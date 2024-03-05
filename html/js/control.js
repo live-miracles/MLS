@@ -42,7 +42,7 @@ function renderStreamControls() {
 
 		otherControlsDiv.innerHTML += `
       <div class="my-1" >
-        <b>Overlays:</b> 
+        <b>Overlays:</b>
         <a href="/control.php?streamno=${i}&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
         <a href="/control.php?streamno=${i}&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
         <a href="/control.php?streamno=${i}&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
@@ -67,18 +67,18 @@ function renderStreamControls() {
 		<div>
 			<b>Choose Input:</b>
 			<div class="my-1">
-				<button onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=main&actnumber=&state=turnon')" 
+				<button onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=main&actnumber=&state=turnon')"
 					id="stream${i}-main" class="btn btn-xs btn-primary">on</button>
 				Main Live Stream
 			</div>
 			<div class="my-1">
-				<button href="/control.php?streamno=${i}&action=back&actnumber=&state=turnon" 
+				<button href="/control.php?streamno=${i}&action=back&actnumber=&state=turnon"
 					class="btn btn-xs btn-primary" target="_blank">on</button>
 				Backup Live stream
 			</div>
-			
+
 			<form method="post" id="videoInputForm" class="my-1">
-				<input type="submit" class="btn btn-xs btn-primary" style="display: inline" value="on" 
+				<input type="submit" class="btn btn-xs btn-primary" style="display: inline" value="on"
 					onclick="event.preventDefault(); submitFormAndShowResponse('videoInputForm','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
 				<btn onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</btn>
 				Uploaded
@@ -132,12 +132,14 @@ function renderOuts() {
 		// we need to slice slice(0, STREAM_NUM) because outs 98 are used for recording.
 		const outSize = streamOutsConfig[i]
 			.slice(0, STREAM_NUM)
-			.findLastIndex((info) => info?.name);
+			.findLastIndex((info) => !isOutEmpty(info));
+
 		for (var j = 1; j <= outSize; j++) {
-			const info = streamOutsConfig[i][j];
-			const on = `<button class="btn btn-xs btn-primary" 
+			let info = streamOutsConfig[i][j];
+			if (isOutEmpty(info)) info = { stream: '', out: '', url: '', encoding: '', name: '' };
+			const on = `<button class="btn btn-xs btn-primary"
 				onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=${j}&state=on')">on</button>`;
-			const off = `<button class="btn btn-xs btn-error" 
+			const off = `<button class="btn btn-xs btn-error"
 				onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=${j}&state=off')">off</button>`;
 			let title = `Out ${j}`;
 			let destDiv = `<span id="destination${i}-${j}">${info.name}</span>`;
@@ -294,14 +296,17 @@ function jsmpegVolumedown() {
 }
 // ===== jsmpeg player =====
 
+async function rerender() {
+	streamNames = await fetchStreamNames();
+	statsJson = await fetchStats();
+	streamOutsConfig = await fetchConfigFile();
+	renderStreamHeaders();
+	renderOuts();
+}
+
 window.onload = async function () {
 	renderStreamControls();
 	setVideoPlayers();
-	setInterval(async function () {
-		streamNames = await fetchStreamNames();
-		statsJson = await fetchStats();
-		streamOutsConfig = await fetchConfigFile();
-		renderStreamHeaders();
-		renderOuts();
-	}, 3000);
+	rerender();
+	setInterval(rerender, 3000);
 };
