@@ -9,98 +9,105 @@ const OUTS_MAX_H = 'max-h-52';
 function renderStreamControls() {
 	const streamControls = document.getElementById('stream-controls');
 
+	let html = '';
 	for (let i = 1; i <= STREAM_NUM; i++) {
 		// Create the div container
-		const divContainer = document.createElement('div');
-		divContainer.classList.add('stream-container', 'p-2');
+		html += `
+            <div class="stream-container p-2">
+                <div id="streamHeader${i}" class="text-xl"></div>
+                ${getJsmpegPlayerHtml(i)}
+                <div id="stream-outs-${i}"></div>
+                <details class="collapse bg-base-200 mt-2">
+                    <summary class="collapse-title font-medium">More</summary>
 
-		const streamHeader = document.createElement('h');
-		streamHeader.id = `streamHeader${i}`;
-		streamHeader.classList.add('text-xl');
-		divContainer.appendChild(streamHeader);
+                    <div class="collapse-content">
+                        <div class="my-1">
+                            <button
+                                class="btn btn-xs btn-primary"
+                                href="/control.php?streamno=${i}&action=out&actnumber=98&state=on"
+                                target="_blank">
+                                on
+                            </button>
+                            <button
+                                class="btn btn-xs btn-error"
+                                href="/control.php?streamno=${i}&action=out&actnumber=98&state=off"
+                                target="_blank">
+                                off
+                            </button>
+                            Record
+                        </div>
 
-		divContainer.appendChild(creteJsmpegPlayer(i));
+                        <div class="my-1">
+                            <b>Overlays:</b>
+                            <a href="/control.php?streamno=${i}&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+                            <a href="/control.php?streamno=${i}&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+                            <a href="/control.php?streamno=${i}&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+                            <a href="/control.php?streamno=${i}&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+                            <a href="/control.php?streamno=${i}&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+                            <a href="/control.php?streamno=${i}&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+                            <a href="/control.php?streamno=${i}&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+                            <a href="/control.php?streamno=${i}&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+                            <a href="/control.php?streamno=${i}&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+                        </div>
 
-		// creating controls bellow the video preview
-		const outsDiv = document.createElement('div');
-		outsDiv.id = `stream-outs-${i}`;
-		divContainer.appendChild(outsDiv);
+                        <form method="post" target="_blank" action="/control.php?streamno=${i}&action=volume&actnumber=&state=volume">
+                        <p>
+                            <b>Volume: </b>
+                            <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs"/>
+                            <input type="submit" value="Change" class="btn btn-xs btn-outline"/>
+                        </p>
+                        </form>
 
-		// Other options
-		const collapseContainer = document.createElement('details');
-		collapseContainer.className = 'collapse bg-base-200 mt-2';
-		collapseContainer.innerHTML = '<summary class="collapse-title font-medium">More</summary>';
+                        <div class="my-1 text-bold">Choose Input:</div>
+                        <div class="my-1">
+                            <button
+                                onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=main&actnumber=&state=turnon')"
+                                id="stream${i}-main" class="btn btn-xs btn-primary">
+                                on
+                            </button>
+                            Main Live Stream
+                        </div>
+                        <div class="my-1">
+                        <button
+                            href="/control.php?streamno=${i}&action=back&actnumber=&state=turnon"
+                            class="btn btn-xs btn-primary" target="_blank">on</button>
+                            Backup Live stream
+                        </div>
 
-		const otherControlsDiv = document.createElement('div');
-		otherControlsDiv.className = 'collapse-content';
-		otherControlsDiv.innerHTML += `
-		<div class="my-1">
-			<button class="btn btn-xs btn-primary" href="/control.php?streamno=${i}&action=out&actnumber=98&state=on" target="_blank">on</button>
-			<button class="btn btn-xs btn-error" href="/control.php?streamno=${i}&action=out&actnumber=98&state=off" target="_blank">off</button>
-			Record
-		</div>`;
+                        <form method="post" id="videoInputForm" class="my-1">
+                            <input
+                                type="submit"
+                                class="btn btn-xs btn-primary"
+                                style="display: inline" value="on"
+                                onclick="event.preventDefault(); submitFormAndShowResponse('videoInputForm','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
+                            <btn
+                                onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=off&actnumber=&state=')"
+                                class="btn btn-xs btn-error">
+                                off
+                            </btn>
+                            Uploaded
+                            <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                                <option selected value="video">Video</option>
+                                <option value="holding">Holding</option>
+                            </select>
+                            <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9"/>m
+                            <input type="text" style="display: inline" name="startsec" size="1" value="0" class="input input-bordered input-neutral input-xs w-10"/>s
+                        </form>
 
-		otherControlsDiv.innerHTML += `
-      <div class="my-1" >
-        <b>Overlays:</b>
-        <a href="/control.php?streamno=${i}&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
-        <a href="/control.php?streamno=${i}&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
-        <a href="/control.php?streamno=${i}&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
-        <a href="/control.php?streamno=${i}&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
-        <a href="/control.php?streamno=${i}&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
-        <a href="/control.php?streamno=${i}&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
-        <a href="/control.php?streamno=${i}&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
-        <a href="/control.php?streamno=${i}&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
-        <a href="/control.php?streamno=${i}&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
-      </div>`;
-
-		otherControlsDiv.innerHTML += `
-      <form method="post" target="_blank" action="/control.php?streamno=${i}&action=volume&actnumber=&state=volume">
-        <p>
-          <b>Volume: </b>
-          <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs"/>
-          <input type="submit" value="Change" class="btn btn-xs btn-outline"/>
-        </p>
-      </form>`;
-
-		otherControlsDiv.innerHTML += `
-		<div>
-			<b>Choose Input:</b>
-			<div class="my-1">
-				<button onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=main&actnumber=&state=turnon')"
-					id="stream${i}-main" class="btn btn-xs btn-primary">on</button>
-				Main Live Stream
-			</div>
-			<div class="my-1">
-				<button href="/control.php?streamno=${i}&action=back&actnumber=&state=turnon"
-					class="btn btn-xs btn-primary" target="_blank">on</button>
-				Backup Live stream
-			</div>
-
-			<form method="post" id="videoInputForm" class="my-1">
-				<input type="submit" class="btn btn-xs btn-primary" style="display: inline" value="on"
-					onclick="event.preventDefault(); submitFormAndShowResponse('videoInputForm','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
-				<btn onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</btn>
-				Uploaded
-				<select name="video_no" class="select select-bordered select-xs max-w-xs">
-					<option selected value="video">Video</option>
-					<option value="holding">Holding</option>
-				</select>
-				<input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9"/>m
-				<input type="text" style="display: inline" name="startsec" size="1" value="0" class="input input-bordered input-neutral input-xs w-10"/>s
-			</form>
-
-			<div class="my-1">
-				<a href="/control.php?streamno=${i}&action=playlist&actnumber=&state=" target="_blank" class="btn btn-xs btn-primary">on</a>
-				<btn onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</btn>
-				Playlist
-			</div>
-		</div>`;
-
-		collapseContainer.appendChild(otherControlsDiv);
-		divContainer.appendChild(collapseContainer);
-		streamControls.appendChild(divContainer);
+                        <div class="my-1">
+                            <a
+                                href="/control.php?streamno=${i}&action=playlist&actnumber=&state="
+                                target="_blank" class="btn btn-xs btn-primary">on</a>
+                            <btn
+                                onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=off&actnumber=&state=')"
+                                class="btn btn-xs btn-error">off</btn>
+                            Playlist
+                        </div>
+                    </div>
+                </details>
+            </div>`;
 	}
+	streamControls.innerHTML = html;
 }
 
 function renderStreamHeaders() {
@@ -218,33 +225,31 @@ function setVideoPlayers() {
 	}
 }
 
-function creteJsmpegPlayer(streamId) {
-	const jsmpegDiv = document.createElement('div');
-	jsmpegDiv.classList.add('jsmpeg', 'text-center');
-
-	if (streamId === 1) {
-		jsmpegDiv.innerHTML = `
-				<canvas width="320" height="180" id="video-canvas${streamId}"
-					class="inline border border-solid border-gray-400"></canvas>`;
-	}
-
-	// Create jsmpeg player controls
-	const controlsElem = document.createElement('p');
-	controlsElem.id = 'stream' + streamId;
-
-	controlsElem.innerHTML = `
-		<a href="javascript:void(0);" onclick="genericFunction('player.php?appname=main&streamname=', jsmpegPlay, this)" class="mx-1">
-			<i class="material-icons text-3xl">play_arrow</i>M</a>
-		<a href="javascript:void(0);" onclick="genericFunction('player.php?appname=backup&streamname=', jsmpegPlay, this)" class="mx-1">
-			<i class="material-icons text-3xl">play_arrow</i>B</a>
-		<a href="javascript:void(0);" onclick="genericFunction('player.php?appname=distribute&streamname=', jsmpegPlay, this)" class="mx-1">
-			<i class="material-icons text-3xl">play_arrow</i>D</a>
-		<a href="javascript:void(0);" onclick="jsmpegStop()" class="mx-1"><i class="material-icons text-3xl">stop</i></a>
-		<a href="javascript:void(0);" onclick="jsmpegVolumeup()" class="mx-1"><i class="material-icons text-3xl">volume_up</i></a>
-		<a href="javascript:void(0);" onclick="jsmpegVolumedown()" class="mx-1"><i class="material-icons text-3xl">volume_down</i></a>`;
-
-	jsmpegDiv.appendChild(controlsElem);
-	return jsmpegDiv;
+function getJsmpegPlayerHtml(streamId) {
+	return `
+        <div class="jsmpeg text-center">
+            ${
+				streamId === 1
+					? `
+                <canvas
+                    width="320"
+                    height="180"
+                    id="video-canvas${streamId}"
+                    class="inline border border-solid border-gray-400"></canvas>`
+					: ``
+			}
+            <p id="stream${streamId}">
+                <a href="javascript:void(0);" onclick="genericFunction('player.php?appname=main&streamname=', jsmpegPlay, this)" class="mx-1">
+                    <i class="material-icons text-3xl">play_arrow</i>M</a>
+                <a href="javascript:void(0);" onclick="genericFunction('player.php?appname=backup&streamname=', jsmpegPlay, this)" class="mx-1">
+                    <i class="material-icons text-3xl">play_arrow</i>B</a>
+                <a href="javascript:void(0);" onclick="genericFunction('player.php?appname=distribute&streamname=', jsmpegPlay, this)" class="mx-1">
+                    <i class="material-icons text-3xl">play_arrow</i>D</a>
+                <a href="javascript:void(0);" onclick="jsmpegStop()" class="mx-1"><i class="material-icons text-3xl">stop</i></a>
+                <a href="javascript:void(0);" onclick="jsmpegVolumeup()" class="mx-1"><i class="material-icons text-3xl">volume_up</i></a>
+                <a href="javascript:void(0);" onclick="jsmpegVolumedown()" class="mx-1"><i class="material-icons text-3xl">volume_down</i></a>
+            </p>
+        </div>`;
 }
 
 function genericFunction(url, cFunction, elem) {
