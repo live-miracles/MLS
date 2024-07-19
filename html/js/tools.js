@@ -27,31 +27,25 @@ function clearAndAddChooseOption(selector) {
 
 // AJAX request function
 async function submitFormAndShowResponse(formId, phpUrl) {
-	var form = document.getElementById(formId);
+	const form = document.getElementById(formId);
 	if (form.checkValidity()) {
-		try {
-			var formData = new FormData(form);
-			var response = await fetch(phpUrl, { method: 'POST', body: formData });
-			if (response.ok) {
-				showResponse(await response.text());
-			} else {
-				console.error('Request failed with status:', response.status);
-			}
-		} catch (error) {
-			console.error('Error:', error);
-		}
+		const formData = new FormData(form);
+		executePhpAndShowResponse(phpUrl, {}, formData);
 	} else {
 		form.reportValidity();
 	}
 }
 
-// AJAX request function
-async function executePhpAndShowResponse(phpUrl) {
-	var response = await fetch(phpUrl, { method: 'POST' });
-	if (response.ok) {
-		showResponse(await response.text());
-	} else {
-		console.error('Request failed with status:', response.status);
+async function executePhpAndShowResponse(phpUrl, headers = {}, body = undefined) {
+	try {
+		const response = await fetch(phpUrl, { method: 'POST', headers: headers, body: body });
+		if (response.ok) {
+			showResponse(await response.text());
+		} else {
+			console.error('Request failed with status:', response.status);
+		}
+	} catch (error) {
+		console.error('Error:', error);
 	}
 }
 

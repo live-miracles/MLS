@@ -115,11 +115,14 @@ if (isset($_GET['destadd'])) {
 }
 
 if (isset($_GET['bulkset'])) {
-    $name_id = $_GET['name_id'];
-    $stream_id = $_GET['stream_id'];
-    $output_id = $_GET['output_id'];
-    $resolution = $_GET['resolution'];
-    $rtmp_url = $_GET['rtmp_url'];
+    $rawPostData = file_get_contents("php://input");
+    $data = json_decode($rawPostData, true);
+
+    $name_id = $data['name_id'];
+    $stream_id = $data['stream_id'];
+    $output_id = $data['output_id'];
+    $resolution = $data['resolution'];
+    $rtmp_url = $data['rtmp_url'];
 
     echo "<h2>You Entered the following information:</h2>";
     echo "<b>RTMP Url: </b> $rtmp_url";
