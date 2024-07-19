@@ -53,8 +53,8 @@ if (isset($_GET['upload-video'])) {
     echo "<b>Video ID: </b> $video_id";
     echo "<br><b>Stream ID: </b> $stream_id";
     echo "<br>";
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/scripts/gdrive-downloader.sh  \"$video_id\"" .
-        "/usr/local/nginx/scripts/scripts/images/" . $stream_id . "video.mp4");
+    $exec = "sudo /bin/bash /usr/local/nginx/scripts/gdrive-downloader.sh $video_id /usr/local/nginx/scripts/images/" . $stream_id . "video.mp4";
+    $output = shell_exec($exec);
     echo $output;
 }
 
