@@ -90,7 +90,7 @@
             type="text"
             name="name_id"
             placeholder="English_YT..."
-            class="input input-bordered input-neutral input-xs w-44" />
+            class="input input-bordered input-xs w-44" />
         </label>
 
         <label class="input-label">
@@ -149,7 +149,7 @@
             placeholder=""
             id="stream-key"
             onchange="updateRtmpUrl()"
-            class="input input-bordered input-neutral input-xs w-[40rem]" />
+            class="input input-bordered input-xs w-[40rem]" />
         </label>
 
         <label class="hidden">
@@ -391,6 +391,40 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <br />
           <input type="submit" value="Schedule" class="btn btn-accent btn-sm my-2" />
         </p>
+      </form>
+
+      <div class="divider"></div>
+
+      <div tabindex="0" class="collapsible-header">
+        <div class="collapse-title">
+          Upload Google Drive Video
+          <a href="/config.php?streamlist" target="_blank" class="link link-accent">[file]</a>
+        </div>
+        <div class="collapse-content">
+          <p>Description...</p>
+        </div>
+      </div>
+
+      <form method="post" id="uploadVideo">
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Stream Id</span>
+          </div>
+          <select name="stream_id" class="stream-selector labeled-select w-32"></select>
+        </label>
+
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Video ID</span>
+          </div>
+          <input type="text" name="video_id" class="input input-bordered input-xs w-96" />
+        </label>
+
+        <input
+          type="submit"
+          class="btn btn-accent btn-sm my-2"
+          value="Upload"
+          onclick="event.preventDefault(); submitFormAndShowResponse('uploadVideo','config.php?upload-video');" />
       </form>
 
       <div class="divider"></div>

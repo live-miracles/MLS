@@ -46,6 +46,18 @@ if (isset($_GET['audiopreset'])) {
     echo $output;
 }
 
+if (isset($_GET['upload-video'])) {
+    $video_id = $_POST['video_id'];
+    $stream_no = $_POST['stream_no'];
+    echo "<h2>You entered the following information:</h2>";
+    echo "<b>Video ID: </b> $video_id";
+    echo "<br><b>Stream Id: </b> $stream_id";
+    echo "<br>";
+    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/scripts/gdrive-downloader.sh  \"$video_id\"" .
+        "/usr/local/nginx/scripts/scripts/images/" . $stream_no . "video.mp4");
+    echo $output;
+}
+
 if (isset($_GET['uploadfile'])) {
     $file_url = $_POST['file_url'];
     $stream_no = $_POST['stream_no'];
