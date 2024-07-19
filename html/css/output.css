@@ -3117,21 +3117,6 @@ details.collapse summary::-webkit-details-marker {
   margin-bottom: 0.75rem;
 }
 
-.my-8 {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
-.-my-2 {
-  margin-top: -0.5rem;
-  margin-bottom: -0.5rem;
-}
-
-.-my-24 {
-  margin-top: -6rem;
-  margin-bottom: -6rem;
-}
-
 .mb-0 {
   margin-bottom: 0px;
 }
@@ -3144,16 +3129,12 @@ details.collapse summary::-webkit-details-marker {
   margin-top: 0.5rem;
 }
 
-.-mt-5 {
-  margin-top: -1.25rem;
-}
-
-.mt-5 {
-  margin-top: 1.25rem;
-}
-
 .mt-8 {
   margin-top: 2rem;
+}
+
+.mt-3 {
+  margin-top: 0.75rem;
 }
 
 .block {
@@ -3174,10 +3155,6 @@ details.collapse summary::-webkit-details-marker {
 
 .hidden {
   display: none;
-}
-
-.h-24 {
-  height: 6rem;
 }
 
 .h-48 {
@@ -3293,11 +3270,6 @@ details.collapse summary::-webkit-details-marker {
   padding-right: 0.25rem;
 }
 
-.px-5 {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-}
-
 .pb-0 {
   padding-bottom: 0px;
 }
@@ -3323,6 +3295,10 @@ details.collapse summary::-webkit-details-marker {
 
 .font-medium {
   font-weight: 500;
+}
+
+.font-bold {
+  font-weight: 700;
 }
 
 .capitalize {
