@@ -424,7 +424,9 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           type="submit"
           class="btn btn-accent btn-sm my-2"
           value="Upload"
-          onclick="event.preventDefault(); submitFormAndShowResponse('uploadVideo','config.php?upload-video');" />
+          onclick="event.preventDefault();
+            showResponse('Uploading started, please wait...');
+            submitFormAndShowResponse('uploadVideo','config.php?upload-video');" />
       </form>
 
       <div class="divider"></div>
