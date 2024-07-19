@@ -3,6 +3,8 @@
 	"devDependencies": {
 		"@tailwindcss/typography": "^0.5.10",
 		"daisyui": "4.4.19",
+		"express": "^4.19.2",
+		"nodemon": "^3.0.1",
 		"prettier": "^3.2.5",
 		"prettier-plugin-tailwindcss": "^0.5.11",
 		"tailwindcss": "^3.4.1"
