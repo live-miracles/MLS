@@ -52,7 +52,7 @@ if (isset($_GET['batch-input-control'])) {
         } else {
             $cmd = "sudo /bin/bash $scriptPath off";
         }
-        $output .= exec($cmd);
+        $output .= exec($cmd) . "\n";
     }
     echo $output;
 }

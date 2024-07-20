@@ -121,7 +121,7 @@ function renderStreamHeaders() {
 		const streamName = streamNames[i];
 		const suffix = streamName ? ` (${streamName})` : '';
 		headerElem.innerHTML = `
-			<span class="stream-status ${statuses[i] ? 'on' : 'off'}" id="distribute-status${i}"></span>
+			<span class="stream-status ${statuses.distribute[i] ? 'on' : 'off'}" id="distribute-status${i}"></span>
 			Stream ${i}${suffix}`;
 
 		document.getElementById(`main-status${i}`).className =
@@ -258,7 +258,7 @@ window.onload = async function () {
 	renderStreamControls();
 	setVideoPlayers();
 	rerender();
-	setInterval(rerender, 10000);
+	setInterval(rerender, 5000);
 };
 
 (function renderServerDetails() {
