@@ -1414,6 +1414,16 @@ html {
 }
 
 @media (hover: hover) {
+  .btm-nav > *.disabled:hover,
+      .btm-nav > *[disabled]:hover {
+    pointer-events: none;
+    --tw-border-opacity: 0;
+    background-color: var(--fallback-n,oklch(var(--n)/var(--tw-bg-opacity)));
+    --tw-bg-opacity: 0.1;
+    color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));
+    --tw-text-opacity: 0.2;
+  }
+
   .btn:hover {
     --tw-border-opacity: 1;
     border-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-border-opacity)));
@@ -1915,6 +1925,16 @@ html {
   border-color: transparent;
   --tw-bg-opacity: 1;
   background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
+}
+
+.btm-nav > *.disabled,
+    .btm-nav > *[disabled] {
+  pointer-events: none;
+  --tw-border-opacity: 0;
+  background-color: var(--fallback-n,oklch(var(--n)/var(--tw-bg-opacity)));
+  --tw-bg-opacity: 0.1;
+  color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));
+  --tw-text-opacity: 0.2;
 }
 
 .btm-nav > * .label {
@@ -2869,6 +2889,14 @@ details.collapse summary::-webkit-details-marker {
   line-height: 1.625;
 }
 
+.input-sm, input.input-sm {
+  height: 2rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 2rem;
+}
+
 .join.join-vertical {
   flex-direction: column;
 }
@@ -3087,9 +3115,18 @@ details.collapse summary::-webkit-details-marker {
   position: relative;
 }
 
+.m-auto {
+  margin: auto;
+}
+
 .mx-1 {
   margin-left: 0.25rem;
   margin-right: 0.25rem;
+}
+
+.mx-10 {
+  margin-left: 2.5rem;
+  margin-right: 2.5rem;
 }
 
 .mx-6 {
@@ -3185,8 +3222,8 @@ details.collapse summary::-webkit-details-marker {
   width: 2.25rem;
 }
 
-.w-\[30rem\] {
-  width: 30rem;
+.w-96 {
+  width: 24rem;
 }
 
 .w-\[40rem\] {
@@ -3197,12 +3234,24 @@ details.collapse summary::-webkit-details-marker {
   width: 100%;
 }
 
-.w-64 {
-  width: 16rem;
+.w-\[700px\] {
+  width: 700px;
 }
 
-.w-96 {
-  width: 24rem;
+.w-\[900px\] {
+  width: 900px;
+}
+
+.w-0 {
+  width: 0px;
+}
+
+.w-\[30rem\] {
+  width: 30rem;
+}
+
+.w-\[32rem\] {
+  width: 32rem;
 }
 
 .max-w-3xl {
@@ -3282,6 +3331,11 @@ details.collapse summary::-webkit-details-marker {
   padding-right: 0.25rem;
 }
 
+.px-10 {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
 .pb-0 {
   padding-bottom: 0px;
 }
@@ -3303,6 +3357,11 @@ details.collapse summary::-webkit-details-marker {
 .text-xl {
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
 }
 
 .font-bold {

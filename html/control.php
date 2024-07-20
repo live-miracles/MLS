@@ -29,8 +29,31 @@ if ($action == "video") { #Get variables for starting holding screen
 } elseif ($action == "super") {
     $output = exec("sudo /bin/bash /usr/local/nginx/scripts/\"$streamno\".sh \"$action\" $actnumber");
     echo $output;
-} else { #For outputs
+} else { # For outputs
     $output = exec("sudo /bin/bash /usr/local/nginx/scripts/\"$streamno\".sh \"$action$actnumber\" $state");
+    echo $output;
+}
+
+if (isset($_GET['batch-input-control'])) {
+    $rawPostData = file_get_contents("php://input");
+    $data = json_decode($rawPostData, true);
+
+    $inputType = $data['inputType'];
+    $streams = $data['streams'];
+    $state = $data['state'];
+    $output = "";
+    foreach ($streams as $streamId) {
+        $scriptPath = "/usr/local/nginx/scripts/$streamId.sh";
+        if ($state == "on") {
+            $cmd = "sudo /bin/bash $scriptPath on && sudo /bin/bash $scriptPath $inputType";
+            if ($inputType == "video" || $inputType == "holding") {
+                $cmd .= " 0";
+            }
+        } else {
+            $cmd = "sudo /bin/bash $scriptPath off";
+        }
+        $output .= exec($cmd);
+    }
     echo $output;
 }
 
@@ -43,6 +66,7 @@ for ($j = 1; $j <= $OUT_NUM; $j++) {
         }
     }
 }
+
 if (isset($_GET['allsuperoff'])) {
     for ($i = 1; $i <= 8; $i++) {
         $output = exec("sudo /bin/bash /usr/local/nginx/scripts/{$i}.sh super off");
