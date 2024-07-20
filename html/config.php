@@ -130,20 +130,29 @@ if (isset($_GET['bulkset'])) {
     $rawPostData = file_get_contents("php://input");
     $data = json_decode($rawPostData, true);
 
-    $name_id = $data['name_id'];
-    $stream_id = $data['stream_id'];
-    $output_id = $data['output_id'];
-    $resolution = $data['resolution'];
-    $rtmp_url = $data['rtmp_url'];
+    $output = "";
+    foreach ($data as $out) {
+        $name_id = $out['name_id'];
+        $stream_id = $out['stream_id'];
+        $output_id = $out['output_id'];
+        $resolution = $out['resolution'];
+        $rtmp_url = $out['rtmp_url'];
 
-    echo "<h2>You Entered the following information:</h2>";
-    echo "<b>RTMP Url: </b> $rtmp_url";
-    echo "<br><b>Name: </b> $name_id";
-    echo "<br><b>Stream Id: </b> $stream_id";
-    echo "<br><b>Output Id: </b> $output_id";
-    echo "<br><b>Resolution: </b> $resolution";
-    echo "<br>";
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh destination \"$rtmp_url\" \"$stream_id\" \"$output_id\" \"$resolution\" $name_id");
+        $output .= "<h2>You Entered the following information:</h2>
+                    <b>RTMP Url:</b> $rtmp_url<br>
+                    <b>Name:</b> $name_id<br>
+                    <b>Stream Id:</b> $stream_id<br>
+                    <b>Output Id:</b> $output_id<br>
+                    <b>Resolution:</b> $resolution<br><br>";
+
+        $command = sprintf(
+            'sudo /bin/bash /usr/local/nginx/scripts/config.sh destination "%s" "%s" "%s" "%s" %s',
+            $rtmp_url, $stream_id, $output_id, $resolution, $name_id
+        );
+
+        $output .= shell_exec($command);
+    }
+
     echo $output;
 }
 

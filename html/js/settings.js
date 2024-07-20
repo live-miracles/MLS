@@ -80,19 +80,18 @@ function bulkSetOuts() {
 		.split('\n')
 		.map((line) => parseOutLine(line))
 		.filter((out) => !isOutEmpty(out))
-		.forEach((out) => {
-			executePhpAndShowResponse(
-				`config.php?bulkset`,
-				{ 'Content-Type': 'application/json' },
-				JSON.stringify({
-					name_id: out.name,
-					stream_id: out.stream,
-					output_id: out.out,
-					resolution: out.encoding,
-					rtmp_url: out.url,
-				}),
-			);
-		});
+		.map((out) => ({
+			name_id: out.name,
+			stream_id: out.stream,
+			output_id: out.out,
+			resolution: out.encoding,
+			rtmp_url: out.url,
+		}));
+	executePhpAndShowResponse(
+		`config.php?bulkset`,
+		{ 'Content-Type': 'application/json' },
+		JSON.stringify(outs),
+	);
 }
 
 window.onload = async function () {
