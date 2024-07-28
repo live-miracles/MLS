@@ -74,6 +74,26 @@ function saveStreamNamesTable() {
 	writeStreamNames();
 }
 
+function bulkSetOuts() {
+	const rawText = document.getElementById('bulk-outs').value;
+	const outs = rawText
+		.split('\n')
+		.map((line) => parseOutLine(line))
+		.filter((out) => !isOutEmpty(out))
+		.map((out) => ({
+			name_id: out.name,
+			stream_id: out.stream,
+			output_id: out.out,
+			resolution: out.encoding,
+			rtmp_url: out.url,
+		}));
+	executePhpAndShowResponse(
+		`config.php?bulkset`,
+		{ 'Content-Type': 'application/json' },
+		JSON.stringify(outs),
+	);
+}
+
 window.onload = async function () {
 	streamNames = await fetchStreamNames();
 	renderOutputs();

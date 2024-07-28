@@ -27,31 +27,25 @@ function clearAndAddChooseOption(selector) {
 
 // AJAX request function
 async function submitFormAndShowResponse(formId, phpUrl) {
-	var form = document.getElementById(formId);
+	const form = document.getElementById(formId);
 	if (form.checkValidity()) {
-		try {
-			var formData = new FormData(form);
-			var response = await fetch(phpUrl, { method: 'POST', body: formData });
-			if (response.ok) {
-				showResponse(await response.text());
-			} else {
-				console.error('Request failed with status:', response.status);
-			}
-		} catch (error) {
-			console.error('Error:', error);
-		}
+		const formData = new FormData(form);
+		executePhpAndShowResponse(phpUrl, {}, formData);
 	} else {
 		form.reportValidity();
 	}
 }
 
-// AJAX request function
-async function executePhpAndShowResponse(phpUrl) {
-	var response = await fetch(phpUrl, { method: 'POST' });
-	if (response.ok) {
-		showResponse(await response.text());
-	} else {
-		console.error('Request failed with status:', response.status);
+async function executePhpAndShowResponse(phpUrl, headers = {}, body = undefined) {
+	try {
+		const response = await fetch(phpUrl, { method: 'POST', headers: headers, body: body });
+		if (response.ok) {
+			showResponse(await response.text());
+		} else {
+			console.error('Request failed with status:', response.status);
+		}
+	} catch (error) {
+		console.error('Error:', error);
 	}
 }
 
@@ -98,13 +92,27 @@ async function fetchStreamNames() {
 		return streamNames;
 	} catch (error) {
 		console.error('Error fetching stream names:', error);
-		throw error; // Propagate the error to the caller
+	}
+	return [];
+}
+
+function parseOutLine(text) {
+	const matches = text.match(/^__stream(\d+)__out(\d+)__(.*)$/);
+	const split = matches ? matches[3].trim().split(' ') : [];
+	if (matches && split.length === 3) {
+		return {
+			stream: matches[1],
+			out: matches[2],
+			url: split[0],
+			encoding: split[1],
+			name: split[2],
+		};
+	} else {
+		return {};
 	}
 }
 
-async function fetchConfigFile() {
-	const response = await fetch('/config.txt');
-	const text = await response.text();
+function parseOutsConfig(text) {
 	const lines = text.split('\n');
 
 	const streamOutsConfig = [];
@@ -115,23 +123,23 @@ async function fetchConfigFile() {
 		}
 	}
 
-	for (const line of lines) {
-		const matches = line.match(/^__stream(\d+)__out(\d+)__(.*)$/);
-		if (matches) {
-			const i = parseInt(matches[1]);
-			const j = parseInt(matches[2]);
-			let remainingLine = matches[3].trim();
-			const split = remainingLine.split(' ');
-
-			if (split.length === 3) {
-				streamOutsConfig[i][j] = { url: split[0], encoding: split[1], name: split[2] };
-			} else {
-				streamOutsConfig[i][j] = { url: '', encoding: '', name: '' };
-			}
-		}
-	}
+	lines
+		.filter((line) => line !== '')
+		.forEach((line) => {
+			out = parseOutLine(line);
+			if (!isOutEmpty(out)) streamOutsConfig[out.stream][out.out] = out;
+		});
 
 	return streamOutsConfig;
+}
+
+function isOutEmpty(out) {
+	return out?.name ? false : true;
+}
+
+async function fetchConfigFile() {
+	const response = await fetch('/config.txt');
+	return parseOutsConfig(await response.text());
 }
 
 function xml2json(xml) {

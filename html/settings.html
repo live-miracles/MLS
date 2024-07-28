@@ -58,12 +58,12 @@
 
       <div tabindex="0" class="collapsible-header">
         <div class="collapse-title text-xl font-medium">
-          Add New Destination
+          Set Outputs
           <a href="/config.php?destlist" target="_blank" class="link link-accent">[file]</a>
         </div>
         <div class="collapse-content">
           <p>
-            The nginx server receives the feed and sends it to a multiple destinations, such as when
+            The nginx server receives the feed and sends it to a multiple outputs, such as when
             streaming on the YouTube or Facebook. You can use this interface to add such
             destination.
             <br />
@@ -81,7 +81,7 @@
           </ul>
         </div>
       </div>
-      <form method="post" id="destinationForm">
+      <form method="post" id="outForm">
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Name</span>
@@ -89,18 +89,15 @@
           <input
             type="text"
             name="name_id"
-            placeholder="Sadhguru_English_YT"
-            class="input input-bordered input-neutral input-xs w-44" />
+            placeholder="English_YT..."
+            class="input input-bordered input-xs w-44" />
         </label>
 
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Id</span>
           </div>
-          <select
-            name="stream_id"
-            id="new-destination-stream"
-            class="stream-selector labeled-select w-32"></select>
+          <select name="stream_id" class="stream-selector labeled-select w-32"></select>
         </label>
 
         <label class="input-label">
@@ -152,7 +149,7 @@
             placeholder=""
             id="stream-key"
             onchange="updateRtmpUrl()"
-            class="input input-bordered input-neutral input-xs w-[40rem]" />
+            class="input input-bordered input-xs w-[40rem]" />
         </label>
 
         <label class="hidden">
@@ -165,7 +162,7 @@
             size="65"
             placeholder="Generated as Server URL + Stream Key"
             id="rtmp-url"
-            class="input input-neutral input-xs max-w-md"
+            class="input input-xs max-w-md"
             readonly />
         </label>
 
@@ -174,9 +171,20 @@
         <input
           type="submit"
           class="btn btn-accent btn-sm my-2"
-          value="Add Destination"
-          onclick="event.preventDefault(); submitFormAndShowResponse('destinationForm','config.php?destadd');" />
+          value="Set Output"
+          onclick="event.preventDefault(); submitFormAndShowResponse('outForm','config.php?destadd');" />
       </form>
+
+      <div class="mt-8">
+        <textarea
+          id="bulk-outs"
+          class="textarea textarea-bordered mx-auto h-48 w-full"
+          placeholder="__stream1__out1__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 source LB_Wb_Eng
+__stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_Foundation_YT
+..."></textarea>
+      </div>
+
+      <button onclick="bulkSetOuts()" class="btn btn-accent btn-sm my-2">Bulk Set Outputs</button>
 
       <div class="divider"></div>
 
@@ -204,7 +212,7 @@
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Id</span>
           </div>
-          <select name="stream_id" class="stream-selector labeled-select"></select>
+          <select name="stream_id" class="stream-selector labeled-select w-32"></select>
         </label>
         <label class="input-label">
           <div class="label pb-0">
@@ -383,6 +391,42 @@
           <br />
           <input type="submit" value="Schedule" class="btn btn-accent btn-sm my-2" />
         </p>
+      </form>
+
+      <div class="divider"></div>
+
+      <div tabindex="0" class="collapsible-header">
+        <div class="collapse-title">
+          Upload Google Drive Video
+          <a href="/config.php?streamlist" target="_blank" class="link link-accent">[file]</a>
+        </div>
+        <div class="collapse-content">
+          <p>Description...</p>
+        </div>
+      </div>
+
+      <form method="post" id="uploadVideo">
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Stream Id</span>
+          </div>
+          <select name="stream_id" class="stream-selector labeled-select w-32"></select>
+        </label>
+
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Video ID</span>
+          </div>
+          <input type="text" name="video_id" class="input input-bordered input-xs w-96" />
+        </label>
+
+        <input
+          type="submit"
+          class="btn btn-accent btn-sm my-2"
+          value="Upload"
+          onclick="event.preventDefault();
+            showResponse('Uploading started, please wait...');
+            submitFormAndShowResponse('uploadVideo','config.php?upload-video');" />
       </form>
 
       <div class="divider"></div>

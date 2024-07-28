@@ -6,9 +6,10 @@
     <link rel="icon" type="image/png" href="./img/isha-logo.png" />
     <link rel="stylesheet" type="text/css" href="/css/output.css" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <script type="text/javascript" src="/js/tools.js"></script>
-    <script type="text/javascript" src="/js/control.js" defer></script>
     <script type="text/javascript" src="jsmpeg.min.js"></script>
+    <script type="text/javascript" src="/js/tools.js"></script>
+    <script type="text/javascript" src="/js/jsmpeg.js" defer></script>
+    <script type="text/javascript" src="/js/control.js" defer></script>
   </head>
   <body class="bg-base-100 text-base-content">
     <div class="navbar bg-base-100">
@@ -43,56 +44,109 @@
       </p>
     </section>
 
-    <div class="mx-6 my-3 text-center">
-      <form method="post" target="_blank" action="/config.php?remap">
-        <p>
-          <b>No. of Audio Channels:</b>
-          <input
-            type="text"
-            name="channel_no"
-            size="5"
-            placeholder="4"
-            class="input input-bordered input-neutral input-xs max-w-xs mx-1" />
-          <select name="outputdest" class="select select-bordered select-xs max-w-xs">
-            <option selected value="main">Main</option>
-            <option value="backup">Backup</option>
-          </select>
-          <input type="submit" value="Remap On" class="btn btn-xs btn-primary" />
-        </p>
-      </form>
-      <form method="post" target="_blank" action="/config.php?remapoff">
-        <p>
-          <b>Turn off Remapping: </b>
-          <select name="outputdest" class="select select-bordered select-xs max-w-xs">
-            <option selected value="main">Main</option>
-            <option value="backup">Backup</option>
-          </select>
-          <input type="submit" value="Remap Off" class="btn btn-xs btn-error" />
-        </p>
-      </form>
-    </div>
+    <div class="mx-10 my-3">
+      <details class="collapse bg-base-200 mx-auto">
+        <summary class="collapse-title text-center"><b>More</b></summary>
+        <div class="collapse-content">
+          <div class="mx-6 my-3 text-center">
+            <form method="post" target="_blank" action="/config.php?remap">
+              <p>
+                <b>No. of Audio Channels:</b>
+                <input
+                  type="text"
+                  name="channel_no"
+                  size="5"
+                  placeholder="4"
+                  class="input input-bordered input-neutral input-xs max-w-xs mx-1" />
+                <select name="outputdest" class="select select-bordered select-xs max-w-xs">
+                  <option selected value="main">Main</option>
+                  <option value="backup">Backup</option>
+                </select>
+                <input type="submit" value="Remap On" class="btn btn-xs btn-primary" />
+              </p>
+            </form>
+            <form method="post" target="_blank" action="/config.php?remapoff">
+              <p>
+                <b>Turn off Remapping: </b>
+                <select name="outputdest" class="select select-bordered select-xs max-w-xs">
+                  <option selected value="main">Main</option>
+                  <option value="backup">Backup</option>
+                </select>
+                <input type="submit" value="Remap Off" class="btn btn-xs btn-error" />
+              </p>
+            </form>
+          </div>
 
-    <div class="mx-6 my-3 text-center">
-      <p>
-        SRT Accept:
-        <a href="/config.php?srtaccept" target="_blank" class="btn btn-xs btn-primary">ON</a>
-        <a href="/config.php?srtacceptoff" target="_blank" class="btn btn-xs btn-error">OFF</a>
-      </p>
-    </div>
+          <div class="mx-6 my-3 text-center">
+            <p>
+              SRT Accept:
+              <a href="/config.php?srtaccept" target="_blank" class="btn btn-xs btn-primary">ON</a>
+              <a href="/config.php?srtacceptoff" target="_blank" class="btn btn-xs btn-error"
+                >OFF</a
+              >
+            </p>
+          </div>
 
-    <div class="mx-6 my-3 text-center">
-      <p>
-        <b>Supers - Global Control:</b>
-        <a href="/control.php?allsuper1on" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
-        <a href="/control.php?allsuper2on" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
-        <a href="/control.php?allsuper3on" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
-        <a href="/control.php?allsuper4on" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
-        <a href="/control.php?allsuper5on" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
-        <a href="/control.php?allsuper6on" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
-        <a href="/control.php?allsuper7on" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
-        <a href="/control.php?allsuper8on" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
-        <a href="/control.php?allsuperoff" target="_blank" class="btn btn-xs btn-error">Remove</a>
-      </p>
+          <div class="mx-6 my-3 text-center">
+            <p>
+              <b>Supers - Global Control:</b>
+              <a href="/control.php?allsuper1on" target="_blank" class="btn btn-xs btn-primary"
+                >Add 1</a
+              >
+              <a href="/control.php?allsuper2on" target="_blank" class="btn btn-xs btn-primary"
+                >Add 2</a
+              >
+              <a href="/control.php?allsuper3on" target="_blank" class="btn btn-xs btn-primary"
+                >Add 3</a
+              >
+              <a href="/control.php?allsuper4on" target="_blank" class="btn btn-xs btn-primary"
+                >Add 4</a
+              >
+              <a href="/control.php?allsuper5on" target="_blank" class="btn btn-xs btn-primary"
+                >Add 5</a
+              >
+              <a href="/control.php?allsuper6on" target="_blank" class="btn btn-xs btn-primary"
+                >Add 6</a
+              >
+              <a href="/control.php?allsuper7on" target="_blank" class="btn btn-xs btn-primary"
+                >Add 7</a
+              >
+              <a href="/control.php?allsuper8on" target="_blank" class="btn btn-xs btn-primary"
+                >Add 8</a
+              >
+              <a href="/control.php?allsuperoff" target="_blank" class="btn btn-xs btn-error"
+                >Remove</a
+              >
+            </p>
+          </div>
+
+          <div class="mx-6 my-3 text-center">
+            Batch Input Control: &nbsp;
+
+            <select id="inputType" class="labeled-select">
+              <option value="" disabled selected>Input Type</option>
+              <option value="main">Main</option>
+              <option value="back">Backup</option>
+              <option value="video">Video</option>
+              <option value="holding">Holding</option>
+            </select>
+
+            <input
+              type="text"
+              id="batchInputStreams"
+              placeholder="Stream IDs: 3 4 5 7"
+              id="batchInputControl"
+              class="input input-bordered input-xs w-[30rem]" />
+
+            <button class="btn btn-xs btn-primary" onclick="batchInputControlClick(true);">
+              on
+            </button>
+            <button class="btn btn-xs btn-error" onclick="batchInputControlClick(false);">
+              off
+            </button>
+          </div>
+        </div>
+      </details>
     </div>
 
     <div class="divider"></div>
