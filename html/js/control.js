@@ -1,3 +1,6 @@
+let refreshTime = 5000;
+let refreshIntervalId = null;
+
 function renderStreamControls() {
     const streamControls = document.getElementById('stream-controls');
 
@@ -18,13 +21,13 @@ function renderStreamControls() {
             <div class="my-1">
                 <button
                     class="btn btn-xs btn-primary"
-                    href="/control.php?streamno=${i}&action=out&actnumber=98&state=on"
+                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=98&state=on')"
                     target="_blank">
                     on
                 </button>
                 <button
                     class="btn btn-xs btn-error"
-                    href="/control.php?streamno=${i}&action=out&actnumber=98&state=off"
+                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=98&state=off')"
                     target="_blank">
                     off
                 </button>
@@ -53,13 +56,9 @@ function renderStreamControls() {
             </form>
 
             <div class="mt-3 font-bold">
-                <button
-                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=off&actnumber=&state=')"
-                    class="btn btn-xs btn-error">off</button>
-                    Choose Input:
+                Choose Input:
             </div>
             <div class="my-1">
-                <span class="stream-status" id="main-status${i}"></span>
                 <button
                     onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=main&actnumber=&state=turnon')"
                     class="btn btn-xs btn-primary">
@@ -68,7 +67,6 @@ function renderStreamControls() {
                 Main Live Stream
             </div>
             <div class="my-1">
-                <span class="stream-status" id="backup-status${i}"></span>
                 <button
                     onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=back&actnumber=&state=turnon')"
                     class="btn btn-xs btn-primary" target="_blank">on</button>
@@ -95,6 +93,13 @@ function renderStreamControls() {
                     onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=playlist&actnumber=&state=')"
                     class="btn btn-xs btn-primary">on</button>
                 Playlist
+            </div>
+
+            <div>
+                <button
+                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=off&actnumber=&state=')"
+                    class="btn btn-xs btn-error">off</button>
+                Current Input
             </div>`;
 
         html += `
@@ -121,13 +126,10 @@ function renderStreamHeaders() {
         const streamName = streamNames[i];
         const suffix = streamName ? ` (${streamName})` : '';
         headerElem.innerHTML = `
-			<span class="stream-status ${statuses.distribute[i] ? 'on' : 'off'}" id="distribute-status${i}"></span>
-			Stream ${i}${suffix}`;
-
-        document.getElementById(`main-status${i}`).className =
-            `stream-status ${statuses.main[i] ? 'on' : 'off'}`;
-        document.getElementById(`backup-status${i}`).className =
-            `stream-status ${statuses.backup[i] ? 'on' : 'off'}`;
+			<div class="mb-2 badge ${statuses.distribute[i] ? 'badge-primary' : 'badge-outline'}">dist</div>
+			<div class="badge ${statuses.main[i] ? 'badge-primary' : 'badge-outline'}">main</div>
+			<div class="badge ${statuses.backup[i] ? 'badge-primary' : 'badge-outline'}">back</div>
+			<span class="badge badge-lg badge-neutral text-xl">Stream ${i}${suffix}</span>`;
     }
 }
 
@@ -231,7 +233,7 @@ function getActiveStreams() {
 function batchInputControlClick(isOn) {
     const inputType = document.getElementById('inputType').value;
     const streams = document
-        .getElementById('batchInputStreams')
+        .getElementById('batchInputControl')
         .value.split(' ')
         .map((id) => id.trim())
         .filter((id) => id !== '');
@@ -246,6 +248,12 @@ function batchInputControlClick(isOn) {
     );
 }
 
+function updateRefreshTime() {
+    refreshTime = Math.max(1, Number(document.getElementById('refreshTime').value)) * 1000;
+    clearInterval(refreshIntervalId);
+    refreshIntervalId = setInterval(rerender, refreshTime);
+}
+
 async function rerender() {
     streamNames = await fetchStreamNames();
     statsJson = await fetchStats();
@@ -258,7 +266,7 @@ window.onload = async function () {
     renderStreamControls();
     setVideoPlayers();
     rerender();
-    setInterval(rerender, 5000);
+    updateRefreshTime();
 };
 
 (function renderServerDetails() {

@@ -133,9 +133,8 @@
 
             <input
               type="text"
-              id="batchInputStreams"
-              placeholder="Stream IDs: 3 4 5 7"
               id="batchInputControl"
+              placeholder="Stream IDs: 3 4 5 7"
               class="input input-bordered input-xs w-[30rem]" />
 
             <button class="btn btn-primary btn-xs" onclick="batchInputControlClick(true);">
@@ -144,6 +143,19 @@
             <button class="btn btn-error btn-xs" onclick="batchInputControlClick(false);">
               off
             </button>
+          </div>
+
+          <div class="mx-6 my-3 text-center">
+            Refresh Time (seconds):
+            <input
+              type="number"
+              min="1"
+              id="refreshTime"
+              value="5"
+              class="input input-bordered input-xs w-16" />
+            <button class="btn btn-primary btn-xs" onclick="updateRefreshTime();">Update</button>
+
+            <button class="btn btn-outline btn-xs ml-3" onclick="rerender();">Refresh Now</button>
           </div>
         </div>
       </details>
