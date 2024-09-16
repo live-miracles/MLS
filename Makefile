@@ -7,6 +7,9 @@ pretty:
 install:
 	sudo ./setup-nginx-docker.sh
 
+update:
+	sudo ./update-mls.sh
+
 front:
 	npm run --prefix ./next dev
 

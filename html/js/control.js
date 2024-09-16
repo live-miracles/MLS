@@ -19,6 +19,7 @@ function renderStreamControls() {
 
         html += `
             <div class="my-1">
+                <span class="stream-status" id="recording-status${i}"></span>
                 <button
                     class="btn btn-xs btn-primary"
                     onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=98&state=on')"
@@ -116,10 +117,12 @@ function renderStreamHeaders() {
         distribute: Array(STREAM_NUM),
         main: Array(STREAM_NUM),
         backup: Array(STREAM_NUM),
+        recording: Array(STREAM_NUM),
     };
     streams.distribute.forEach((stream) => (statuses.distribute[stream.streamId] = true));
     streams.main.forEach((stream) => (statuses.main[stream.streamId] = true));
     streams.backup.forEach((stream) => (statuses.backup[stream.streamId] = true));
+    streams.recording.forEach((stream) => (statuses.recording[stream.streamId] = true));
 
     for (let i = 1; i <= STREAM_NUM; i++) {
         const headerElem = document.getElementById(`streamHeader${i}`);
@@ -130,6 +133,8 @@ function renderStreamHeaders() {
 			<div class="badge ${statuses.main[i] ? 'badge-primary' : 'badge-outline'}">main</div>
 			<div class="badge ${statuses.backup[i] ? 'badge-primary' : 'badge-outline'}">back</div>
 			<span class="badge badge-lg badge-neutral text-xl">Stream ${i}${suffix}</span>`;
+        document.getElementById(`recording-status${i}`).className =
+            `stream-status ${statuses.recording[i] ? 'on' : 'off'}`;
     }
 }
 
@@ -222,11 +227,15 @@ function getActiveStreams() {
         .stream;
     let backup = statsJson.rtmp.server.application.find((app) => app.name['#text'] == 'backup').live
         .stream;
+    let recording = statsJson.rtmp.server.application.find(
+        (app) => app.name['#text'] == 'recording',
+    ).live.stream;
 
     return {
         distribute: extractStreamIds(distribute),
         main: extractStreamIds(main),
         backup: extractStreamIds(backup),
+        recording: extractStreamIds(recording),
     };
 }
 
