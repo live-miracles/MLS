@@ -87,7 +87,7 @@ function bulkSetOuts() {
             resolution: out.encoding,
             rtmp_url: out.url,
         }));
-    showResponse('Starting bulk outs setting.');
+    showResponse('Executing bulk outs setting.');
     executePhpAndShowResponse(
         `config.php?bulkset`,
         { 'Content-Type': 'application/json' },

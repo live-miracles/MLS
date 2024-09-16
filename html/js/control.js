@@ -246,7 +246,7 @@ function batchInputControlClick(isOn) {
         .value.split(' ')
         .map((id) => id.trim())
         .filter((id) => id !== '');
-    showResponse('Starting batch input control.');
+    showResponse('Executing batch input control.');
     executePhpAndShowResponse(
         '/control.php?batch-input-control',
         { 'Content-Type': 'application/json' },
