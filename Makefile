@@ -8,6 +8,7 @@ install:
 	sudo ./setup-nginx-docker.sh
 
 update:
+	git pull
 	sudo ./update-mls.sh
 
 front:
