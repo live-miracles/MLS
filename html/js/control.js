@@ -35,27 +35,6 @@ function renderStreamControls() {
                 Record
             </div>
 
-            <div class="my-1">
-                <b>Overlays:</b>
-                <a href="/control.php?streamno=${i}&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
-                <a href="/control.php?streamno=${i}&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
-                <a href="/control.php?streamno=${i}&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
-                <a href="/control.php?streamno=${i}&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
-                <a href="/control.php?streamno=${i}&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
-                <a href="/control.php?streamno=${i}&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
-                <a href="/control.php?streamno=${i}&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
-                <a href="/control.php?streamno=${i}&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
-                <a href="/control.php?streamno=${i}&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
-            </div>
-
-            <form method="post" target="_blank" action="/control.php?streamno=${i}&action=volume&actnumber=&state=volume">
-            <p>
-                <span class="font-bold">Volume:</span>
-                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs"/>
-                <input type="submit" value="Change" class="btn btn-xs btn-outline"/>
-            </p>
-            </form>
-
             <div class="mt-3 font-bold">
                 Choose Input:
             </div>
@@ -86,21 +65,7 @@ function renderStreamControls() {
                 Uploaded
                 <select name="video_no" class="select select-bordered select-xs max-w-xs">
                     <option selected value="video">Video</option>
-                </select>
-                <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9"/>m
-                <input type="text" style="display: inline" name="startsec" size="1" value="0" class="input input-bordered input-neutral input-xs w-10"/>s
-            </form>
-
-            <form method="post" id="videoInputForm${i}" class="my-1">
-                <span class="stream-status" id="holding-status${i}"></span>
-                <input
-                    type="submit"
-                    class="btn btn-xs btn-primary"
-                    style="display: inline" value="on"
-                    onclick="event.preventDefault(); submitFormAndShowResponse('videoInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
-                Uploaded
-                <select name="video_no" class="select select-bordered select-xs max-w-xs">
-                    <option selected value="holding">Holding</option>
+                    <option value="holding">Holding</option>
                 </select>
                 <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9"/>m
                 <input type="text" style="display: inline" name="startsec" size="1" value="0" class="input input-bordered input-neutral input-xs w-10"/>s
@@ -109,7 +74,7 @@ function renderStreamControls() {
             <div class="my-1">
                 <button
                     onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=playlist&actnumber=&state=')"
-                    class="btn btn-xs btn-primary">on</button>
+                    class="btn btn-xs btn-primary ml-6">on</button>
                 Playlist
             </div>
 
@@ -118,7 +83,28 @@ function renderStreamControls() {
                     onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=off&actnumber=&state=')"
                     class="btn btn-xs btn-error">off</button>
                 Current Input
-            </div>`;
+            </div>
+
+            <div class="my-1 mt-3">
+                <b>Overlays:</b>
+                <a href="/control.php?streamno=${i}&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+                <a href="/control.php?streamno=${i}&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+                <a href="/control.php?streamno=${i}&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+                <a href="/control.php?streamno=${i}&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+                <a href="/control.php?streamno=${i}&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+                <a href="/control.php?streamno=${i}&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+                <a href="/control.php?streamno=${i}&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+                <a href="/control.php?streamno=${i}&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+                <a href="/control.php?streamno=${i}&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=${i}&action=volume&actnumber=&state=volume">
+            <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs"/>
+                <input type="submit" value="Change" class="btn btn-xs btn-outline"/>
+            </p>
+            </form>`;
 
         html += `
                     </div>
@@ -156,11 +142,9 @@ function renderStreamHeaders() {
         document.getElementById(`main-status${i}`).className =
             `stream-status ${processes.includes(i + 'main') ? 'on' : 'off'}`;
         document.getElementById(`backup-status${i}`).className =
-            `stream-status ${processes.includes(i + 'backup') ? 'on' : 'off'}`;
+            `stream-status ${processes.includes(i + 'back') ? 'on' : 'off'}`;
         document.getElementById(`video-status${i}`).className =
             `stream-status ${processes.includes(i + 'video') ? 'on' : 'off'}`;
-        document.getElementById(`holding-status${i}`).className =
-            `stream-status ${processes.includes(i + 'holding') ? 'on' : 'off'}`;
     }
 }
 
