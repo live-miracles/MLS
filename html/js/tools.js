@@ -43,7 +43,7 @@ async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
     try {
         const response = await fetch(phpUrl, { method: 'POST', headers: headers, body: body });
         if (response.ok) {
-            msg = showResponse(await response.text());
+            msg = await response.text();
         } else {
             error = 'Request failed with status: ' + response.status;
         }

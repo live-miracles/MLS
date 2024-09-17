@@ -91,11 +91,12 @@ function bulkSetOuts() {
     executePhp(`config.php?bulkset`, { 'Content-Type': 'application/json' }, JSON.stringify(outs));
 }
 
-function resetStreamOutputs() {
+async function resetStreamOutputs() {
     const stream = document.getElementById('reset-stream').value;
     if (stream === '') {
         return;
     }
+    streamOutsConfig = await fetchConfigFile();
     const i = Number(stream);
     const outSize = getOutSize(i);
     const outs = Array(outSize)
