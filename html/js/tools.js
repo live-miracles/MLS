@@ -6,6 +6,7 @@ const OUT_NUM = 95;
 let streamNames = [];
 let streamOutsConfig = [];
 let statsJson = [];
+let processes = [];
 
 function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -50,8 +51,25 @@ async function executePhpAndShowResponse(phpUrl, headers = {}, body = undefined)
 }
 
 function showResponse(response) {
-    var responseBox = document.getElementById('responseBox');
+    const responseBox = document.getElementById('responseBox');
     responseBox.innerHTML = `<p>${response}</p><div class="divider"></div>` + responseBox.innerHTML;
+}
+
+async function fetchProcesses() {
+    try {
+        const response = await fetch('/config.php?proclist');
+        const data = await response.text();
+        const procs = data
+            .replace('<pre>', '')
+            .replace('\n</pre>', '')
+            .replace('</pre>', '')
+            .split('\n')
+            .map((s) => s.split('.')[1]);
+        return procs;
+    } catch (error) {
+        console.error('Error fetching stats data:', error);
+        return [];
+    }
 }
 
 async function fetchStats() {
