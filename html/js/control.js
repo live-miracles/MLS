@@ -65,7 +65,21 @@ function renderStreamControls() {
                 Uploaded
                 <select name="video_no" class="select select-bordered select-xs max-w-xs">
                     <option selected value="video">Video</option>
-                    <option value="holding">Holding</option>
+                </select>
+                <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9"/>m
+                <input type="text" style="display: inline" name="startsec" size="1" value="0" class="input input-bordered input-neutral input-xs w-10"/>s
+            </form>
+
+            <form method="post" id="videoInputForm${i}" class="my-1">
+                <span class="stream-status" id="holding-status${i}"></span>
+                <input
+                    type="submit"
+                    class="btn btn-xs btn-primary"
+                    style="display: inline" value="on"
+                    onclick="event.preventDefault(); submitFormAndShowResponse('videoInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
+                Uploaded
+                <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                    <option selected value="holding">Holding</option>
                 </select>
                 <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9"/>m
                 <input type="text" style="display: inline" name="startsec" size="1" value="0" class="input input-bordered input-neutral input-xs w-10"/>s
@@ -145,6 +159,8 @@ function renderStreamHeaders() {
             `stream-status ${processes.includes(i + 'back') ? 'on' : 'off'}`;
         document.getElementById(`video-status${i}`).className =
             `stream-status ${processes.includes(i + 'video') ? 'on' : 'off'}`;
+        document.getElementById(`holding-status${i}`).className =
+            `stream-status ${processes.includes(i + 'holding') ? 'on' : 'off'}`;
     }
 }
 
