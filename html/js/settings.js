@@ -88,10 +88,31 @@ function bulkSetOuts() {
             rtmp_url: out.url,
         }));
     showResponse('Executing bulk outs setting.');
-    executePhpAndShowResponse(
+    executePhp(`config.php?bulkset`, { 'Content-Type': 'application/json' }, JSON.stringify(outs));
+}
+
+function resetStreamOutputs() {
+    const stream = document.getElementById('reset-stream').value;
+    if (stream === '') {
+        return;
+    }
+    const i = Number(stream);
+    const outSize = getOutSize(i);
+    const outs = Array(outSize)
+        .fill(0)
+        .map((_, j) => ({
+            name_id: '',
+            stream_id: String(i),
+            output_id: String(j + 1),
+            resolution: '',
+            rtmp_url: '',
+        }));
+    showResponse('Reseting outs.');
+    executePhp(
         `config.php?bulkset`,
         { 'Content-Type': 'application/json' },
         JSON.stringify(outs),
+        false,
     );
 }
 

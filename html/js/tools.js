@@ -31,28 +31,42 @@ async function submitFormAndShowResponse(formId, phpUrl) {
     const form = document.getElementById(formId);
     if (form.checkValidity()) {
         const formData = new FormData(form);
-        executePhpAndShowResponse(phpUrl, {}, formData);
+        executePhp(phpUrl, {}, formData);
     } else {
         form.reportValidity();
     }
 }
 
-async function executePhpAndShowResponse(phpUrl, headers = {}, body = undefined) {
+async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
+    let msg = null;
+    let error = null;
     try {
         const response = await fetch(phpUrl, { method: 'POST', headers: headers, body: body });
         if (response.ok) {
-            showResponse(await response.text());
+            msg = showResponse(await response.text());
         } else {
-            console.error('Request failed with status:', response.status);
+            error = 'Request failed with status: ' + response.status;
         }
     } catch (error) {
-        console.error('Error:', error);
+        error = 'Error: ' + error;
+    }
+
+    if (show) {
+        if (msg) {
+            showResponse(msg);
+        } else if (error) {
+            showResponse(error, true);
+        }
+    } else if (error) {
+        console.error(error);
     }
 }
 
-function showResponse(response) {
+function showResponse(response, error = false) {
     const responseBox = document.getElementById('responseBox');
-    responseBox.innerHTML = `<p>${response}</p><div class="divider"></div>` + responseBox.innerHTML;
+    responseBox.innerHTML =
+        `<p class="${error ? 'text-error' : ''}">${response}</p><div class="divider"></div>` +
+        responseBox.innerHTML;
 }
 
 async function fetchProcesses() {
@@ -153,6 +167,13 @@ function parseOutsConfig(text) {
 
 function isOutEmpty(out) {
     return out?.name ? false : true;
+}
+
+function getOutSize(stream) {
+    const size = streamOutsConfig[stream]
+        .slice(0, STREAM_NUM)
+        .findLastIndex((info) => !isOutEmpty(info));
+    return size === -1 ? 0 : size;
 }
 
 async function fetchConfigFile() {

@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.stream-container {
-    @apply m-2 inline-block rounded-box bg-base-300 text-left;
-    width: 400px;
-}
-
 .response-box {
     @apply fixed bottom-3 right-3 h-48 w-96 overflow-auto bg-base-100 p-2 opacity-90;
     @apply rounded-box border border-b-4 border-t-4 border-solid border-neutral-content;

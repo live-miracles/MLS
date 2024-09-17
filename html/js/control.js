@@ -8,7 +8,7 @@ function renderStreamControls() {
     for (let i = 1; i <= STREAM_NUM; i++) {
         // Create the div container
         html += `
-            <div class="stream-container p-2">
+            <div class="inline-block w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
                 <div id="streamHeader${i}" class="text-xl"></div>
                 ${getJsmpegPlayerHtml(i)}
                 <div id="stream-outs-${i}"></div>
@@ -22,13 +22,13 @@ function renderStreamControls() {
                 <span class="stream-status" id="recording-status${i}"></span>
                 <button
                     class="btn btn-xs btn-primary"
-                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=98&state=on')"
+                    onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=98&state=on')"
                     target="_blank">
                     on
                 </button>
                 <button
                     class="btn btn-xs btn-error"
-                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=98&state=off')"
+                    onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=98&state=off')"
                     target="_blank">
                     off
                 </button>
@@ -41,7 +41,7 @@ function renderStreamControls() {
             <div class="my-1">
                 <span class="stream-status" id="main-status${i}"></span>
                 <button
-                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=main&actnumber=&state=turnon')"
+                    onclick="executePhp('/control.php?streamno=${i}&action=main&actnumber=&state=turnon')"
                     class="btn btn-xs btn-primary">
                     on
                 </button>
@@ -50,7 +50,7 @@ function renderStreamControls() {
             <div class="my-1">
                 <span class="stream-status" id="backup-status${i}"></span>
                 <button
-                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=back&actnumber=&state=turnon')"
+                    onclick="executePhp('/control.php?streamno=${i}&action=back&actnumber=&state=turnon')"
                     class="btn btn-xs btn-primary" target="_blank">on</button>
                     Backup Live stream
             </div>
@@ -87,14 +87,14 @@ function renderStreamControls() {
 
             <div class="my-1">
                 <button
-                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=playlist&actnumber=&state=')"
+                    onclick="executePhp('/control.php?streamno=${i}&action=playlist&actnumber=&state=')"
                     class="btn btn-xs btn-primary ml-6">on</button>
                 Playlist
             </div>
 
             <div>
                 <button
-                    onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=off&actnumber=&state=')"
+                    onclick="executePhp('/control.php?streamno=${i}&action=off&actnumber=&state=')"
                     class="btn btn-xs btn-error">off</button>
                 Current Input
             </div>
@@ -149,7 +149,7 @@ function renderStreamHeaders() {
 			<div class="mb-2 badge ${statuses.distribute[i] ? 'badge-primary' : 'badge-outline'}">dist</div>
 			<div class="badge ${statuses.main[i] ? 'badge-primary' : 'badge-outline'}">main</div>
 			<div class="badge ${statuses.backup[i] ? 'badge-primary' : 'badge-outline'}">back</div>
-			<span class="badge badge-lg badge-neutral text-xl">Stream ${i}${suffix}</span>`;
+			<span class="badge badge-lg bg-base-200 rounded-md text-xl">Stream ${i}${suffix}</span>`;
         document.getElementById(`recording-status${i}`).className =
             `stream-status ${statuses.recording[i] ? 'on' : 'off'}`;
 
@@ -176,17 +176,17 @@ function renderOuts() {
 
         let outsHtml = '';
         // we need to slice slice(0, STREAM_NUM) because outs 98 are used for recording.
-        const outSize = streamOutsConfig[i]
-            .slice(0, STREAM_NUM)
-            .findLastIndex((info) => !isOutEmpty(info));
-
+        const outSize = getOutSize(i);
+        if (outSize === 0) {
+            outsHtml += 'No configured outs...';
+        }
         for (var j = 1; j <= outSize; j++) {
             let info = streamOutsConfig[i][j];
             if (isOutEmpty(info)) info = { stream: '', out: '', url: '', encoding: '', name: '' };
             const on = `<button class="btn btn-xs btn-primary"
-				onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=${j}&state=on')">on</button>`;
+				onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=${j}&state=on')">on</button>`;
             const off = `<button class="btn btn-xs btn-error"
-				onclick="executePhpAndShowResponse('/control.php?streamno=${i}&action=out&actnumber=${j}&state=off')">off</button>`;
+				onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=${j}&state=off')">off</button>`;
             let title = `Out ${j}`;
             let destDiv = `<span id="destination${i}-${j}">${info.name}</span>`;
             if (info.name !== '') {
@@ -200,9 +200,6 @@ function renderOuts() {
 					<span class="stream-status ${statuses[i][j] ? 'on' : 'off'}" id="status${i}-${j}"></span>
 					${on} ${off} ${title} ${destDiv}
 				</div>`;
-        }
-        if (outSize < 1) {
-            outsHtml += 'No configured outs...';
         }
 
         outsDiv.innerHTML = outsHtml;
@@ -273,7 +270,7 @@ function batchInputControlClick(isOn) {
         .map((id) => id.trim())
         .filter((id) => id !== '');
     showResponse('Executing batch input control.');
-    executePhpAndShowResponse(
+    executePhp(
         '/control.php?batch-input-control',
         { 'Content-Type': 'application/json' },
         JSON.stringify({
