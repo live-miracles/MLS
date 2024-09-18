@@ -36,11 +36,11 @@
 
     <section class="mx-6 my-3 text-center">
       <p id="server-details">
-        Send stream to <code>rtmp://${address}/distribute/stream1</code> or stream2 or stream3 etc.
+        Distribute - <code>rtmp://${address}/distribute/stream1</code> or <code>stream2</code> or
+        <code>stream3</code> ...
         <br />
-        Send primary stream to rtmp://${address}/main/stream1 or stream2 or stream3 etc. <br />
-        backupaddress = Send backup stream to rtmp://${address}/backup/stream1 or stream2 or stream3
-        etc.
+        Primary - <code>rtmp://${address}/main/stream1</code><br />
+        Backup - <code>rtmp://${address}/backup/stream1</code>
       </p>
     </section>
 
@@ -51,7 +51,7 @@
           <div class="mx-6 my-3 text-center">
             <form method="post" target="_blank" action="/config.php?remap">
               <p>
-                <b>No. of Audio Channels:</b>
+                No. of Audio Channels:
                 <input
                   type="text"
                   name="channel_no"
@@ -67,7 +67,7 @@
             </form>
             <form method="post" target="_blank" action="/config.php?remapoff">
               <p>
-                <b>Turn off Remapping: </b>
+                Turn off Remapping:
                 <select name="outputdest" class="select select-bordered select-xs max-w-xs">
                   <option selected value="main">Main</option>
                   <option value="backup">Backup</option>
@@ -89,7 +89,7 @@
 
           <div class="mx-6 my-3 text-center">
             <p>
-              <b>Supers - Global Control:</b>
+              Supers - Global Control:
               <a href="/control.php?allsuper1on" target="_blank" class="btn btn-primary btn-xs"
                 >Add 1</a
               >
