@@ -105,6 +105,7 @@ function renderStreamControls() {
                 <a href="/control.php?streamno=${i}&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
                 <a href="/control.php?streamno=${i}&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
                 <a href="/control.php?streamno=${i}&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+                <br />
                 <a href="/control.php?streamno=${i}&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
                 <a href="/control.php?streamno=${i}&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
                 <a href="/control.php?streamno=${i}&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
