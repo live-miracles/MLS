@@ -7,6 +7,7 @@ The default login/password for the server is admin/nimda
 Don't use Ubuntu minimal. Use the regular 16.04 image
 
 ## Design
+
 <img src="https://github.com/user-attachments/assets/0d913222-c192-42c4-b611-a5fa3d319eb0" align="center" width="500" >
 
 ## Steps to Install
