@@ -5,8 +5,8 @@ function getJsmpegPlayerHtml(streamId) {
                 streamId === 1
                     ? `
                 <canvas
-                    width="320"
-                    height="180"
+                    width="300"
+                    height="169"
                     id="video-canvas${streamId}"
                     class="inline border border-solid border-gray-400"></canvas>`
                     : ``

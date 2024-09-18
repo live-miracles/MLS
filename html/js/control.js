@@ -8,7 +8,7 @@ function renderStreamControls() {
     for (let i = 1; i <= STREAM_NUM; i++) {
         // Create the div container
         html += `
-            <div id="stream-container${i}" class="inline-block w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+            <div id="stream-container${i}" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
                 <div id="streamHeader${i}" class="text-xl"></div>
                 ${getJsmpegPlayerHtml(i)}
                 <div id="stream-outs-${i}"></div>
@@ -62,7 +62,7 @@ function renderStreamControls() {
                     class="btn btn-xs btn-primary"
                     style="display: inline" value="on"
                     onclick="event.preventDefault(); submitFormAndShowResponse('videoInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
-                Uploaded
+                Local
                 <select name="video_no" class="select select-bordered select-xs max-w-xs">
                     <option selected value="video">Video</option>
                 </select>
@@ -77,7 +77,7 @@ function renderStreamControls() {
                     class="btn btn-xs btn-primary"
                     style="display: inline" value="on"
                     onclick="event.preventDefault(); submitFormAndShowResponse('holdingInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
-                Uploaded
+                Local
                 <select name="video_no" class="select select-bordered select-xs max-w-xs">
                     <option selected value="holding">Holding</option>
                 </select>
