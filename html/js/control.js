@@ -8,7 +8,7 @@ function renderStreamControls() {
     for (let i = 1; i <= STREAM_NUM; i++) {
         // Create the div container
         html += `
-            <div class="inline-block w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+            <div id="stream-container${i}" class="inline-block w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
                 <div id="streamHeader${i}" class="text-xl"></div>
                 ${getJsmpegPlayerHtml(i)}
                 <div id="stream-outs-${i}"></div>
@@ -144,12 +144,18 @@ function renderStreamHeaders() {
     for (let i = 1; i <= STREAM_NUM; i++) {
         const headerElem = document.getElementById(`streamHeader${i}`);
         const streamName = streamNames[i];
-        const suffix = streamName ? ` (${streamName})` : '';
+        if (streamName === '') {
+            document.getElementById('stream-container' + i).classList.add('hidden');
+            continue;
+        } else {
+            document.getElementById('stream-container' + i).classList.remove('hidden');
+        }
         headerElem.innerHTML = `
-			<div class="mb-2 badge ${statuses.distribute[i] ? 'badge-primary' : 'badge-outline'}">dist</div>
-			<div class="badge ${statuses.main[i] ? 'badge-primary' : 'badge-outline'}">main</div>
-			<div class="badge ${statuses.backup[i] ? 'badge-primary' : 'badge-outline'}">back</div>
-			<span class="badge badge-lg bg-base-200 rounded-md text-xl">Stream ${i}${suffix}</span>`;
+            <div class="mb-2 badge badge-lg bg-base-100 font-semibold">${i}</div>
+            <div class="mb-2 badge ${statuses.distribute[i] ? 'badge-primary' : 'badge-outline'}">dist</div>
+            <div class="badge ${statuses.main[i] ? 'badge-primary' : 'badge-outline'}">main</div>
+            <div class="badge ${statuses.backup[i] ? 'badge-primary' : 'badge-outline'}">back</div>
+            <span class="badge badge-lg bg-base-200 rounded-md">${streamName}</span>`;
         document.getElementById(`recording-status${i}`).className =
             `stream-status ${statuses.recording[i] ? 'on' : 'off'}`;
 
