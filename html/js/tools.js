@@ -31,10 +31,10 @@ async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
     let error = null;
     try {
         const response = await fetch(phpUrl, { method: 'POST', headers: headers, body: body });
-        if (response.ok) {
-            msg = await response.text();
-        } else {
-            error = 'Request failed with status: ' + response.status;
+        msg = await response.text();
+
+        if (!response.ok) {
+            error = 'Request ' + phpUrl + ' failed with status ' + response.status + msg;
         }
     } catch (error) {
         error = 'Error: ' + error;
@@ -107,17 +107,22 @@ async function fetchStats() {
 }
 
 async function writeStreamNames() {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('POST', 'save-stream-names.php', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.timeout = 2000;
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === XMLHttpRequest.DONE) {
-            showResponse(xhr.responseText);
+            if (xhr.status === 0) {
+                showResponse('Request to update stream names timed out.', true);
+            } else {
+                showResponse(xhr.responseText, xhr.status !== 200);
+            }
         }
     };
 
-    var jsonData = JSON.stringify({ csvData: [streamNames] });
+    const jsonData = JSON.stringify({ csvData: [streamNames] });
     xhr.send(jsonData);
 }
 
