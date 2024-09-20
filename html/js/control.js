@@ -61,7 +61,7 @@ function renderStreamControls() {
                     type="submit"
                     class="btn btn-xs btn-primary"
                     style="display: inline" value="on"
-                    onclick="event.preventDefault(); submitFormAndShowResponse('videoInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
+                    onclick="event.preventDefault(); submitForm('videoInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
                 Local
                 <select name="video_no" class="select select-bordered select-xs max-w-xs">
                     <option selected value="video">Video</option>
@@ -76,7 +76,7 @@ function renderStreamControls() {
                     type="submit"
                     class="btn btn-xs btn-primary"
                     style="display: inline" value="on"
-                    onclick="event.preventDefault(); submitFormAndShowResponse('holdingInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
+                    onclick="event.preventDefault(); submitForm('holdingInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
                 Local
                 <select name="video_no" class="select select-bordered select-xs max-w-xs">
                     <option selected value="holding">Holding</option>
