@@ -250,7 +250,7 @@ function hideBadConnectionAllert() {
 // CONSTANTS
 const STREAM_NUM = 25;
 const OUT_NUM = 95;
-const LOG_SIZE = 100;
+const LOG_SIZE = 1000;
 
 // This will be fetched from a file
 let streamNames = null;
