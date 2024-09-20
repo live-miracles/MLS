@@ -108,7 +108,7 @@ async function resetStreamOutputs() {
             resolution: '',
             rtmp_url: '',
         }));
-    showResponse('Reseting outs.');
+    showResponse(`Reseting outs for stream ${i}.`);
     executePhp(
         `config.php?bulkset`,
         { 'Content-Type': 'application/json' },
