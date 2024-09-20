@@ -130,6 +130,9 @@ function renderStreamControls() {
 }
 
 function renderStreamHeaders() {
+    if (streamNames === null) {
+        return;
+    }
     const streams = getActiveStreams();
     let statuses = {
         distribute: Array(STREAM_NUM),
@@ -224,6 +227,9 @@ function parseOutputStreamName(str) {
 }
 
 function getActiveOuts() {
+    if (statsJson === null) {
+        return [];
+    }
     let streams = statsJson.rtmp.server.application.find((app) => app.name['#text'] == 'output')
         .live.stream;
     if (streams === undefined) streams = []; // no streams
@@ -252,6 +258,9 @@ function extractStreamIds(streamsStats) {
 }
 
 function getActiveStreams() {
+    if (statsJson === null) {
+        return { distribute: [], main: [], backup: [], recording: [] };
+    }
     let distribute = statsJson.rtmp.server.application.find(
         (app) => app.name['#text'] == 'distribute',
     ).live.stream;
@@ -299,6 +308,7 @@ function updateRefreshTime() {
 }
 
 async function rerender() {
+    hideBadConnectionAllert();
     streamNames = await fetchStreamNames();
     statsJson = await fetchStats();
     streamOutsConfig = await fetchConfigFile();

@@ -38,6 +38,7 @@ async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
         }
     } catch (error) {
         error = 'Error: ' + error;
+        showBadConnectionAllert();
     }
 
     if (show) {
@@ -46,8 +47,6 @@ async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
         } else {
             showResponse(msg);
         }
-    } else if (error) {
-        console.error(error);
     }
 }
 
@@ -89,8 +88,8 @@ async function fetchProcesses() {
             .map((s) => s.split('.')[1]);
         return procs;
     } catch (error) {
-        console.error('Error fetching stats data:', error);
-        return [];
+        showBadConnectionAllert();
+        return null;
     }
 }
 
@@ -102,7 +101,8 @@ async function fetchStats() {
         const xmlData = parser.parseFromString(data, 'text/xml');
         return xml2json(xmlData);
     } catch (error) {
-        console.error('Error fetching stats data:', error);
+        showBadConnectionAllert();
+        return null;
     }
 }
 
@@ -131,9 +131,9 @@ async function fetchStreamNames() {
         const streamNames = data.csvData[0];
         return streamNames;
     } catch (error) {
-        console.error('Error fetching stream names:', error);
+        showBadConnectionAllert();
+        return null;
     }
-    return [];
 }
 
 function parseOutLine(text) {
@@ -178,6 +178,7 @@ function isOutEmpty(out) {
 }
 
 function getOutSize(stream) {
+    if (streamOutsConfig === null) return 0;
     const size = streamOutsConfig[stream]
         .slice(0, STREAM_NUM)
         .findLastIndex((info) => !isOutEmpty(info));
@@ -185,8 +186,13 @@ function getOutSize(stream) {
 }
 
 async function fetchConfigFile() {
-    const response = await fetch('/config.txt');
-    return parseOutsConfig(await response.text());
+    try {
+        const response = await fetch('/config.txt');
+        return parseOutsConfig(await response.text());
+    } catch (error) {
+        showBadConnectionAllert();
+        return null;
+    }
 }
 
 function xml2json(xml) {
@@ -228,13 +234,21 @@ function xml2json(xml) {
     return obj;
 }
 
+function showBadConnectionAllert() {
+    document.getElementById('badConnectionAlert').classList.remove('hidden');
+}
+
+function hideBadConnectionAllert() {
+    document.getElementById('badConnectionAlert').classList.add('hidden');
+}
+
 // CONSTANTS
 const STREAM_NUM = 25;
 const OUT_NUM = 95;
 const LOG_SIZE = 100;
 
 // This will be fetched from a file
-let streamNames = [];
-let streamOutsConfig = [];
-let statsJson = [];
-let processes = [];
+let streamNames = null;
+let streamOutsConfig = null;
+let statsJson = null;
+let processes = null;

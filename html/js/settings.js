@@ -1,4 +1,5 @@
 function renderStreamSelectors() {
+    if (streamNames === null) return;
     const streamSelectors = document.getElementsByClassName('stream-selector');
 
     for (let selector of streamSelectors) clearAndAddChooseOption(selector);
@@ -34,6 +35,7 @@ function updateRtmpUrl() {
 }
 
 function renderStreamNameTable() {
+    if (streamNames === null) return;
     const tableHead = document.getElementById('name-table').tHead;
     let tHeadHtml = '<tr>';
     for (let i = 1; i <= STREAM_NUM; i++) {

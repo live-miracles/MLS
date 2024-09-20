@@ -39,6 +39,24 @@
       </div>
     </div>
 
+    <div
+      role="alert"
+      id="badConnectionAlert"
+      class="alert alert-error fixed left-1/2 z-[999] hidden w-96 -translate-x-1/2 transform opacity-90">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Unable to connect to the server...</span>
+    </div>
+
     <section class="mx-6 my-3 text-center">
       <p id="server-details">
         Distribute - <code>rtmp://${address}/distribute/stream1</code> or <code>stream2</code> or
