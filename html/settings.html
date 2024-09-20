@@ -28,7 +28,15 @@
         </ul>
       </div>
     </div>
-    <div class="response-box" id="responseBox"></div>
+
+    <div
+      class="collapse collapse-arrow fixed bottom-3 right-3 z-[999] w-[500px] bg-base-300 opacity-90">
+      <input type="checkbox" checked />
+      <div class="collapse-title text-xl font-medium">Logs</div>
+      <div class="collapse-content">
+        <div class="h-48 overflow-auto" id="responseBox"></div>
+      </div>
+    </div>
 
     <div class="prose mx-auto max-w-3xl">
       <div tabindex="0" class="collapsible-header">
@@ -57,7 +65,7 @@
       <div class="divider"></div>
 
       <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title text-xl font-medium">
+        <div class="collapse-title">
           Set Outputs
           <a href="/config.php?destlist" target="_blank" class="link link-accent">[file]</a>
         </div>
@@ -172,7 +180,7 @@
           type="submit"
           class="btn btn-accent btn-sm my-2"
           value="Set Output"
-          onclick="event.preventDefault(); submitFormAndShowResponse('outForm','config.php?destadd');" />
+          onclick="event.preventDefault(); submitForm('outForm','config.php?destadd');" />
       </form>
 
       <div class="mt-8">
@@ -263,7 +271,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           type="submit"
           class="btn btn-accent btn-sm my-2"
           value="Add Config"
-          onclick="event.preventDefault(); submitFormAndShowResponse('addConfigForm','config.php?streamadd');" />
+          onclick="event.preventDefault(); submitForm('addConfigForm','config.php?streamadd');" />
       </form>
 
       <div class="divider"></div>
@@ -438,7 +446,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           value="Upload"
           onclick="event.preventDefault();
             showResponse('Uploading started, please wait...');
-            submitFormAndShowResponse('uploadVideo','config.php?upload-video');" />
+            submitForm('uploadVideo','config.php?upload-video');" />
       </form>
 
       <div class="divider"></div>

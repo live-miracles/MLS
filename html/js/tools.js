@@ -1,18 +1,7 @@
-// CONSTANTS
-const STREAM_NUM = 25;
-const OUT_NUM = 95;
-
-// This will be fetched from a file
-let streamNames = [];
-let streamOutsConfig = [];
-let statsJson = [];
-let processes = [];
-
 function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-// Tools
 function removeAllChildNodes(parent) {
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
@@ -27,11 +16,11 @@ function clearAndAddChooseOption(selector) {
 }
 
 // AJAX request function
-async function submitFormAndShowResponse(formId, phpUrl) {
+async function submitForm(formId, phpUrl, show = true) {
     const form = document.getElementById(formId);
     if (form.checkValidity()) {
         const formData = new FormData(form);
-        executePhp(phpUrl, {}, formData);
+        executePhp(phpUrl, {}, formData, show);
     } else {
         form.reportValidity();
     }
@@ -52,21 +41,40 @@ async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
     }
 
     if (show) {
-        if (msg) {
-            showResponse(msg);
-        } else if (error) {
+        if (error) {
             showResponse(error, true);
+        } else {
+            showResponse(msg);
         }
     } else if (error) {
         console.error(error);
     }
 }
 
-function showResponse(response, error = false) {
+function showResponse(value, error = false, time = Date.now()) {
+    logResponse(value, error, time);
+    renderResponse(value, error, time);
+}
+
+function renderResponse(value, error, time) {
     const responseBox = document.getElementById('responseBox');
+    const timestamp = new Date(time).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
     responseBox.innerHTML =
-        `<p class="${error ? 'text-error' : ''}">${response}</p><div class="divider"></div>` +
-        responseBox.innerHTML;
+        `<p class="${error ? 'text-error' : ''}">
+            <span class="text-accent">[${timestamp}]</span>
+            ${value}
+        </p><div class="divider"></div>` + responseBox.innerHTML;
+}
+
+function logResponse(value, error, time) {
+    const logs = localStorage.getItem('logs') ? JSON.parse(localStorage.getItem('logs')) : [];
+    logs.unshift({ time: time, value: value, error: error });
+    localStorage.setItem('logs', JSON.stringify(logs.slice(0, LOG_SIZE)));
+}
+
+function renderLogs() {
+    const logs = localStorage.getItem('logs') ? JSON.parse(localStorage.getItem('logs')) : [];
+    logs.reverse().forEach((log) => renderResponse(log.value, log.error, log.time));
 }
 
 async function fetchProcesses() {
@@ -219,3 +227,14 @@ function xml2json(xml) {
     }
     return obj;
 }
+
+// CONSTANTS
+const STREAM_NUM = 25;
+const OUT_NUM = 95;
+const LOG_SIZE = 100;
+
+// This will be fetched from a file
+let streamNames = [];
+let streamOutsConfig = [];
+let statsJson = [];
+let processes = [];

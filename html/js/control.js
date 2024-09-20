@@ -12,14 +12,14 @@ function renderStreamControls() {
                 <div id="streamHeader${i}" class="text-xl"></div>
                 ${getJsmpegPlayerHtml(i)}
                 <div id="stream-outs-${i}"></div>
-                <details class="collapse bg-base-200 mt-2">
-                    <summary class="collapse-title font-medium">More</summary>
-
+                <div class="collapse collapse-arrow bg-base-200 mt-2">
+                    <input type="checkbox" />
+                    <div class="collapse-title text-xl font-medium">More</div>
                     <div class="collapse-content">`;
 
         html += `
             <div class="my-1">
-                <span class="stream-status" id="recording-status${i}"></span>
+                <div class="badge badge-xs badge-outline" id="recording-status${i}"></div>
                 <button
                     class="btn btn-xs btn-primary"
                     onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=98&state=on')"
@@ -39,7 +39,7 @@ function renderStreamControls() {
                 Choose Input:
             </div>
             <div class="my-1">
-                <span class="stream-status" id="main-status${i}"></span>
+                <span class="badge badge-xs badge-outline" id="main-status${i}"></span>
                 <button
                     onclick="executePhp('/control.php?streamno=${i}&action=main&actnumber=&state=turnon')"
                     class="btn btn-xs btn-primary">
@@ -48,7 +48,7 @@ function renderStreamControls() {
                 Main Live Stream
             </div>
             <div class="my-1">
-                <span class="stream-status" id="backup-status${i}"></span>
+                <span class="badge badge-xs badge-outline" id="backup-status${i}"></span>
                 <button
                     onclick="executePhp('/control.php?streamno=${i}&action=back&actnumber=&state=turnon')"
                     class="btn btn-xs btn-primary" target="_blank">on</button>
@@ -56,7 +56,7 @@ function renderStreamControls() {
             </div>
 
             <form method="post" id="videoInputForm${i}" class="my-1">
-                <span class="stream-status" id="video-status${i}"></span>
+                <span class="badge badge-xs badge-outline" id="video-status${i}"></span>
                 <input
                     type="submit"
                     class="btn btn-xs btn-primary"
@@ -71,7 +71,7 @@ function renderStreamControls() {
             </form>
 
             <form method="post" id="holdingInputForm${i}" class="my-1">
-                <span class="stream-status" id="holding-status${i}"></span>
+                <span class="badge badge-xs badge-outline" id="holding-status${i}"></span>
                 <input
                     type="submit"
                     class="btn btn-xs btn-primary"
@@ -88,7 +88,7 @@ function renderStreamControls() {
             <div class="my-1">
                 <button
                     onclick="executePhp('/control.php?streamno=${i}&action=playlist&actnumber=&state=')"
-                    class="btn btn-xs btn-primary ml-6">on</button>
+                    class="btn btn-xs btn-primary ml-4">on</button>
                 Playlist
             </div>
 
@@ -123,7 +123,7 @@ function renderStreamControls() {
 
         html += `
                     </div>
-                </details>
+                </div>
             </div>`;
     }
     streamControls.innerHTML = html;
@@ -157,17 +157,18 @@ function renderStreamHeaders() {
             <div class="badge ${statuses.main[i] ? 'badge-primary' : 'badge-outline'}">main</div>
             <div class="badge ${statuses.backup[i] ? 'badge-primary' : 'badge-outline'}">back</div>
             <span class="badge badge-lg bg-base-200 rounded-md">${streamName}</span>`;
+
         document.getElementById(`recording-status${i}`).className =
-            `stream-status ${statuses.recording[i] ? 'on' : 'off'}`;
+            `badge badge-xs ${statuses.recording[i] ? 'badge-primary' : 'badge-outline'}`;
 
         document.getElementById(`main-status${i}`).className =
-            `stream-status ${processes.includes(i + 'main') ? 'on' : 'off'}`;
+            `badge badge-xs ${processes.includes(i + 'main') ? 'badge-primary' : 'badge-outline'}`;
         document.getElementById(`backup-status${i}`).className =
-            `stream-status ${processes.includes(i + 'back') ? 'on' : 'off'}`;
+            `badge badge-xs ${processes.includes(i + 'back') ? 'badge-primary' : 'badge-outline'}`;
         document.getElementById(`video-status${i}`).className =
-            `stream-status ${processes.includes(i + 'video') ? 'on' : 'off'}`;
+            `badge badge-xs ${processes.includes(i + 'video') ? 'badge-primary' : 'badge-outline'}`;
         document.getElementById(`holding-status${i}`).className =
-            `stream-status ${processes.includes(i + 'holding') ? 'on' : 'off'}`;
+            `badge badge-xs ${processes.includes(i + 'holding') ? 'badge-primary' : 'badge-outline'}`;
     }
 }
 
@@ -190,23 +191,24 @@ function renderOuts() {
         for (var j = 1; j <= outSize; j++) {
             let info = streamOutsConfig[i][j];
             if (isOutEmpty(info)) info = { stream: '', out: '', url: '', encoding: '', name: '' };
-            const on = `<button class="btn btn-xs btn-primary"
-				onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=${j}&state=on')">on</button>`;
-            const off = `<button class="btn btn-xs btn-error"
-				onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=${j}&state=off')">off</button>`;
-            let title = `Out ${j}`;
-            let destDiv = `<span id="destination${i}-${j}">${info.name}</span>`;
-            if (info.name !== '') {
-                title =
-                    (info.encoding === 'source' ? '' : `<b>${capitalize(info.encoding)}</b> `) +
-                    `${title}: `;
-                destDiv = `<div class="tooltip" data-tip="${info.url}">${destDiv}</div>`;
-            }
             outsHtml += `
-				<div class="my-1">
-					<span class="stream-status ${statuses[i][j] ? 'on' : 'off'}" id="status${i}-${j}"></span>
-					${on} ${off} ${title} ${destDiv}
-				</div>`;
+                <div class="my-1">
+                    <span class="badge badge-xs ${statuses[i][j] ? 'badge-primary' : 'badge-outline'}"
+                        id="status${i}-${j}"></span>
+                    <button class="btn btn-xs btn-primary"
+                        onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=${j}&state=on')">
+                        on
+                    </button>
+                    <button class="btn btn-xs btn-error"
+                        onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=${j}&state=off')">
+                        off
+                    </button>
+                    ${info.encoding === 'source' ? '' : `<b>${capitalize(info.encoding)}</b> `}
+                    Out ${j}
+                    <div class="tooltip" data-tip="${info.url}">
+                        <span id="destination${i}-${j}">${info.name}</span>
+                    </div>
+                </div>`;
         }
 
         outsDiv.innerHTML = outsHtml;
@@ -308,6 +310,7 @@ window.onload = async function () {
     setVideoPlayers();
     rerender();
     updateRefreshTime();
+    renderLogs();
 };
 
 (function renderServerDetails() {

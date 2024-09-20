@@ -2,23 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-.response-box {
-    @apply fixed bottom-3 right-3 h-48 w-96 overflow-auto bg-base-100 p-2 opacity-90;
-    @apply rounded-box border border-b-4 border-t-4 border-solid border-neutral-content;
-    z-index: 999;
-}
-
-.stream-status {
-    @apply mx-1 inline-block h-3 w-3 bg-base-100;
-    border-radius: 50%;
-}
-
-.stream-status.on {
-    @apply bg-primary;
-}
-
 .collapse-title {
-    @apply !text-base;
+    @apply text-xl font-medium;
 }
 
 .table :where(th, td) {
@@ -39,8 +24,4 @@
 
 .collapsible-header {
     @apply collapse collapse-arrow border border-base-300 bg-base-200;
-}
-
-.collapse-title {
-    @apply text-xl font-medium;
 }

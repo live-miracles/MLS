@@ -122,4 +122,5 @@ window.onload = async function () {
     renderOutputs();
     renderStreamSelectors();
     renderStreamNameTable();
+    renderLogs();
 };
