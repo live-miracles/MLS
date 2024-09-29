@@ -27,11 +27,44 @@ function renderOutputs() {
     }
 }
 
-function updateRtmpUrl() {
-    const serverUrl = document.getElementById('server-url').value;
-    const streamKey = document.getElementById('stream-key').value;
-    const rtmpUrl = document.getElementById('rtmp-url');
-    rtmpUrl.value = serverUrl + streamKey;
+function isValidUrl(str) {
+    const pattern = new RegExp(
+        '^([a-zA-Z]+:\\/\\/)?' + // protocol
+            '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+            '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR IP (v4) address
+            '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+            '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+            '(\\#[-a-z\\d_]*)?$', // fragment locator
+        'i',
+    );
+    return pattern.test(str);
+}
+
+function setOutBtnClick() {
+    const serverUrlInput = document.getElementById('server-url');
+    const streamKeyInput = document.getElementById('stream-key');
+    const rtmpUrl = serverUrlInput.value + streamKeyInput.value;
+    const isRtmpUrlValid = rtmpUrl === '' || isValidUrl(rtmpUrl);
+    if (isRtmpUrlValid) {
+        document.getElementById('rtmp-url').value = rtmpUrl;
+        serverUrlInput.classList.remove('input-error');
+        streamKeyInput.classList.remove('input-error');
+    } else {
+        serverUrlInput.classList.add('input-error');
+        streamKeyInput.classList.add('input-error');
+    }
+
+    const outNameInput = document.getElementById('outName');
+    const isOutNameValid = /^[a-zA-Z0-9_]*$/.test(outNameInput.value);
+    if (isOutNameValid) {
+        outNameInput.classList.remove('input-error');
+    } else {
+        outNameInput.classList.add('input-error');
+    }
+
+    if (isRtmpUrlValid & isOutNameValid) {
+        submitForm('outForm', 'config.php?destadd');
+    }
 }
 
 function renderStreamNameTable() {
