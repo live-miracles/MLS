@@ -194,9 +194,17 @@ function renderOuts() {
         for (var j = 1; j <= outSize; j++) {
             let info = streamOutsConfig[i][j];
             if (isOutEmpty(info)) info = { stream: '', out: '', url: '', encoding: '', name: '' };
+            const isProcRunning = processes.includes(i + 'out' + j);
+            const stateClass = isProcRunning
+                ? statuses[i][j]
+                    ? 'badge-primary'
+                    : 'badge-error'
+                : 'badge-outline';
+            console.assert(isProcRunning || !statuses[i][j]);
+
             outsHtml += `
                 <div class="my-1">
-                    <span class="badge badge-xs ${statuses[i][j] ? 'badge-primary' : 'badge-outline'}"
+                    <span class="badge badge-xs ${stateClass}"
                         id="status${i}-${j}"></span>
                     <button class="btn btn-xs btn-primary"
                         onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=${j}&state=on')">
