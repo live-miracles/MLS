@@ -158,7 +158,7 @@ if (isset($_GET['bulkset'])) {
 
 
 if (isset($_GET['proclist'])) {
-    $output = shell_exec("sudo find /var/run/screen/S-root -type p -printf "%TY-%Tm-%Td %TH:%TM:%.2TS %f\n"");
+    $output = shell_exec("sudo find /var/run/screen/S-root -type p -printf '%TY-%Tm-%Td %TH:%TM:%.2TS %f\n'");
     echo "<pre>$output</pre>";
 }
 
