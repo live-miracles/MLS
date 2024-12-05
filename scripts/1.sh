@@ -286,15 +286,12 @@ video)
 		done
 
 		if [ -z "$STY" ]; then
-			echo "Turning on $streamid Ad video at $2 seconds"
+			echo "Turning on $streamid video at $2 seconds"
 			exec screen -dm -S $screenname /bin/bash "$0" video $2
 		fi
 
-		while true; do
-			/usr/local/bin/ffmpeg -nostdin -re -fflags +genpts -stream_loop -1 -ss $2 -i /usr/local/nginx/scripts/images/$advideo -c copy -vbsf h264_mp4toannexb -f mpegts pipe:1 >$inputparam
-			echo "Restarting ffmpeg..."
-			sleep .2
-		done
+		/usr/local/bin/ffmpeg -nostdin -re -fflags +genpts -ss $2 -i /usr/local/nginx/scripts/images/$advideo -c copy -vbsf h264_mp4toannexb -f mpegts pipe:1 >$inputparam
+		echo "Video has finished playing. Exiting..."
 
 	else
 		echo $screenname " is already running"
