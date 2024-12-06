@@ -2,6 +2,11 @@
 
 source scripts/set-env.sh
 
+if [[ -z ${STREAM_NUM+x} ]]; then
+	echo "Error: STREAM_NUM is not defined. Please switch to BASH if you're using ZSH."
+	exit 1
+fi
+
 # Production files folder
 cd /usr/local/nginx/
 
