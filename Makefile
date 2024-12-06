@@ -9,7 +9,7 @@ install:
 
 update:
 	git pull
-	sudo ./update-mls.sh
+	./update-mls.sh
 
 front:
 	npm run --prefix ./next dev
