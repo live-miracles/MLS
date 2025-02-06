@@ -177,7 +177,7 @@ function renderStreamHeaders() {
 
 function renderOuts() {
     const actives = getActiveOuts();
-    let statuses = Array(STREAM_NUM)
+    let statuses = Array(STREAM_NUM + 1)
         .fill()
         .map((_) => []);
     actives.forEach((out) => (statuses[out.streamId][out.outId] = true));
