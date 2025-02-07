@@ -158,29 +158,34 @@ if (isset($_GET['bulkset'])) {
 
 
 if (isset($_GET['proclist'])) {
-    $output = shell_exec("sudo ls -laR /var/run/screen/S-root | grep 'main\|back\|holding\|video' | cut -d ' ' -f 8,9,10,11");
+    $output = shell_exec("sudo find /var/run/screen/S-root -type p -printf '%TY-%Tm-%Td %TH:%TM:%.2TS %f\n'");
     echo "<pre>$output</pre>";
 }
 
-if (isset($_GET['videoschedule'])) {
-    $hour = $_POST['hour'];
-    $minute = $_POST['minute'];
+if (isset($_GET['addschedule'])) {
+    $name = $_POST['name'];
     $stream_no = $_POST['stream_no'];
     $type_id = $_POST['type_id'];
     $on_off = $_POST['on_off'];
-    $schedule_type = $_POST['schedule_type'];
     $startmin = $_POST['startmin'];
     $startsec = $_POST['startsec'];
+    $minute = $_POST['minute'];
+    $hour = $_POST['hour'];
+    $monthday = $_POST['monthday'];
+    $month = $_POST['month'];
 
-    echo "<h2>You Entered the following information:</h2>";
-    echo "<b>Time: </b> $hour:$minute";
-    echo "<br><b>Stream id: </b> $stream_no";
-    echo "<br><b>Video: </b> $type_id";
-    echo "<br><b>Schedule: </b> $schedule_type";
-    echo "<br>";
+    echo "You added a new cron job \"$name\" to turn $on_off stream $stream_no $type_id at $hour:$minute $monthday day $month month. ";
+    echo "If it is a video it will start at </b> $startmin:$startsec.";
 
     $inputsec = 60 * $startmin + $startsec;
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh videoschedule \"$stream_no\" \"$type_id\" \"$on_off\" \"$schedule_type\" \"$hour\" \"$minute\" $inputsec");
+    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh addschedule \"$stream_no\" \"$type_id\" \"$on_off\" \"$name\" $inputsec \"$minute\" \"$hour\" \"$monthday\" \"$month\"");
+    echo $output;
+}
+
+if (isset($_GET['removeschedule'])) {
+    $name = $_POST['removename'];
+    echo "Removing cron jobs with name <b>\"$name\"</b>";
+    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh removeschedule 0 0 NA \"$name\"");
     echo $output;
 }
 
