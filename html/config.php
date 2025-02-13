@@ -1,9 +1,17 @@
 <?php
+$scriptPath = "/usr/local/nginx/scripts";
+
+if (isset($_GET['nameconfig'])) {
+    $names = file_get_contents("php://input");
+    echo "<h2>You entered the following names:</h2>";
+    echo "$names";
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh nameconfig \"$names\"");
+    echo $output;
+}
+
 if (isset($_GET['streamlist'])) {
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh streamlist");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh streamlist");
     echo "<pre>$output</pre>";
-    #$output = file_get_contents( "../scripts/streamconfig.txt" ); // get the contents, and echo it out.
-    #echo "<pre>$output</pre>";
 }
 
 if (isset($_GET['streamadd'])) {
@@ -17,7 +25,7 @@ if (isset($_GET['streamadd'])) {
     echo "<br><b>Stream Resolution: </b> $stream_res";
     echo "<br><b>Failover: </b> $failover_method";
     echo "<br>";
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh streamconfig \"$stream_id\" \"$encodeparam\" \"$stream_res\" $failover_method");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh streamconfig \"$stream_id\" \"$encodeparam\" \"$stream_res\" $failover_method");
     echo $output;
 }
 
@@ -34,7 +42,7 @@ if (isset($_GET['audioadd'])) {
     echo "<br><b>Channel 2: </b> $channel2";
     echo "<br><b>Destination: </b> $rtmpparam";
     echo "<br>";
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh audioconfig \"$stream_id\" \"$audioparam\" \"$channel1\" \"$channel2\" $rtmpparam");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh audioconfig \"$stream_id\" \"$audioparam\" \"$channel1\" \"$channel2\" $rtmpparam");
     echo $output;
 }
 
@@ -42,7 +50,7 @@ if (isset($_GET['audiopreset'])) {
     $audiopreset = $_POST['audiopreset'];
     echo "<b>You loaded </b> $audiopreset";
     echo "<br>";
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh audiopreset $audiopreset");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh audiopreset $audiopreset");
     echo $output;
 }
 
@@ -53,7 +61,7 @@ if (isset($_GET['upload-video'])) {
     echo "<b>Video ID: </b> $video_id";
     echo "<br><b>Stream ID: </b> $stream_id";
     echo "<br>";
-    $exec = "sudo /bin/bash /usr/local/nginx/scripts/gdrive-downloader.sh $video_id /usr/local/nginx/scripts/images/" . $stream_id . "video.mp4";
+    $exec = "sudo /bin/bash $scriptPath/gdrive-downloader.sh $video_id $scriptPath/images/" . $stream_id . "video.mp4";
     $output = shell_exec($exec);
     echo $output;
 }
@@ -67,45 +75,41 @@ if (isset($_GET['uploadfile'])) {
     echo "<br><b>Stream Id: </b> $stream_no";
     echo "<br><b>FIle Type: </b> $type_id";
     echo "<br>";
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh uploadfile \"$file_url\" \"$stream_no\" $type_id");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh uploadfile \"$file_url\" \"$stream_no\" $type_id");
     echo $output;
 }
 
 if (isset($_GET['remap'])) {
     $channel = $_POST['channel_no'];
     $outputdest = $_POST['outputdest'];
-    $output = exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh remap \"$channel\" $outputdest");
+    $output = exec("sudo /bin/bash $scriptPath/config.sh remap \"$channel\" $outputdest");
     echo $output;
 }
 
 if (isset($_GET['audiolist'])) {
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh audiolist");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh audiolist");
     echo "<pre>$output</pre>";
-    #$output = file_get_contents( "../scripts/streamconfig.txt" ); // get the contents, and echo it out.
-    #echo "<pre>$output</pre>";
 }
 
 if (isset($_GET['remapoff'])) {
     $outputdest = $_POST['outputdest'];
-    $output = exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh remap off $outputdest");
+    $output = exec("sudo /bin/bash $scriptPath/config.sh remap off $outputdest");
     echo $output;
 }
 
 if (isset($_GET['srtaccept'])) {
-    $output = exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh srtaccept on");
+    $output = exec("sudo /bin/bash $scriptPath/config.sh srtaccept on");
     echo $output;
 }
 
 if (isset($_GET['srtacceptoff'])) {
-    $output = exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh srtaccept off");
+    $output = exec("sudo /bin/bash $scriptPath/config.sh srtaccept off");
     echo $output;
 }
 
 if (isset($_GET['destlist'])) {
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh destlist");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh destlist");
     echo "<pre>$output</pre>";
-    #$output = file_get_contents( "../scripts/1data.txt" ); // get the contents, and echo it out.
-    #echo "<pre>$output</pre>";
 }
 
 if (isset($_GET['destadd'])) {
@@ -122,7 +126,7 @@ if (isset($_GET['destadd'])) {
     echo "<br><b>Output Id: </b> $output_id";
     echo "<br><b>Resolution: </b> $resolution";
     echo "<br>";
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh destination \"$rtmp_url\" \"$stream_id\" \"$output_id\" \"$resolution\" $name_id");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh destination \"$rtmp_url\" \"$stream_id\" \"$output_id\" \"$resolution\" $name_id");
     echo $output;
 }
 
@@ -146,7 +150,7 @@ if (isset($_GET['bulkset'])) {
                     <b>Resolution:</b> $resolution<br><br>";
 
         $command = sprintf(
-            'sudo /bin/bash /usr/local/nginx/scripts/config.sh destination "%s" "%s" "%s" "%s" %s',
+            'sudo /bin/bash $scriptPath/config.sh destination "%s" "%s" "%s" "%s" %s',
             $rtmp_url, $stream_id, $output_id, $resolution, $name_id
         );
 
@@ -178,26 +182,26 @@ if (isset($_GET['addschedule'])) {
     echo "If it is a video it will start at </b> $startmin:$startsec.";
 
     $inputsec = 60 * $startmin + $startsec;
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh addschedule \"$stream_no\" \"$type_id\" \"$on_off\" \"$name\" $inputsec \"$minute\" \"$hour\" \"$monthday\" \"$month\"");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh addschedule \"$stream_no\" \"$type_id\" \"$on_off\" \"$name\" $inputsec \"$minute\" \"$hour\" \"$monthday\" \"$month\"");
     echo $output;
 }
 
 if (isset($_GET['removeschedule'])) {
     $name = $_POST['removename'];
     echo "Removing cron jobs with name <b>\"$name\"</b>";
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh removeschedule 0 0 NA \"$name\"");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh removeschedule 0 0 NA \"$name\"");
     echo $output;
 }
 
 if (isset($_GET['schedulelist'])) {
-    $output = shell_exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh schedulelist");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh schedulelist");
     echo "<pre>$output</pre>";
 }
 
 if (isset($_GET['uploadlower'])) {
     error_reporting(E_ALL);
     ini_set("display_errors", 1);
-    $target_dir = "/usr/local/nginx/scripts/images/lowerthird/";
+    $target_dir = "$scriptPath/images/lowerthird/";
     $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
     $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -229,7 +233,7 @@ if (isset($_GET['uploadlower'])) {
         // if everything is ok, try to upload file
     } else {
         $temp_filename = $_FILES["fileToUpload"]["tmp_name"];
-        $output = exec("sudo /bin/bash /usr/local/nginx/scripts/config.sh uploadlower $temp_filename $target_file");
+        $output = exec("sudo /bin/bash $scriptPath/config.sh uploadlower $temp_filename $target_file");
         echo $output;
     }
 }

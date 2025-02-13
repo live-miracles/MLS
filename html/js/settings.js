@@ -94,19 +94,20 @@ function renderStreamNameTable() {
 function extractStreamNamesFromTable() {
     const table = document.getElementById('name-table');
 
-    const ans = ['ignored'];
+    const names = [''];
     const row = table.rows[1];
     for (let i = 0; i < STREAM_NUM; i++) {
         const cell = row.cells[i];
-        ans.push(cell.firstChild.value);
+        names.push(cell.firstChild.value);
     }
-    return ans;
+    return names;
 }
 
 function saveStreamNamesTable() {
     streamNames = extractStreamNamesFromTable();
     renderStreamSelectors();
-    writeStreamNames();
+    const names = streamNames.slice(1).join(',');
+    executePhp(`config.php?nameconfig`, { 'Content-Type': 'application/json' }, names);
 }
 
 function bulkSetOuts() {
@@ -131,7 +132,7 @@ async function resetStreamOutputs() {
     if (stream === '') {
         return;
     }
-    streamOutsConfig = await fetchConfigFile();
+    await updateConfigs();
     const i = Number(stream);
     const outSize = getOutSize(i);
     const outs = Array(outSize)
@@ -143,7 +144,7 @@ async function resetStreamOutputs() {
             resolution: '',
             rtmp_url: '',
         }));
-    showResponse(`Reseting outs for stream ${i}.`);
+    showResponse(`Resetting outs for stream ${i}.`);
     executePhp(
         `config.php?bulkset`,
         { 'Content-Type': 'application/json' },
@@ -153,7 +154,7 @@ async function resetStreamOutputs() {
 }
 
 window.onload = async function () {
-    streamNames = await fetchStreamNames();
+    await updateConfigs();
     renderOutputs();
     renderStreamSelectors();
     renderStreamNameTable();

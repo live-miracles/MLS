@@ -38,7 +38,7 @@ async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
         }
     } catch (error) {
         error = 'Error: ' + error;
-        showBadConnectionAllert();
+        showBadConnectionAlert();
     }
 
     if (show) {
@@ -88,7 +88,7 @@ async function fetchProcesses() {
             .map((s) => s.split('.')[1]);
         return procs;
     } catch (error) {
-        showBadConnectionAllert();
+        showBadConnectionAlert();
         return null;
     }
 }
@@ -101,7 +101,7 @@ async function fetchStats() {
         const xmlData = parser.parseFromString(data, 'text/xml');
         return xml2json(xmlData);
     } catch (error) {
-        showBadConnectionAllert();
+        showBadConnectionAlert();
         return null;
     }
 }
@@ -126,21 +126,6 @@ async function writeStreamNames() {
     xhr.send(jsonData);
 }
 
-async function fetchStreamNames() {
-    try {
-        const response = await fetch('fetch-stream-names.php');
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        const streamNames = data.csvData[0];
-        return streamNames;
-    } catch (error) {
-        showBadConnectionAllert();
-        return null;
-    }
-}
-
 function parseOutLine(text) {
     const matches = text.match(/^__stream(\d+)__out(\d+)__(.*)$/);
     const split = matches ? matches[3].trim().split(' ') : [];
@@ -157,27 +142,6 @@ function parseOutLine(text) {
     }
 }
 
-function parseOutsConfig(text) {
-    const lines = text.split('\n');
-
-    const streamOutsConfig = [];
-    for (let i = 1; i <= STREAM_NUM; i++) {
-        streamOutsConfig[i] = [];
-        for (let j = 1; j <= OUT_NUM; j++) {
-            streamOutsConfig[i][j] = {};
-        }
-    }
-
-    lines
-        .filter((line) => line !== '')
-        .forEach((line) => {
-            out = parseOutLine(line);
-            if (!isOutEmpty(out)) streamOutsConfig[out.stream][out.out] = out;
-        });
-
-    return streamOutsConfig;
-}
-
 function isOutEmpty(out) {
     return out?.name ? false : true;
 }
@@ -191,13 +155,36 @@ function getOutSize(stream) {
 }
 
 async function fetchConfigFile() {
+    let lines = [];
+
     try {
         const response = await fetch('/config.txt');
-        return parseOutsConfig(await response.text());
+        lines = (await response.text()).split('\n');
     } catch (error) {
-        showBadConnectionAllert();
-        return null;
+        showBadConnectionAlert();
+        return { outs: null, names: null };
     }
+
+    let names = [];
+    const outs = [];
+    for (let i = 1; i <= STREAM_NUM; i++) {
+        outs[i] = [];
+        for (let j = 1; j <= OUT_NUM; j++) {
+            outs[i][j] = {};
+        }
+    }
+
+    lines
+        .filter((line) => line !== '')
+        .forEach((line) => {
+            if (line.startsWith('__stream__name__')) {
+                names = (',' + line.substring(17)).split(',');
+            }
+            const out = parseOutLine(line);
+            if (!isOutEmpty(out)) outs[out.stream][out.out] = out;
+        });
+
+    return { outs: outs, names: names };
 }
 
 function xml2json(xml) {
@@ -239,12 +226,20 @@ function xml2json(xml) {
     return obj;
 }
 
-function showBadConnectionAllert() {
+function showBadConnectionAlert() {
     document.getElementById('badConnectionAlert').classList.remove('hidden');
 }
 
-function hideBadConnectionAllert() {
+function hideBadConnectionAlert() {
     document.getElementById('badConnectionAlert').classList.add('hidden');
+}
+
+async function updateConfigs() {
+    const config = await fetchConfigFile();
+    streamNames = config.names;
+    streamOutsConfig = config.outs;
+    statsJson = await fetchStats();
+    processes = await fetchProcesses();
 }
 
 // CONSTANTS

@@ -2480,4 +2480,7 @@ __stream23__audio__ c23 c45 mono main
 __stream24__audio__ c24 c47 mono main
 __stream25__audio__ c25 c49 mono main
 
+***NAME CONFIG***
+__stream__name__ English,.,.,.,.,.,.,.,.,.,.,,,,,,,,,,,,,,,
+
 ***NEXT CONFIG***

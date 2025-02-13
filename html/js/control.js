@@ -186,7 +186,6 @@ function renderOuts() {
         const outsDiv = document.getElementById(`stream-outs-${i}`);
 
         let outsHtml = '';
-        // we need to slice slice(0, STREAM_NUM) because outs 98 are used for recording.
         const outSize = getOutSize(i);
         if (outSize === 0) {
             outsHtml += 'No configured outs...';
@@ -316,11 +315,8 @@ function updateRefreshTime() {
 }
 
 async function rerender() {
-    hideBadConnectionAllert();
-    streamNames = await fetchStreamNames();
-    statsJson = await fetchStats();
-    streamOutsConfig = await fetchConfigFile();
-    processes = await fetchProcesses();
+    hideBadConnectionAlert();
+    await updateConfigs();
     renderStreamHeaders();
     renderOuts();
 }

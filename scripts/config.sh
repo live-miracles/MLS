@@ -1,7 +1,12 @@
 #!/bin/bash
 
-# ===== Add Destination =====
 case $1 in
+# ===== Name Config =====
+nameconfig)
+	sudo sed -i "s|stream__name__.*|stream__name__ $2|" /usr/local/nginx/scripts/config.txt
+	;;
+
+# ===== Add Destination =====
 destination)
 	sudo sed -i "s|stream$3__out$4__.*|stream$3__out$4__ $(echo $2 | sed -e 's/\\/\\\\/g; s/\//\\\//g; s/&/\\\&/g') $5 $6|" /usr/local/nginx/scripts/config.txt
 	;;
