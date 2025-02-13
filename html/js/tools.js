@@ -169,11 +169,11 @@ async function fetchConfigFile() {
 
 async function fetchSystemStats() {
     const defaults = {
-        cpu: '',
-        ram: '',
-        disk: '',
-        uplink: '',
-        downlink: '',
+        cpu: '...',
+        ram: '...',
+        disk: '...',
+        uplink: '...',
+        downlink: '...',
     };
     try {
         const response = await fetch('/config.php?stats');
