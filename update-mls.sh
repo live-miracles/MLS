@@ -11,7 +11,6 @@ fi
 cd /usr/local/nginx/
 
 # Keep configs
-cp ./html/stream-names.csv ~/MLS/html/
 cp ./scripts/config.txt ~/MLS/scripts/
 
 # Shift files to right locations

@@ -106,26 +106,6 @@ async function fetchStats() {
     }
 }
 
-async function writeStreamNames() {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'save-stream-names.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.timeout = 2000;
-
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 0) {
-                showResponse('Request to update stream names timed out.', true);
-            } else {
-                showResponse(xhr.responseText, xhr.status !== 200);
-            }
-        }
-    };
-
-    const jsonData = JSON.stringify({ csvData: [streamNames] });
-    xhr.send(jsonData);
-}
-
 function parseOutLine(text) {
     const matches = text.match(/^__stream(\d+)__out(\d+)__(.*)$/);
     const split = matches ? matches[3].trim().split(' ') : [];
