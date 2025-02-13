@@ -1,6 +1,11 @@
 <?php
 $scriptPath = "/usr/local/nginx/scripts";
 
+if (isset($_GET['stats'])) {
+    $output = shell_exec("sudo /bin/bash $scriptPath/system-monitor.sh");
+    echo $output;
+}
+
 if (isset($_GET['nameconfig'])) {
     $names = file_get_contents("php://input");
     echo "<h2>You entered the following names:</h2>";

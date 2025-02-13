@@ -167,6 +167,26 @@ async function fetchConfigFile() {
     return { outs: outs, names: names };
 }
 
+async function fetchSystemStats() {
+    const defaults = {
+        cpu: '',
+        ram: '',
+        disk: '',
+        uplink: '',
+        downlink: '',
+    };
+    try {
+        const response = await fetch('/config.php?stats');
+        const data = await response.text();
+        if (data === '') return defaults;
+        return JSON.parse(data);
+    } catch (error) {
+        showBadConnectionAlert();
+        console.log(error);
+        return defaults;
+    }
+}
+
 function xml2json(xml) {
     // Create the return object
     var obj = {};
@@ -220,6 +240,15 @@ async function updateConfigs() {
     streamOutsConfig = config.outs;
     statsJson = await fetchStats();
     processes = await fetchProcesses();
+}
+
+async function updateSystemStats() {
+    let stats = await fetchSystemStats();
+    document.getElementById('cpu-info').innerHTML = stats.cpu;
+    document.getElementById('ram-info').innerHTML = stats.ram;
+    document.getElementById('disk-info').innerHTML = stats.disk;
+    document.getElementById('uplink-info').innerHTML = stats.uplink;
+    document.getElementById('downlink-info').innerHTML = stats.downlink;
 }
 
 function toggleLogs() {

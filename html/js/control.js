@@ -327,6 +327,9 @@ window.onload = async function () {
     rerender();
     updateRefreshTime();
     renderLogs();
+
+    updateSystemStats();
+    setInterval(updateSystemStats, 10000);
 };
 
 (function renderServerDetails() {

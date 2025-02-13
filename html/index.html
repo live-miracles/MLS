@@ -32,8 +32,23 @@
 
     <div
       id="logs"
-      class="fixed bottom-1 right-1 z-40 mx-auto h-[250px] w-[650px] overflow-y-scroll rounded-lg border border-accent bg-base-300 p-1 opacity-80"></div>
-    <div class="fixed bottom-2 right-9 z-50 rounded bg-neutral px-3">
+      class="fixed bottom-10 right-1 z-40 mx-auto h-[250px] w-[600px] overflow-y-scroll rounded-lg border border-accent bg-base-300 p-1 opacity-80"></div>
+    <div class="fixed bottom-1 right-1 z-50 flex items-center rounded bg-neutral px-1">
+      <label class="badge badge-accent badge-outline m-1 min-w-24 rounded py-3">
+        CPU: <span id="cpu-info"></span>
+      </label>
+      <label class="badge badge-accent badge-outline m-1 min-w-36 rounded py-3">
+        RAM: <span id="ram-info"></span>
+      </label>
+      <label class="badge badge-accent badge-outline m-1 min-w-32 rounded py-3">
+        Disk: <span id="disk-info"></span>
+      </label>
+      <label class="badge badge-accent badge-outline m-1 min-w-32 rounded py-3">
+        Down: <span id="downlink-info"></span>
+      </label>
+      <label class="badge badge-accent badge-outline m-1 min-w-32 rounded py-3">
+        Up: <span id="uplink-info"></span>
+      </label>
       <label class="swap m-1">
         <input
           id="show-logs"

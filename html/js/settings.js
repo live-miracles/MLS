@@ -159,4 +159,7 @@ window.onload = async function () {
     renderStreamSelectors();
     renderStreamNameTable();
     renderLogs();
+
+    updateSystemStats();
+    setInterval(updateSystemStats, 10000);
 };

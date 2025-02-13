@@ -1922,6 +1922,20 @@ html {
   height: auto;
 }
 
+.stats {
+  display: inline-grid;
+  border-radius: var(--rounded-box, 1rem);
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
+  --tw-text-opacity: 1;
+  color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));
+}
+
+:where(.stats) {
+  grid-auto-flow: column;
+  overflow-x: auto;
+}
+
 .stat {
   display: inline-grid;
   width: 100%;
@@ -2976,6 +2990,19 @@ details.collapse summary::-webkit-details-marker {
   }
 }
 
+:where(.stats) > :not([hidden]) ~ :not([hidden]) {
+  --tw-divide-x-reverse: 0;
+  border-right-width: calc(1px * var(--tw-divide-x-reverse));
+  border-left-width: calc(1px * calc(1 - var(--tw-divide-x-reverse)));
+  --tw-divide-y-reverse: 0;
+  border-top-width: calc(0px * calc(1 - var(--tw-divide-y-reverse)));
+  border-bottom-width: calc(0px * var(--tw-divide-y-reverse));
+}
+
+:is([dir="rtl"] .stats > :not([hidden]) ~ :not([hidden])) {
+  --tw-divide-x-reverse: 1;
+}
+
 .swap-rotate .swap-on,
 .swap-rotate .swap-indeterminate,
 .swap-rotate input:indeterminate ~ .swap-on {
@@ -3479,8 +3506,8 @@ details.collapse summary::-webkit-details-marker {
   bottom: 0.25rem;
 }
 
-.bottom-2 {
-  bottom: 0.5rem;
+.bottom-10 {
+  bottom: 2.5rem;
 }
 
 .left-1\/2 {
@@ -3489,10 +3516,6 @@ details.collapse summary::-webkit-details-marker {
 
 .right-1 {
   right: 0.25rem;
-}
-
-.right-9 {
-  right: 2.25rem;
 }
 
 .z-40 {
@@ -3590,6 +3613,10 @@ details.collapse summary::-webkit-details-marker {
   display: inline;
 }
 
+.flex {
+  display: flex;
+}
+
 .table {
   display: table;
 }
@@ -3658,12 +3685,24 @@ details.collapse summary::-webkit-details-marker {
   width: 40rem;
 }
 
-.w-\[650px\] {
-  width: 650px;
+.w-\[600px\] {
+  width: 600px;
 }
 
 .w-full {
   width: 100%;
+}
+
+.min-w-24 {
+  min-width: 6rem;
+}
+
+.min-w-32 {
+  min-width: 8rem;
+}
+
+.min-w-36 {
+  min-width: 9rem;
 }
 
 .max-w-3xl {
@@ -3713,6 +3752,10 @@ details.collapse summary::-webkit-details-marker {
 
 .resize {
   resize: both;
+}
+
+.items-center {
+  align-items: center;
 }
 
 .overflow-x-auto {
@@ -3796,11 +3839,6 @@ details.collapse summary::-webkit-details-marker {
 .px-1 {
   padding-left: 0.25rem;
   padding-right: 0.25rem;
-}
-
-.px-3 {
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
 }
 
 .py-3 {
