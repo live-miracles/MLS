@@ -28,12 +28,19 @@
     </div>
 
     <div
-      class="collapse collapse-arrow fixed bottom-3 right-3 z-[999] w-[500px] bg-base-300 opacity-90">
-      <input type="checkbox" checked />
-      <div class="collapse-title text-xl font-medium">Logs</div>
-      <div class="collapse-content">
-        <div class="h-48 overflow-auto" id="responseBox"></div>
-      </div>
+      id="logs"
+      class="fixed bottom-1 right-1 z-40 mx-auto h-[250px] w-[650px] overflow-y-scroll rounded-lg border border-accent bg-base-300 p-1 opacity-80"></div>
+    <div class="fixed bottom-2 right-9 z-50 rounded bg-neutral px-3">
+      <label class="swap m-1">
+        <input
+          id="show-logs"
+          type="checkbox"
+          checked
+          class="show-toggle url-param"
+          onclick="toggleLogs()" />
+        <div class="badge swap-on badge-accent rounded py-3">logs</div>
+        <div class="badge swap-off badge-accent badge-outline rounded py-3">logs</div>
+      </label>
     </div>
 
     <div

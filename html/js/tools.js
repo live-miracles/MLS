@@ -56,13 +56,13 @@ function showResponse(value, error = false, time = Date.now()) {
 }
 
 function renderResponse(value, error, time) {
-    const responseBox = document.getElementById('responseBox');
+    const logs = document.getElementById('logs');
     const timestamp = new Date(time).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
-    responseBox.innerHTML =
+    logs.innerHTML =
         `<p class="${error ? 'text-error' : ''}">
             <span class="text-accent">[${timestamp}]</span>
             ${value}
-        </p><div class="divider"></div>` + responseBox.innerHTML;
+        </p><div class="divider"></div>` + logs.innerHTML;
 }
 
 function logResponse(value, error, time) {
@@ -220,6 +220,16 @@ async function updateConfigs() {
     streamOutsConfig = config.outs;
     statsJson = await fetchStats();
     processes = await fetchProcesses();
+}
+
+function toggleLogs() {
+    const toggle = document.getElementById('show-logs');
+    const logs = document.getElementById('logs');
+    if (toggle.checked) {
+        logs.classList.remove('hidden');
+    } else {
+        logs.classList.add('hidden');
+    }
 }
 
 // CONSTANTS
