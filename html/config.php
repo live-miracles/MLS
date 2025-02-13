@@ -155,7 +155,7 @@ if (isset($_GET['bulkset'])) {
                     <b>Resolution:</b> $resolution<br><br>";
 
         $command = sprintf(
-            'sudo /bin/bash $scriptPath/config.sh destination "%s" "%s" "%s" "%s" %s',
+            'sudo /bin/bash ' . $scriptPath . '/config.sh destination "%s" "%s" "%s" "%s" %s',
             $rtmp_url, $stream_id, $output_id, $resolution, $name_id
         );
 
