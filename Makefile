@@ -12,7 +12,7 @@ update:
 	./update-mls.sh
 
 front:
-	npm run --prefix ./next dev
+	npm start
 
 run:
 	docker compose up

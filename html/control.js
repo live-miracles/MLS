@@ -315,7 +315,6 @@ function updateRefreshTime() {
 }
 
 async function rerender() {
-    hideBadConnectionAlert();
     await updateConfigs();
     renderStreamHeaders();
     renderOuts();

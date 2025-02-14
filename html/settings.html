@@ -111,6 +111,17 @@
           </p>
           <ul>
             <li>"Name" field should not contain any spaces. Please use underscores "_".</li>
+            <li>"Name" field should be unique within the stream.</li>
+            <li>When streaming locally between streams use the localhost IP: 127.0.0.1</li>
+            <li>
+              Select "Vertical" when streaming to Instagram. It will rotate the video by 90 degrees
+              clockwise and encode into
+              <code>720p</code> resolution. Server will need around 3 vCPU for each vertical stream.
+            </li>
+            <li>
+              If you keep the source resolution for all destinations the server is capable of
+              streaming 100+ outs with just 10 vCPU cores.
+            </li>
             <li>
               If a login/password has to be added, enter the details in the format:
               <br />
@@ -245,14 +256,10 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
         <div class="collapse-content">
           <p>
             You can apply an encoding to the stream. When encoding <code>1080p</code> video into
-            <code>720p</code> it takes about 2.5 vCores per stream.
+            <code>720p</code> it takes about 2.5 vCPU per stream.
             <br />
             Select "None" if you don't want any encodings then it will not take much CPU resources
             since it will be be only copying the data and not processing it.
-            <br />
-            Select "Vertical" when streaming to Instagram. It will rotate the video by 90 degrees
-            clockwise and encode into
-            <code>720p</code> resolution.
           </p>
         </div>
       </div>
@@ -311,83 +318,122 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <a href="/config.php?audiolist" target="_blank" class="link link-accent">[file]</a>
         </div>
         <div class="collapse-content">
-          <p>Description...</p>
+          <p>
+            You can stream multichannel audio to nginx using stream1080 main or backup. Then you can
+            split these audio channels into streams. In this audio config you can choose which
+            channel you want to give to each stream.
+          </p>
         </div>
       </div>
-      <form method="post" target="_blank" action="config.php?audioadd">
-        Stream Id:
-        <select name="stream_id" class="stream-selector"></select>
-        <br />
-        Mono/Stereo:
-        <select name="audioparam">
-          <option value="mono">Mono</option>
-          <option value="stereo">Stereo</option>
-          <option value="none">None</option>
-        </select>
-        <br />
-        Channel 1:
-        <select name="channel_1">
-          <option value="c0">Channel 1</option>
-          <option value="c1">Channel 2</option>
-          <option value="c2">Channel 3</option>
-          <option value="c3">Channel 4</option>
-          <option value="c4">Channel 5</option>
-          <option value="c5">Channel 6</option>
-          <option value="c6">Channel 7</option>
-          <option value="c7">Channel 8</option>
-          <option value="c8">Channel 9</option>
-          <option value="c9">Channel 10</option>
-          <option value="c10">Channel 11</option>
-          <option value="c11">Channel 12</option>
-          <option value="c12">Channel 13</option>
-          <option value="c13">Channel 14</option>
-          <option value="c14">Channel 15</option>
-          <option value="c15">Channel 16</option>
-          <option value="c16">Channel 17</option>
-          <option value="c17">Channel 18</option>
-          <option value="c18">Channel 19</option>
-          <option value="c19">Channel 20</option>
-        </select>
-        <br />
-        Channel 2:
-        <select name="channel_2">
-          <option value="c0">Channel 1</option>
-          <option value="c1">Channel 2</option>
-          <option value="c2">Channel 3</option>
-          <option value="c3">Channel 4</option>
-          <option value="c4">Channel 5</option>
-          <option value="c5">Channel 6</option>
-          <option value="c6">Channel 7</option>
-          <option value="c7">Channel 8</option>
-          <option value="c8">Channel 9</option>
-          <option value="c9">Channel 10</option>
-          <option value="c10">Channel 11</option>
-          <option value="c11">Channel 12</option>
-          <option value="c12">Channel 13</option>
-          <option value="c13">Channel 14</option>
-          <option value="c14">Channel 15</option>
-          <option value="c15">Channel 16</option>
-          <option value="c16">Channel 17</option>
-          <option value="c17">Channel 18</option>
-          <option value="c18">Channel 19</option>
-          <option value="c19">Channel 20</option>
-        </select>
-        <br />
-        Main/Distribute:
-        <select name="rtmpparam">
-          <option value="main_back">Main-Backup</option>
-          <option value="distribute">Distribute</option>
-        </select>
-        <br />
-        <input type="submit" value="Add Config" class="btn btn-accent btn-sm my-2" />
+      <form method="post" id="audio-config-form">
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Stream Id</span>
+          </div>
+          <select name="stream_id" class="stream-selector labeled-select w-36"></select>
+        </label>
+
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Mono / Stereo</span>
+          </div>
+          <select name="audioparam" class="labeled-select w-28">
+            <option value="mono">Mono</option>
+            <option value="stereo">Stereo</option>
+            <option value="none">None</option>
+          </select>
+        </label>
+
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Channel 1</span>
+          </div>
+          <select name="channel_1" class="labeled-select">
+            <option value="c0">Channel 1</option>
+            <option value="c1">Channel 2</option>
+            <option value="c2">Channel 3</option>
+            <option value="c3">Channel 4</option>
+            <option value="c4">Channel 5</option>
+            <option value="c5">Channel 6</option>
+            <option value="c6">Channel 7</option>
+            <option value="c7">Channel 8</option>
+            <option value="c8">Channel 9</option>
+            <option value="c9">Channel 10</option>
+            <option value="c10">Channel 11</option>
+            <option value="c11">Channel 12</option>
+            <option value="c12">Channel 13</option>
+            <option value="c13">Channel 14</option>
+            <option value="c14">Channel 15</option>
+            <option value="c15">Channel 16</option>
+            <option value="c16">Channel 17</option>
+            <option value="c17">Channel 18</option>
+            <option value="c18">Channel 19</option>
+            <option value="c19">Channel 20</option>
+          </select>
+        </label>
+
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Channel 1</span>
+          </div>
+          <select name="channel_2" class="labeled-select">
+            <option value="c0">Channel 1</option>
+            <option value="c1">Channel 2</option>
+            <option value="c2">Channel 3</option>
+            <option value="c3">Channel 4</option>
+            <option value="c4">Channel 5</option>
+            <option value="c5">Channel 6</option>
+            <option value="c6">Channel 7</option>
+            <option value="c7">Channel 8</option>
+            <option value="c8">Channel 9</option>
+            <option value="c9">Channel 10</option>
+            <option value="c10">Channel 11</option>
+            <option value="c11">Channel 12</option>
+            <option value="c12">Channel 13</option>
+            <option value="c13">Channel 14</option>
+            <option value="c14">Channel 15</option>
+            <option value="c15">Channel 16</option>
+            <option value="c16">Channel 17</option>
+            <option value="c17">Channel 18</option>
+            <option value="c18">Channel 19</option>
+            <option value="c19">Channel 20</option>
+          </select>
+        </label>
+
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Main / Distribute</span>
+          </div>
+          <select name="rtmpparam" class="labeled-select">
+            <option value="main_back">Main-Backup</option>
+            <option value="distribute">Distribute</option>
+          </select>
+        </label>
+
+        <input
+          type="submit"
+          value="Add Config"
+          class="btn btn-accent btn-sm my-2"
+          onclick="event.preventDefault(); submitForm('audio-config-form','config.php?audioadd');" />
       </form>
-      <form method="post" target="_blank" action="config.php?audiopreset">
-        <select name="audiopreset">
-          <option value="allmono">All Mono</option>
-          <option value="firststereo" selected>First Stereo</option>
-          <option value="allstereo">All Stereo</option>
-        </select>
-        <input type="submit" value="Load Preset" class="btn btn-accent btn-sm my-2" />
+
+      <form method="post" id="audio-preset-form">
+        <label class="input-label">
+          <div class="label pb-0">
+            <span class="label-text text-sm">Audio Preset</span>
+          </div>
+          <select name="audiopreset" class="labeled-select">
+            <option value="allmono">All Mono</option>
+            <option value="firststereo" selected>First Stereo</option>
+            <option value="allstereo">All Stereo</option>
+          </select>
+        </label>
+
+        <input
+          type="submit"
+          value="Load Preset"
+          class="btn btn-accent btn-sm my-2"
+          onclick="event.preventDefault(); submitForm('audio-preset-form','config.php?audiopreset');" />
       </form>
 
       <div class="divider"></div>
@@ -546,10 +592,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
       <div class="divider"></div>
 
       <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title">
-          Upload Google Drive Video
-          <a href="/config.php?streamlist" target="_blank" class="link link-accent">[file]</a>
-        </div>
+        <div class="collapse-title">Upload Google Drive Video</div>
         <div class="collapse-content">
           <p>Description...</p>
         </div>

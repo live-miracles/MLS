@@ -36,6 +36,7 @@ async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
         if (!response.ok) {
             error = 'Request ' + phpUrl + ' failed with status ' + response.status + msg;
         }
+        hideBadConnectionAlert();
     } catch (error) {
         error = 'Error: ' + error;
         showBadConnectionAlert();
@@ -86,6 +87,7 @@ async function fetchProcesses() {
             .replace('</pre>', '')
             .split('\n')
             .map((s) => s.split('.')[1]);
+        hideBadConnectionAlert();
         return procs;
     } catch (error) {
         showBadConnectionAlert();
@@ -99,6 +101,7 @@ async function fetchStats() {
         const data = await response.text();
         const parser = new DOMParser();
         const xmlData = parser.parseFromString(data, 'text/xml');
+        hideBadConnectionAlert();
         return xml2json(xmlData);
     } catch (error) {
         showBadConnectionAlert();
@@ -140,6 +143,7 @@ async function fetchConfigFile() {
     try {
         const response = await fetch('/config.txt');
         lines = (await response.text()).split('\n');
+        hideBadConnectionAlert();
     } catch (error) {
         showBadConnectionAlert();
         return { outs: null, names: null };
@@ -168,23 +172,31 @@ async function fetchConfigFile() {
 }
 
 async function fetchSystemStats() {
-    const defaults = {
+    let stats = {
         cpu: '...',
         ram: '...',
         disk: '...',
         uplink: '...',
         downlink: '...',
     };
+    let data = JSON.stringify(stats);
     try {
         const response = await fetch('/config.php?stats');
-        const data = await response.text();
-        if (data === '') return defaults;
-        return JSON.parse(data);
+        data = await response.text();
+        hideBadConnectionAlert();
     } catch (error) {
         showBadConnectionAlert();
-        console.log(error);
-        return defaults;
+        return stats;
     }
+    try {
+        stats = data === '' ? stats : JSON.parse(data);
+    } catch (error) {
+        showResponse(
+            'Not able to parse system stats "' + escapeHTML(data.slice(0, 50)) + '": ' + error,
+            true,
+        );
+    }
+    return stats;
 }
 
 function xml2json(xml) {
@@ -224,6 +236,10 @@ function xml2json(xml) {
         }
     }
     return obj;
+}
+
+function escapeHTML(str) {
+    return new Option(str).innerHTML;
 }
 
 function showBadConnectionAlert() {
