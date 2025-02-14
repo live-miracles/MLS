@@ -26,4 +26,4 @@ exec:
 dev: build run
 
 css:
-	npx tailwindcss -i ./html/css/input.css -o ./html/css/output.css --watch
+	npx tailwindcss -i ./html/input.css -o ./html/output.css --watch
