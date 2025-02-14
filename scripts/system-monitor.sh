@@ -2,6 +2,7 @@
 
 # Get CPU usage using uptime
 CPU_USAGE=$(uptime | awk -F'load average:' '{print $2}' | cut -d, -f1 | awk '{print $1}')
+CPU_CORES=$(nproc)
 
 # Get RAM usage
 RAM_INFO=$(free -h | awk '/Mem:/ {print $3 " / " $2}')
@@ -22,7 +23,7 @@ TX_RATE=$(((TX_BYTES_AFTER - TX_BYTES_BEFORE) / 1024))
 
 # Output the results
 echo "{"
-echo "  \"cpu\": \"$CPU_USAGE\","
+echo "  \"cpu\": \"$CPU_USAGE / $CPU_CORES\","
 echo "  \"ram\": \"$RAM_INFO\","
 echo "  \"disk\": \"$DISK_USAGE\","
 echo "  \"downlink\": \"$RX_RATE KB/s\","
