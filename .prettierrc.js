@@ -12,6 +12,7 @@ module.exports = {
         {
             files: '*.html',
             options: {
+                printWidth: 150,
                 tabWidth: 2,
             },
         },

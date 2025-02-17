@@ -47,26 +47,14 @@
         Up: <span id="uplink-info" class="ml-1 text-neutral-content"></span>
       </label>
       <label class="swap m-1">
-        <input
-          id="show-logs"
-          type="checkbox"
-          checked
-          class="show-toggle url-param"
-          onclick="toggleLogs()" />
+        <input id="show-logs" type="checkbox" checked class="show-toggle url-param" onclick="toggleLogs()" />
         <div class="badge swap-on badge-accent rounded py-3">logs</div>
         <div class="badge swap-off badge-accent badge-outline rounded py-3">logs</div>
       </label>
     </div>
 
-    <div
-      role="alert"
-      id="badConnectionAlert"
-      class="alert alert-error fixed left-1/2 z-[999] hidden w-96 -translate-x-1/2 transform opacity-90">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24">
+    <div role="alert" id="badConnectionAlert" class="alert alert-error fixed left-1/2 z-[999] hidden w-96 -translate-x-1/2 transform opacity-90">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -90,9 +78,7 @@
         </table>
       </div>
 
-      <button onclick="saveStreamNamesTable()" class="btn btn-accent btn-sm my-2">
-        Update Names
-      </button>
+      <button onclick="saveStreamNamesTable()" class="btn btn-accent btn-sm my-2">Update Names</button>
 
       <div class="divider"></div>
 
@@ -103,9 +89,8 @@
         </div>
         <div class="collapse-content">
           <p>
-            The nginx server receives the feed and sends it to a multiple outputs, such as when
-            streaming on the YouTube or Facebook. You can use this interface to add such
-            destination.
+            The nginx server receives the feed and sends it to a multiple outputs, such as when streaming on the YouTube or Facebook. You can use this
+            interface to add such destination.
             <br />
             A few important points:
           </p>
@@ -114,20 +99,14 @@
             <li>"Name" field should be unique within the stream.</li>
             <li>When streaming locally between streams use the localhost IP: 127.0.0.1</li>
             <li>
-              Select "Vertical" when streaming to Instagram. It will rotate the video by 90 degrees
-              clockwise and encode into
+              Select "Vertical" when streaming to Instagram. It will rotate the video by 90 degrees clockwise and encode into
               <code>720p</code> resolution. Server will need around 3 vCPU for each vertical stream.
             </li>
-            <li>
-              If you keep the source resolution for all destinations the server is capable of
-              streaming 100+ outs with just 10 vCPU cores.
-            </li>
+            <li>If you keep the source resolution for all destinations the server is capable of streaming 100+ outs with just 10 vCPU cores.</li>
             <li>
               If a login/password has to be added, enter the details in the format:
               <br />
-              <code>
-                rtmp://server/streamkey-+-+flashver=FMLE/3.020(compatible;20FMSc/1.0)-+-+pubUser=login-+-+pubPasswd=password
-              </code>
+              <code> rtmp://server/streamkey-+-+flashver=FMLE/3.020(compatible;20FMSc/1.0)-+-+pubUser=login-+-+pubPasswd=password </code>
             </li>
           </ul>
         </div>
@@ -137,12 +116,7 @@
           <div class="label pb-0">
             <span class="label-text text-sm">Name</span>
           </div>
-          <input
-            id="outName"
-            type="text"
-            name="name_id"
-            placeholder="English_YT..."
-            class="input input-bordered input-xs w-44" />
+          <input id="outName" type="text" name="name_id" placeholder="English_YT..." class="input input-bordered input-xs w-44" />
         </label>
 
         <label class="input-label">
@@ -156,10 +130,7 @@
           <div class="label pb-0">
             <span class="label-text text-sm">Out Id</span>
           </div>
-          <select
-            name="output_id"
-            id="out-selector"
-            class="select select-bordered select-xs w-32"></select>
+          <select name="output_id" id="out-selector" class="select select-bordered select-xs w-32"></select>
         </label>
 
         <label class="input-label">
@@ -192,12 +163,7 @@
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Key or Custom URL</span>
           </div>
-          <input
-            type="text"
-            name="stream_key"
-            placeholder=""
-            id="stream-key"
-            class="input input-bordered input-xs w-[40rem]" />
+          <input type="text" name="stream_key" placeholder="" id="stream-key" class="input input-bordered input-xs w-[40rem]" />
         </label>
 
         <label class="hidden">
@@ -216,11 +182,7 @@
 
         <br />
 
-        <input
-          type="submit"
-          class="btn btn-accent btn-sm my-2"
-          value="Set Output"
-          onclick="event.preventDefault(); setOutBtnClick();" />
+        <input type="submit" class="btn btn-accent btn-sm my-2" value="Set Output" onclick="event.preventDefault(); setOutBtnClick();" />
       </form>
 
       <div class="mt-8">
@@ -241,9 +203,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           </div>
           <select id="reset-stream" class="stream-selector labeled-select w-36"></select>
         </label>
-        <button onclick="resetStreamOutputs()" class="btn btn-accent btn-sm my-2">
-          Reset Stream Outputs
-        </button>
+        <button onclick="resetStreamOutputs()" class="btn btn-accent btn-sm my-2">Reset Stream Outputs</button>
       </div>
 
       <div class="divider"></div>
@@ -255,11 +215,10 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
         </div>
         <div class="collapse-content">
           <p>
-            You can apply an encoding to the stream. When encoding <code>1080p</code> video into
-            <code>720p</code> it takes about 2.5 vCPU per stream.
+            You can apply an encoding to the stream. When encoding <code>1080p</code> video into <code>720p</code> it takes about 2.5 vCPU per stream.
             <br />
-            Select "None" if you don't want any encodings then it will not take much CPU resources
-            since it will be be only copying the data and not processing it.
+            Select "None" if you don't want any encodings then it will not take much CPU resources since it will be be only copying the data and not
+            processing it.
           </p>
         </div>
       </div>
@@ -319,9 +278,8 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
         </div>
         <div class="collapse-content">
           <p>
-            You can stream multichannel audio to nginx using stream1080 main or backup. Then you can
-            split these audio channels into streams. In this audio config you can choose which
-            channel you want to give to each stream.
+            You can stream multichannel audio to nginx using stream1080 main or backup. Then you can split these audio channels into streams. In this
+            audio config you can choose which channel you want to give to each stream.
           </p>
         </div>
       </div>
@@ -445,8 +403,8 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
         </div>
         <div class="collapse-content">
           <p>
-            Use it to schedule a cron job. You can add multiple jobs with the same name, but if you
-            click the remove button, it will remove all of them at once.
+            Use it to schedule a cron job. You can add multiple jobs with the same name, but if you click the remove button, it will remove all of
+            them at once.
           </p>
         </div>
       </div>
@@ -455,11 +413,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Name</span>
           </div>
-          <input
-            type="text"
-            name="name"
-            class="input input-bordered input-xs w-44"
-            placeholder="English_YT..." />
+          <input type="text" name="name" class="input input-bordered input-xs w-44" placeholder="English_YT..." />
         </label>
 
         <label class="input-label">
@@ -521,46 +475,28 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Month</span>
           </div>
-          <input
-            type="text"
-            name="month"
-            class="input input-bordered input-xs w-12"
-            placeholder="1-12"
-            value="*" />
+          <input type="text" name="month" class="input input-bordered input-xs w-12" placeholder="1-12" value="*" />
         </label>
 
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Day</span>
           </div>
-          <input
-            type="text"
-            name="monthday"
-            class="input input-bordered input-xs w-12"
-            placeholder="1-31"
-            value="*" />
+          <input type="text" name="monthday" class="input input-bordered input-xs w-12" placeholder="1-31" value="*" />
         </label>
 
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Hour</span>
           </div>
-          <input
-            type="text"
-            name="hour"
-            class="input input-bordered input-xs w-12"
-            placeholder="0-23" />
+          <input type="text" name="hour" class="input input-bordered input-xs w-12" placeholder="0-23" />
         </label>
 
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Min</span>
           </div>
-          <input
-            type="text"
-            name="minute"
-            class="input input-bordered input-xs w-12"
-            placeholder="0-59" />
+          <input type="text" name="minute" class="input input-bordered input-xs w-12" placeholder="0-59" />
         </label>
 
         <input
@@ -575,11 +511,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Job Name</span>
           </div>
-          <input
-            type="text"
-            name="removename"
-            class="input input-bordered input-xs w-36"
-            placeholder="English_YT..." />
+          <input type="text" name="removename" class="input input-bordered input-xs w-36" placeholder="English_YT..." />
         </label>
 
         <input
@@ -630,19 +562,11 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <p>Description...</p>
         </div>
       </div>
-      <form
-        method="post"
-        target="_blank"
-        action="config.php?uploadlower"
-        enctype="multipart/form-data">
+      <form method="post" target="_blank" action="config.php?uploadlower" enctype="multipart/form-data">
         Select image to upload:
         <input type="file" name="fileToUpload" id="fileToUpload" />
         <br />
-        <input
-          type="submit"
-          value="Upload Image"
-          name="submit"
-          class="btn btn-accent btn-sm my-2" />
+        <input type="submit" value="Upload Image" name="submit" class="btn btn-accent btn-sm my-2" />
       </form>
 
       <div class="divider"></div>
@@ -655,11 +579,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
       </div>
       <form method="post" target="_blank" action="config.php?uploadfile">
         URL:
-        <input
-          type="text"
-          name="file_url"
-          size="35"
-          placeholder="https://www.dropbox.com/s/25xhzrtvom/filename.mp4?dl=0" />
+        <input type="text" name="file_url" size="35" placeholder="https://www.dropbox.com/s/25xhzrtvom/filename.mp4?dl=0" />
         <br />
         Stream Id:
         <select name="stream_no" class="stream-selector"></select>

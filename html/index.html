@@ -50,26 +50,14 @@
         Up: <span id="uplink-info" class="ml-1 text-neutral-content"></span>
       </label>
       <label class="swap m-1">
-        <input
-          id="show-logs"
-          type="checkbox"
-          checked
-          class="show-toggle url-param"
-          onclick="toggleLogs()" />
+        <input id="show-logs" type="checkbox" checked class="show-toggle url-param" onclick="toggleLogs()" />
         <div class="badge swap-on badge-accent rounded py-3">logs</div>
         <div class="badge swap-off badge-accent badge-outline rounded py-3">logs</div>
       </label>
     </div>
 
-    <div
-      role="alert"
-      id="badConnectionAlert"
-      class="alert alert-error fixed left-1/2 z-[999] hidden w-96 -translate-x-1/2 transform opacity-90">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6 shrink-0 stroke-current"
-        fill="none"
-        viewBox="0 0 24 24">
+    <div role="alert" id="badConnectionAlert" class="alert alert-error fixed left-1/2 z-[999] hidden w-96 -translate-x-1/2 transform opacity-90">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -81,8 +69,7 @@
 
     <section class="mx-6 my-3 text-center">
       <p id="server-details">
-        Distribute - <code>rtmp://${address}/distribute/stream1</code> or <code>stream2</code> or
-        <code>stream3</code> ...
+        Distribute - <code>rtmp://${address}/distribute/stream1</code> or <code>stream2</code> or <code>stream3</code> ...
         <br />
         Primary - <code>rtmp://${address}/main/stream1</code><br />
         Backup - <code>rtmp://${address}/backup/stream1</code><br />
@@ -128,42 +115,22 @@
             <p>
               SRT Accept:
               <a href="/config.php?srtaccept" target="_blank" class="btn btn-primary btn-xs">on</a>
-              <a href="/config.php?srtacceptoff" target="_blank" class="btn btn-error btn-xs"
-                >off</a
-              >
+              <a href="/config.php?srtacceptoff" target="_blank" class="btn btn-error btn-xs">off</a>
             </p>
           </div>
 
           <div class="mx-6 my-3 text-center">
             <p>
               Supers - Global Control:
-              <a href="/control.php?allsuper1on" target="_blank" class="btn btn-primary btn-xs"
-                >Add 1</a
-              >
-              <a href="/control.php?allsuper2on" target="_blank" class="btn btn-primary btn-xs"
-                >Add 2</a
-              >
-              <a href="/control.php?allsuper3on" target="_blank" class="btn btn-primary btn-xs"
-                >Add 3</a
-              >
-              <a href="/control.php?allsuper4on" target="_blank" class="btn btn-primary btn-xs"
-                >Add 4</a
-              >
-              <a href="/control.php?allsuper5on" target="_blank" class="btn btn-primary btn-xs"
-                >Add 5</a
-              >
-              <a href="/control.php?allsuper6on" target="_blank" class="btn btn-primary btn-xs"
-                >Add 6</a
-              >
-              <a href="/control.php?allsuper7on" target="_blank" class="btn btn-primary btn-xs"
-                >Add 7</a
-              >
-              <a href="/control.php?allsuper8on" target="_blank" class="btn btn-primary btn-xs"
-                >Add 8</a
-              >
-              <a href="/control.php?allsuperoff" target="_blank" class="btn btn-error btn-xs"
-                >Remove</a
-              >
+              <a href="/control.php?allsuper1on" target="_blank" class="btn btn-primary btn-xs">Add 1</a>
+              <a href="/control.php?allsuper2on" target="_blank" class="btn btn-primary btn-xs">Add 2</a>
+              <a href="/control.php?allsuper3on" target="_blank" class="btn btn-primary btn-xs">Add 3</a>
+              <a href="/control.php?allsuper4on" target="_blank" class="btn btn-primary btn-xs">Add 4</a>
+              <a href="/control.php?allsuper5on" target="_blank" class="btn btn-primary btn-xs">Add 5</a>
+              <a href="/control.php?allsuper6on" target="_blank" class="btn btn-primary btn-xs">Add 6</a>
+              <a href="/control.php?allsuper7on" target="_blank" class="btn btn-primary btn-xs">Add 7</a>
+              <a href="/control.php?allsuper8on" target="_blank" class="btn btn-primary btn-xs">Add 8</a>
+              <a href="/control.php?allsuperoff" target="_blank" class="btn btn-error btn-xs">Remove</a>
             </p>
           </div>
 
@@ -178,28 +145,15 @@
               <option value="holding">Holding</option>
             </select>
 
-            <input
-              type="text"
-              id="batchInputControl"
-              placeholder="Stream IDs: 3 4 5 7"
-              class="input input-bordered input-xs w-[30rem]" />
+            <input type="text" id="batchInputControl" placeholder="Stream IDs: 3 4 5 7" class="input input-bordered input-xs w-[30rem]" />
 
-            <button class="btn btn-primary btn-xs" onclick="batchInputControlClick(true);">
-              on
-            </button>
-            <button class="btn btn-error btn-xs" onclick="batchInputControlClick(false);">
-              off
-            </button>
+            <button class="btn btn-primary btn-xs" onclick="batchInputControlClick(true);">on</button>
+            <button class="btn btn-error btn-xs" onclick="batchInputControlClick(false);">off</button>
           </div>
 
           <div class="mx-6 my-3 text-center">
             Refresh Time (seconds):
-            <input
-              type="number"
-              min="1"
-              id="refreshTime"
-              value="5"
-              class="input input-bordered input-xs w-16" />
+            <input type="number" min="1" id="refreshTime" value="5" class="input input-bordered input-xs w-16" />
             <button class="btn btn-primary btn-xs" onclick="updateRefreshTime();">Update</button>
 
             <button class="btn btn-outline btn-xs ml-3" onclick="rerender();">Refresh Now</button>
