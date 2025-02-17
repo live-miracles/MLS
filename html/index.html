@@ -96,30 +96,30 @@
         <summary class="collapse-title text-center"><b>More</b></summary>
         <div class="collapse-content">
           <div class="mx-6 my-3 text-center">
-            <form method="post" target="_blank" action="/config.php?remap">
+            <form method="post" id="remap-form">
               <p>
-                No. of Audio Channels:
+                Remap Audio Channels:
                 <input
-                  type="text"
+                  type="number"
                   name="channel_no"
-                  size="5"
-                  placeholder="4"
-                  class="input-neutral input input-bordered input-xs mx-1 max-w-xs" />
+                  placeholder="16"
+                  min="2"
+                  max="16"
+                  class="input-neutral input input-bordered input-xs mx-1 w-16" />
                 <select name="outputdest" class="select select-bordered select-xs max-w-xs">
                   <option selected value="main">Main</option>
                   <option value="backup">Backup</option>
                 </select>
-                <input type="submit" value="Remap On" class="btn btn-primary btn-xs" />
-              </p>
-            </form>
-            <form method="post" target="_blank" action="/config.php?remapoff">
-              <p>
-                Turn off Remapping:
-                <select name="outputdest" class="select select-bordered select-xs max-w-xs">
-                  <option selected value="main">Main</option>
-                  <option value="backup">Backup</option>
-                </select>
-                <input type="submit" value="Remap Off" class="btn btn-error btn-xs" />
+                <input
+                  type="submit"
+                  value="on"
+                  class="btn btn-primary btn-xs"
+                  onclick="event.preventDefault(); submitForm('remap-form','config.php?remap');" />
+                <input
+                  type="submit"
+                  value="off"
+                  class="btn btn-error btn-xs"
+                  onclick="event.preventDefault(); submitForm('remap-form','config.php?remapoff');" />
               </p>
             </form>
           </div>
@@ -127,9 +127,9 @@
           <div class="mx-6 my-3 text-center">
             <p>
               SRT Accept:
-              <a href="/config.php?srtaccept" target="_blank" class="btn btn-primary btn-xs">ON</a>
+              <a href="/config.php?srtaccept" target="_blank" class="btn btn-primary btn-xs">on</a>
               <a href="/config.php?srtacceptoff" target="_blank" class="btn btn-error btn-xs"
-                >OFF</a
+                >off</a
               >
             </p>
           </div>
