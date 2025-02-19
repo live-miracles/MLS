@@ -78,41 +78,61 @@ schedulelist)
 ##### AUDIO CONFIG ##########
 
 audioconfig)
-	sudo sed -i "s|stream$2__audio__.*|stream$2__audio__ $4 $5 $3 $6|" /usr/local/nginx/scripts/config.txt
+	stream_id=$2
+	audio_type=$3
+	remap_id=$4
+	ch1=$5
+	ch2=$6
+	dest=$7
+	sudo sed -i "s|stream${stream_id}__audio__.*|stream${stream_id}__audio__ $remap $ch1 $ch2 $audio_type $dest|" /usr/local/nginx/scripts/config.txt
 
 	;;
 
 ##### AUDIO PRESET ##########
 
 audiopreset)
-
-	case $2 in
-	allmono)
-		for ((i = 1; i <= STREAM_NUM; i++)); do
+	preset=$2
+	dest=$3
+	case $preset in
+	all_mono)
+		for ((i = 1; i <= 16; i++)); do
 			input_channel=$((i - 1))
-			output_channel=$((i * 2 - 2))
-			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ c${input_channel} c${output_channel} mono main|" /usr/local/nginx/scripts/config.txt
+			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ remap1 c$input_channel c0 mono $dest|" /usr/local/nginx/scripts/config.txt
+		done
+
+		for ((i = 17; i <= STREAM_NUM; i++)); do
+			input_channel=$((i - 17))
+			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ remap2 c$input_channel c0 mono $dest|" /usr/local/nginx/scripts/config.txt
 		done
 		;;
 
-	firststereo)
-		sudo sed -i "s|stream1__audio__.*|stream1__audio__ c0 c1 stereo distribute|" /usr/local/nginx/scripts/config.txt
-		sudo sed -i "s|stream2__audio__.*|stream2__audio__ c2 c3 mono main|" /usr/local/nginx/scripts/config.txt
-		for ((i = 3; i <= STREAM_NUM; i++)); do
+	one_stereo)
+		sudo sed -i "s|stream1__audio__.*|stream1__audio__ c0 c1 stereo $dest|" /usr/local/nginx/scripts/config.txt
+		for ((i = 2; i <= 15; i++)); do
 			input_channel=$i
-			output_channel=$((i * 2))
-			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ c${input_channel} c${output_channel} mono main|" /usr/local/nginx/scripts/config.txt
+			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ remap1 c$input_channel c0 mono $dest|" /usr/local/nginx/scripts/config.txt
+		done
+
+		for ((i = 16; i <= STREAM_NUM; i++)); do
+			input_channel=$((i - 16))
+			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ remap2 c$input_channel c0 mono $dest|" /usr/local/nginx/scripts/config.txt
 		done
 		;;
 
-	allstereo)
-		sudo sed -i "s|stream1__audio__.*|stream1__audio__ c0 c1 stereo main|" /usr/local/nginx/scripts/config.txt
-		for ((i = 2; i <= STREAM_NUM; i++)); do
-			input_channel=$((i * 2 - 2))
-			output_channel=$((i * 2 - 1))
-			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ c${input_channel} c${output_channel} stereo main|" /usr/local/nginx/scripts/config.txt
+	two_stereo)
+		sudo sed -i "s|stream1__audio__.*|stream1__audio__ c0 c1 stereo $dest|" /usr/local/nginx/scripts/config.txt
+		sudo sed -i "s|stream2__audio__.*|stream2__audio__ c2 c3 stereo $dest|" /usr/local/nginx/scripts/config.txt
+		for ((i = 3; i <= 14; i++)); do
+			input_channel=$((i + 1))
+			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ remap1 c$input_channel c0 mono $dest|" /usr/local/nginx/scripts/config.txt
+		done
+
+		for ((i = 15; i <= STREAM_NUM; i++)); do
+			input_channel=$((i - 15))
+			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ remap2 c$input_channel c0 mono $dest|" /usr/local/nginx/scripts/config.txt
 		done
 		;;
+
 	esac
 	;;
 
@@ -227,36 +247,46 @@ srtsend)
 ##### END SRT SEND - START REMAP ##########
 remap)
 
-	chcount=$2
-	out_dest=$3
-	LCK="/usr/local/nginx/scripts/tmp/remap$out_dest.LCK"
+	remap_id=$2
+	dest=$3
+	ch_num=$4
+	remap_type=$5
+	onoff=$6
+	LCK="/usr/local/nginx/scripts/tmp/$remap_id$dest.LCK"
 
 	exec 8>$LCK
 
 	if flock -n -x 8; then
 		if [ -z "$STY" ]; then
-			echo "Remapping $chcount channels of $out_dest audio"
-			exec screen -dm -S remap$out_dest /bin/bash "$0" "$1" "$2" "$3"
+			if [ $onoff == "on" ]; then
+				echo "Remapping $ch_num audio channels of the $remap_id $dest stream"
+				exec screen -dm -S $remap_id$dest /bin/bash "$0" "$1" "$2" "$3" "$4" "$5" "$6"
+			else
+				echo "Remapping of the $remap_id $dest stream is already off"
+				exec bash
+			fi
 		fi
 
-		i=0
+		ch_cnt=$ch_num
 		j=1
-
-		for ((i = 0; i < $chcount; i++)); do
-			while true; do
-				mapping=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 4)
+		for ((i = 0; i < $ch_cnt; i++)); do
+			for (( ; j <= $STREAM_NUM; j++)); do
+				mapping=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 5)
 				if [ $mapping == "mono" ] || [ $mapping == "stereo" ]; then
 					break
 				fi
-				((j = j + 1))
 			done
 
-			c0=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 2)
-			c1=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 3)
-			rtmpapp=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 5)
+			if ((j > $STREAM_NUM)); then
+				break
+			fi
+
+			c0=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 3)
+			c1=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 4)
+			rtmpapp=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 6)
 
 			if [ $rtmpapp == "main_back" ]; then
-				rtmpapp=$out_dest
+				rtmpapp=$dest
 			fi
 
 			#Fix for OBS-ffmpeg remap diff
@@ -266,304 +296,67 @@ remap)
 			#7 -- 1-2,2-3,3-1,4-6,5-7,6-4,7-5
 			#8 -- 1-2,2-3,3-1,4-6,5-7,6-8,7-4,8-5
 			#16 -- 1-3,2-4,3-15,4-16,5-1,6-2,7-7,8-8,9-5,10-6,11-9,12-10,13-11,14-12,15-13,16-14
-			case $2 in
-			7)
-				if [ $c0 == "c0" ]; then
-					c0="c2"
-				elif [ $c0 == "c1" ]; then
-					c0="c0"
-				elif [ $c0 == "c2" ]; then
-					c0="c1"
-				elif [ $c0 == "c3" ]; then
-					c0="c5"
-				elif [ $c0 == "c4" ]; then
-					c0="c6"
-				elif [ $c0 == "c5" ]; then
-					c0="c3"
-				elif [ $c0 == "c6" ]; then
-					c0="c4"
-				fi
+			if [ $remap_type == "obs" ]; then
+				declare -A map7=(["c0"]="c2" ["c1"]="c0" ["c2"]="c1" ["c3"]="c5" ["c4"]="c6" ["c5"]="c3" ["c6"]="c4")
+				declare -A map8=(["c0"]="c2" ["c1"]="c0" ["c2"]="c1" ["c3"]="c6" ["c4"]="c7" ["c5"]="c3" ["c6"]="c4" ["c7"]="c5")
+				declare -A map16=(["c0"]="c4" ["c1"]="c5" ["c2"]="c0" ["c3"]="c1" ["c4"]="c8" ["c5"]="c9" ["c6"]="c6" ["c7"]="c7" ["c8"]="c10" ["c9"]="c11" ["c10"]="c12" ["c11"]="c13" ["c12"]="c14" ["c13"]="c15" ["c14"]="c2" ["c15"]="c3")
 
-				if [ $c1 == "c0" ]; then
-					c1="c2"
-				elif [ $c1 == "c1" ]; then
-					c1="c0"
-				elif [ $c1 == "c2" ]; then
-					c1="c1"
-				elif [ $c1 == "c3" ]; then
-					c1="c5"
-				elif [ $c1 == "c4" ]; then
-					c1="c6"
-				elif [ $c1 == "c5" ]; then
-					c1="c3"
-				elif [ $c1 == "c6" ]; then
-					c1="c4"
-				fi
-				;;
+				case $ch_num in
+				7)
+					c0=${map7[$c0]}
+					c1=${map7[$c1]}
+					;;
 
-			8)
-				if [ $c0 == "c0" ]; then
-					c0="c2"
-				elif [ $c0 == "c1" ]; then
-					c0="c0"
-				elif [ $c0 == "c2" ]; then
-					c0="c1"
-				elif [ $c0 == "c3" ]; then
-					c0="c6"
-				elif [ $c0 == "c4" ]; then
-					c0="c7"
-				elif [ $c0 == "c5" ]; then
-					c0="c3"
-				elif [ $c0 == "c6" ]; then
-					c0="c4"
-				elif [ $c0 == "c7" ]; then
-					c0="c5"
-				fi
+				8)
+					c0=${map8[$c0]}
+					c1=${map8[$c1]}
+					;;
 
-				if [ $c1 == "c0" ]; then
-					c1="c2"
-				elif [ $c1 == "c1" ]; then
-					c1="c0"
-				elif [ $c1 == "c2" ]; then
-					c1="c1"
-				elif [ $c1 == "c3" ]; then
-					c1="c6"
-				elif [ $c1 == "c4" ]; then
-					c1="c7"
-				elif [ $c1 == "c5" ]; then
-					c1="c3"
-				elif [ $c1 == "c6" ]; then
-					c1="c4"
-				elif [ $c1 == "c7" ]; then
-					c1="c5"
-				fi
-				;;
-
-			16)
-				if [ $c0 == "c0" ]; then
-					c0="c4"
-				elif [ $c0 == "c1" ]; then
-					c0="c5"
-				elif [ $c0 == "c2" ]; then
-					c0="c0"
-				elif [ $c0 == "c3" ]; then
-					c0="c1"
-				elif [ $c0 == "c4" ]; then
-					c0="c8"
-				elif [ $c0 == "c5" ]; then
-					c0="c9"
-				#No change for c6 and c7
-				elif [ $c0 == "c8" ]; then
-					c0="c10"
-				elif [ $c0 == "c9" ]; then
-					c0="c11"
-				elif [ $c0 == "c10" ]; then
-					c0="c12"
-				elif [ $c0 == "c11" ]; then
-					c0="c13"
-				elif [ $c0 == "c12" ]; then
-					c0="c14"
-				elif [ $c0 == "c13" ]; then
-					c0="c15"
-				elif [ $c0 == "c14" ]; then
-					c0="c2"
-				elif [ $c0 == "c15" ]; then
-					c0="c3"
-				fi
-
-				if [ $c1 == "c0" ]; then
-					c1="c4"
-				elif [ $c1 == "c1" ]; then
-					c1="c5"
-				elif [ $c1 == "c2" ]; then
-					c1="c0"
-				elif [ $c1 == "c3" ]; then
-					c1="c1"
-				elif [ $c1 == "c4" ]; then
-					c1="c8"
-				elif [ $c1 == "c5" ]; then
-					c1="c9"
-				#No change for c6 and c7
-				elif [ $c1 == "c8" ]; then
-					c1="c10"
-				elif [ $c1 == "c9" ]; then
-					c1="c11"
-				elif [ $c1 == "c10" ]; then
-					c1="c12"
-				elif [ $c1 == "c11" ]; then
-					c1="c13"
-				elif [ $c1 == "c12" ]; then
-					c1="c14"
-				elif [ $c1 == "c13" ]; then
-					c1="c15"
-				elif [ $c1 == "c14" ]; then
-					c1="c2"
-				elif [ $c1 == "c15" ]; then
-					c1="c3"
-				fi
-				;;
-			esac
-			#OBS-ffmpeg remap adjustment complete
+				16)
+					c0=${map16[$c0]}
+					c1=${map16[$c1]}
+					;;
+				esac
+			fi
 
 			if [[ $mapping = "mono" ]]; then
-				stream[i + 1]="-map 0:v -map [a$i] -vcodec copy -acodec aac -ab 128k -f flv -strict -2 rtmp://127.0.0.1/$rtmpapp/stream$j"
 				map[i]="[0:a]pan=mono|c0=$c0,aresample=async=1000[a$i]"
-			elif [[ $mapping = "stereo" ]]; then
-				stream[i + 1]="-map 0:v -map [a$i] -vcodec copy -acodec aac -ac 2 -ab 256k -f flv -strict -2 rtmp://127.0.0.1/$rtmpapp/stream$j"
-				map[i]="[0:a]pan=stereo|c0=$c0|c1=$c1,aresample=async=1000[a$i]"
-				((chcount = chcount - 1))
+				stream[i + 1]="-map 0:v -map [a$i] -vcodec copy -acodec aac -ab 128k -f flv -strict -2 rtmp://127.0.0.1/$rtmpapp/stream$j"
 			else
-				:
+				map[i]="[0:a]pan=stereo|c0=$c0|c1=$c1,aresample=async=1000[a$i]"
+				stream[i + 1]="-map 0:v -map [a$i] -vcodec copy -acodec aac -ac 2 -ab 256k -f flv -strict -2 rtmp://127.0.0.1/$rtmpapp/stream$j"
+				((ch_cnt = ch_cnt - 1))
 			fi
 			((j = j + 1))
 		done
 
-		case $chcount in
-		1)
+		if ((ch_num >= 1 && ch_num <= 16)); then
 			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]}" ${stream[1]}
+				filter_complex=""
+				output_streams=""
+
+				for ((k = 0; k < ch_num; k++)); do
+					filter_complex+="${map[k]};"
+					output_streams+=" ${stream[k + 1]}"
+				done
+
+				# Remove the trailing semicolon from filter_complex
+				filter_complex=${filter_complex%;}
+
+				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$dest/$remap_id -filter_complex "$filter_complex" $output_streams
 				echo "Restarting remapping..."
 				sleep .2
 			done
-			;;
-
-		2)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]}" ${stream[1]} ${stream[2]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		3)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]}" ${stream[1]} ${stream[2]} ${stream[3]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		4)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		5)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		6)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		7)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		8)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]};${map[7]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]} ${stream[8]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		9)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]};${map[7]};${map[8]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]} ${stream[8]} ${stream[9]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		10)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]};${map[7]};${map[8]};${map[9]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]} ${stream[8]} ${stream[9]} ${stream[10]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		11)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]};${map[7]};${map[8]};${map[9]};${map[10]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]} ${stream[8]} ${stream[9]} ${stream[10]} ${stream[11]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		12)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]};${map[7]};${map[8]};${map[9]};${map[10]};${map[11]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]} ${stream[8]} ${stream[9]} ${stream[10]} ${stream[11]} ${stream[12]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		13)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]};${map[7]};${map[8]};${map[9]};${map[10]};${map[11]};${map[12]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]} ${stream[8]} ${stream[9]} ${stream[10]} ${stream[11]} ${stream[12]} ${stream[13]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		14)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]};${map[7]};${map[8]};${map[9]};${map[10]};${map[11]};${map[12]};${map[13]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]} ${stream[8]} ${stream[9]} ${stream[10]} ${stream[11]} ${stream[12]} ${stream[13]} ${stream[14]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		15)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]};${map[7]};${map[8]};${map[9]};${map[10]};${map[11]};${map[12]};${map[13]};${map[14]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]} ${stream[8]} ${stream[9]} ${stream[10]} ${stream[11]} ${stream[12]} ${stream[13]} ${stream[14]} ${stream[15]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		16)
-			while true; do
-				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]};${map[1]};${map[2]};${map[3]};${map[4]};${map[5]};${map[6]};${map[7]};${map[8]};${map[9]};${map[10]};${map[11]};${map[12]};${map[13]};${map[14]};${map[15]}" ${stream[1]} ${stream[2]} ${stream[3]} ${stream[4]} ${stream[5]} ${stream[6]} ${stream[7]} ${stream[8]} ${stream[9]} ${stream[10]} ${stream[11]} ${stream[12]} ${stream[13]} ${stream[14]} ${stream[15]} ${stream[16]}
-				echo "Restarting remapping..."
-				sleep .2
-			done
-			;;
-
-		*)
-			echo "Invalid number of channels"
-			exec bash
-			;;
-		esac
-
+		else
+			echo "Invalid number of channels."
+		fi
 	else
-		case $2 in
-		off)
-			kill $(ps aux | grep "[S]CREEN.* remap$3" | awk '{print $2}')
-			echo "Turning off $3 remapping"
-			;;
-
-		*)
-			echo "$3 audio is already being remapped with $2 channels"
-			;;
-		esac
+		if [ $onoff == "on" ]; then
+			echo "The $remap_id $dest stream is already being remapped."
+		else
+			kill $(ps aux | grep "[S]CREEN.* $remap_id$dest" | awk '{print $2}')
+			echo "Turning off $remap_id $dest stream remapping."
+		fi
 	fi
 	;;
 

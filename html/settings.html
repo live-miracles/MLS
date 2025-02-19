@@ -261,7 +261,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
             <option value="mainbackfail">Main-Backup-Failover</option>
           </select>
         </label>
-        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?streamadd')">Add Config</button>
+        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?streamadd')">Set Config</button>
       </form>
 
       <div class="divider"></div>
@@ -288,9 +288,9 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
 
         <label class="input-label">
           <div class="label pb-0">
-            <span class="label-text text-sm">Mono / Stereo</span>
+            <span class="label-text text-sm">Type</span>
           </div>
-          <select name="audioparam" class="labeled-select w-28">
+          <select name="audio_type" class="labeled-select">
             <option value="mono">Mono</option>
             <option value="stereo">Stereo</option>
             <option value="none">None</option>
@@ -299,25 +299,35 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
 
         <label class="input-label">
           <div class="label pb-0">
+            <span class="label-text text-sm">Remap Id</span>
+          </div>
+          <select name="remap_id" class="labeled-select">
+            <option value="remap1">Remap 1</option>
+            <option value="remap2">Remap 2</option>
+          </select>
+        </label>
+
+        <label class="input-label">
+          <div class="label pb-0">
             <span class="label-text text-sm">Channel 1</span>
           </div>
           <select name="channel_1" class="labeled-select">
-            <option value="c0">Channel 1</option>
-            <option value="c1">Channel 2</option>
-            <option value="c2">Channel 3</option>
-            <option value="c3">Channel 4</option>
-            <option value="c4">Channel 5</option>
-            <option value="c5">Channel 6</option>
-            <option value="c6">Channel 7</option>
-            <option value="c7">Channel 8</option>
-            <option value="c8">Channel 9</option>
-            <option value="c9">Channel 10</option>
-            <option value="c10">Channel 11</option>
-            <option value="c11">Channel 12</option>
-            <option value="c12">Channel 13</option>
-            <option value="c13">Channel 14</option>
-            <option value="c14">Channel 15</option>
-            <option value="c15">Channel 16</option>
+            <option value="c0">Ch 1</option>
+            <option value="c1">Ch 2</option>
+            <option value="c2">Ch 3</option>
+            <option value="c3">Ch 4</option>
+            <option value="c4">Ch 5</option>
+            <option value="c5">Ch 6</option>
+            <option value="c6">Ch 7</option>
+            <option value="c7">Ch 8</option>
+            <option value="c8">Ch 9</option>
+            <option value="c9">Ch 10</option>
+            <option value="c10">Ch 11</option>
+            <option value="c11">Ch 12</option>
+            <option value="c12">Ch 13</option>
+            <option value="c13">Ch 14</option>
+            <option value="c14">Ch 15</option>
+            <option value="c15">Ch 16</option>
           </select>
         </label>
 
@@ -326,47 +336,57 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
             <span class="label-text text-sm">Channel 2</span>
           </div>
           <select name="channel_2" class="labeled-select">
-            <option value="c0">Channel 1</option>
-            <option value="c1">Channel 2</option>
-            <option value="c2">Channel 3</option>
-            <option value="c3">Channel 4</option>
-            <option value="c4">Channel 5</option>
-            <option value="c5">Channel 6</option>
-            <option value="c6">Channel 7</option>
-            <option value="c7">Channel 8</option>
-            <option value="c8">Channel 9</option>
-            <option value="c9">Channel 10</option>
-            <option value="c10">Channel 11</option>
-            <option value="c11">Channel 12</option>
-            <option value="c12">Channel 13</option>
-            <option value="c13">Channel 14</option>
-            <option value="c14">Channel 15</option>
-            <option value="c15">Channel 16</option>
+            <option value="c0">Ch 1</option>
+            <option value="c1">Ch 2</option>
+            <option value="c2">Ch 3</option>
+            <option value="c3">Ch 4</option>
+            <option value="c4">Ch 5</option>
+            <option value="c5">Ch 6</option>
+            <option value="c6">Ch 7</option>
+            <option value="c7">Ch 8</option>
+            <option value="c8">Ch 9</option>
+            <option value="c9">Ch 10</option>
+            <option value="c10">Ch 11</option>
+            <option value="c11">Ch 12</option>
+            <option value="c12">Ch 13</option>
+            <option value="c13">Ch 14</option>
+            <option value="c14">Ch 15</option>
+            <option value="c15">Ch 16</option>
           </select>
         </label>
 
         <label class="input-label">
           <div class="label pb-0">
-            <span class="label-text text-sm">Main / Distribute</span>
+            <span class="label-text text-sm">Destination</span>
           </div>
-          <select name="rtmpparam" class="labeled-select">
-            <option value="main_back">Main-Backup</option>
+          <select name="dest" class="labeled-select">
             <option value="distribute">Distribute</option>
+            <option value="main_back">Main-Backup</option>
           </select>
         </label>
 
-        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?audioadd')">Add Config</button>
+        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?audioadd')">Set Config</button>
       </form>
 
       <form class="mt-8">
         <label class="input-label">
           <div class="label pb-0">
+            <span class="label-text text-sm">Destination</span>
+          </div>
+          <select name="dest" class="labeled-select">
+            <option value="distribute">Distribute</option>
+            <option value="main_back">Main-Backup</option>
+          </select>
+        </label>
+
+        <label class="input-label">
+          <div class="label pb-0">
             <span class="label-text text-sm">Audio Preset</span>
           </div>
           <select name="audiopreset" class="labeled-select">
-            <option value="allmono">All Mono</option>
-            <option value="firststereo" selected>First Stereo</option>
-            <option value="allstereo">All Stereo</option>
+            <option value="all_mono">All Mono</option>
+            <option value="one_stereo" selected>One Stereo</option>
+            <option value="two_stereo" selected>Two Stereo</option>
           </select>
         </label>
 

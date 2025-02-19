@@ -35,27 +35,30 @@ if (isset($_GET['streamadd'])) {
 }
 
 if (isset($_GET['audioadd'])) {
-    $audioparam = $_POST['audioparam'];
     $stream_id = $_POST['stream_id'];
+    $audio_type = $_POST['audio_type'];
+    $remap_id = $_POST['remap_id'];
     $channel1 = $_POST['channel_1'];
     $channel2 = $_POST['channel_2'];
-    $rtmpparam = $_POST['rtmpparam'];
+    $dest = $_POST['dest'];
     echo "<h2>You entered the following information:</h2>";
-    echo "<b>Channel Layout: </b> $audioparam";
     echo "<br><b>Stream Id: </b> $stream_id";
+    echo "<b>Channel Layout: </b> $audio_type";
+    echo "<br><b>Remap Id: </b> $remap_id";
     echo "<br><b>Channel 1: </b> $channel1";
     echo "<br><b>Channel 2: </b> $channel2";
-    echo "<br><b>Destination: </b> $rtmpparam";
+    echo "<br><b>Destination: </b> $dest";
     echo "<br>";
-    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh audioconfig \"$stream_id\" \"$audioparam\" \"$channel1\" \"$channel2\" $rtmpparam");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh audioconfig \"$stream_id\" \"$audio_type\" \"$remap_id\" \"$channel1\" \"$channel2\" $dest");
     echo $output;
 }
 
 if (isset($_GET['audiopreset'])) {
     $audiopreset = $_POST['audiopreset'];
-    echo "<b>You loaded </b> $audiopreset";
+    $dest = $_POST['dest'];
+    echo "You loaded <b>$audiopreset</b> preset with <b>$dest</b> destination";
     echo "<br>";
-    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh audiopreset $audiopreset");
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh audiopreset $audiopreset $dest");
     echo $output;
 }
 
@@ -90,15 +93,18 @@ if (isset($_GET['audiolist'])) {
 }
 
 if (isset($_GET['remap'])) {
-    $channel = $_POST['channel_no'];
+    $remap_id = $_POST['remap_id'];
     $outputdest = $_POST['outputdest'];
-    $output = exec("sudo /bin/bash $scriptPath/config.sh remap \"$channel\" $outputdest");
+    $ch_num = $_POST['ch_num'];
+    $remap_type = $_POST['remap_type'];
+    $output = exec("sudo /bin/bash $scriptPath/config.sh remap $remap_id $outputdest \"$ch_num\" $remap_type on");
     echo $output;
 }
 
 if (isset($_GET['remapoff'])) {
+    $remap_id = $_POST['remap_id'];
     $outputdest = $_POST['outputdest'];
-    $output = exec("sudo /bin/bash $scriptPath/config.sh remap off $outputdest");
+    $output = exec("sudo /bin/bash $scriptPath/config.sh remap $remap_id $outputdest 0 none off");
     echo $output;
 }
 

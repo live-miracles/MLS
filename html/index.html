@@ -88,19 +88,26 @@
               <button type="button" class="btn btn-primary btn-xs" onclick="submitForm(event,'config.php?remap')">on</button>
               <button type="button" class="btn btn-error btn-xs" onclick="submitForm(event,'config.php?remapoff')">off</button>
               <select name="remap_id" class="select select-bordered select-xs max-w-xs">
+                <option disabled value="">Remap Id</option>
                 <option selected value="remap1">Remap 1</option>
                 <option value="remap2">Remap 2</option>
               </select>
               <select name="outputdest" class="select select-bordered select-xs max-w-xs">
+                <option disabled value="">Destination</option>
                 <option selected value="main">Main</option>
                 <option value="backup">Backup</option>
               </select>
+              <select name="remap_type" class="select select-bordered select-xs max-w-xs">
+                <option disabled value="">Remap Type</option>
+                <option selected value="obs">OBS</option>
+                <option value="none">None</option>
+              </select>
               <input
                 type="number"
-                name="channel_no"
+                name="ch_num"
                 placeholder="Ch Number"
                 value="16"
-                min="2"
+                min="1"
                 max="16"
                 class="input-neutral input input-xs input-bordered mx-1 w-24" />
             </form>
