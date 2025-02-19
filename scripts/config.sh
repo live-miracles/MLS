@@ -1,5 +1,7 @@
 #!/bin/bash
 
+STREAM_NUM=25
+
 case $1 in
 # ===== Name Config =====
 nameconfig)

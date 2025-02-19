@@ -1,7 +1,7 @@
 <?php
 
-$STREAM_NUM = $_ENV['STREAM_NUM'];
-$OUT_NUM = $_ENV['OUT_NUM'];
+$STREAM_NUM = 25;
+$OUT_NUM = 95;
 
 $streamno = $_GET['streamno'];
 $action = $_GET['action'];

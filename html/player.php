@@ -1,6 +1,6 @@
 <?php
-$STREAM_NUM = $_ENV['STREAM_NUM'];
-$OUT_NUM = $_ENV['OUT_NUM'];
+
+$STREAM_NUM = 25;
 
 $streamno = $_GET['streamname'];
 $streamapp = $_GET['appname'];

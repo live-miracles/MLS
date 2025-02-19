@@ -1,11 +1,6 @@
 #!/bin/bash
 
-source scripts/set-env.sh
-
-if [[ -z ${STREAM_NUM+x} ]]; then
-	echo "Error: STREAM_NUM is not defined. Please switch to BASH if you're using ZSH."
-	exit 1
-fi
+STREAM_NUM=25
 
 #Configure Timezone For Recording Timestamps
 sudo dpkg-reconfigure tzdata
