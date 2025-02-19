@@ -86,7 +86,7 @@ audioconfig)
 	ch1=$5
 	ch2=$6
 	dest=$7
-	sudo sed -i "s|stream${stream_id}__audio__.*|stream${stream_id}__audio__ $remap $ch1 $ch2 $audio_type $dest|" /usr/local/nginx/scripts/config.txt
+	sudo sed -i "s|stream${stream_id}__audio__.*|stream${stream_id}__audio__ $remap_id $ch1 $ch2 $audio_type $dest|" /usr/local/nginx/scripts/config.txt
 
 	;;
 
