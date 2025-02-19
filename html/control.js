@@ -22,14 +22,12 @@ function renderStreamControls() {
                 <div class="badge badge-xs badge-outline" id="recording-status${i}"></div>
                 <button
                     class="btn btn-xs btn-primary"
-                    onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=98&state=on')"
-                    target="_blank">
+                    onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=98&state=on')">
                     on
                 </button>
                 <button
                     class="btn btn-xs btn-error"
                     onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=98&state=off')"
-                    target="_blank">
                     off
                 </button>
                 Record
@@ -51,7 +49,7 @@ function renderStreamControls() {
                 <span class="badge badge-xs badge-outline" id="backup-status${i}"></span>
                 <button
                     onclick="executePhp('/control.php?streamno=${i}&action=back&actnumber=&state=turnon')"
-                    class="btn btn-xs btn-primary" target="_blank">on</button>
+                    class="btn btn-xs btn-primary">on</button>
                     Backup Live stream
             </div>
 

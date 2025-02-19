@@ -280,7 +280,7 @@ function toggleLogs() {
 // CONSTANTS
 const STREAM_NUM = 25;
 const OUT_NUM = 95;
-const LOG_SIZE = 1000;
+const LOG_SIZE = 200;
 
 // This will be fetched from a file
 let streamNames = null;

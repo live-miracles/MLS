@@ -153,7 +153,7 @@ destlist)
 ##### END DESTINATION LIST - START AUDIO LIST ##########
 audiolist)
 	startline=$(grep -n '***AUDIO CONFIG***' /usr/local/nginx/scripts/config.txt | cut -d: -f 1)
-	endline=$(grep -n '***NEXT CONFIG***' /usr/local/nginx/scripts/config.txt | cut -d: -f 1)
+	endline=$(grep -n '***NAME CONFIG***' /usr/local/nginx/scripts/config.txt | cut -d: -f 1)
 	rangeoflines=$startline','$endline'p'
 	sed -n $rangeoflines /usr/local/nginx/scripts/config.txt
 

@@ -74,7 +74,7 @@
         Primary - <code>rtmp://${address}/main/stream1</code><br />
         Backup - <code>rtmp://${address}/backup/stream1</code><br />
         Local (between streams) - <code>rtmp://127.0.0.1/distribute/stream1</code><br />
-        Multichannel Audio - <code>rtmp://${address}/main/stream1080</code>
+        Multichannel Main Audio - <code>rtmp://${address}/main/remap1</code> or <code>remap2</code>
       </p>
     </section>
 
@@ -85,14 +85,15 @@
           <div class="mx-6 my-3 text-center">
             <form method="post" id="remap-form">
               <p>
-                Remap Audio Channels:
+                Multichannel Remap 1:
                 <input
                   type="number"
                   name="channel_no"
-                  placeholder="16"
+                  placeholder="Ch Number"
+                  value="16"
                   min="2"
                   max="16"
-                  class="input-neutral input input-bordered input-xs mx-1 w-16" />
+                  class="input-neutral input input-bordered input-xs mx-1 w-24" />
                 <select name="outputdest" class="select select-bordered select-xs max-w-xs">
                   <option selected value="main">Main</option>
                   <option value="backup">Backup</option>

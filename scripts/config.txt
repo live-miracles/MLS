@@ -2454,33 +2454,33 @@ __stream24__config__ none 720p nofailover
 __stream25__config__ none 720p nofailover
 
 ***AUDIO CONFIG***
-__stream1__audio__ c0 c1 stereo distribute
-__stream2__audio__ c2 c3 mono main
-__stream3__audio__ c3 c5 mono main
-__stream4__audio__ c4 c7 mono main
-__stream5__audio__ c5 c9 mono main
-__stream6__audio__ c6 c11 mono main
-__stream7__audio__ c7 c13 mono main
-__stream8__audio__ c8 c15 mono main
-__stream9__audio__ c9 c17 mono main
-__stream10__audio__ c10 c19 mono main
-__stream11__audio__ c11 c21 mono main
-__stream12__audio__ c12 c23 mono main
-__stream13__audio__ c13 c25 mono main
-__stream14__audio__ c14 c27 mono main
-__stream15__audio__ c15 c29 mono main
-__stream16__audio__ c16 c31 mono main
-__stream17__audio__ c17 c33 mono main
-__stream18__audio__ c18 c35 mono main
-__stream19__audio__ c19 c37 mono main
-__stream20__audio__ c20 c39 mono main
-__stream21__audio__ c21 c41 mono main
-__stream22__audio__ c22 c43 mono main
-__stream23__audio__ c23 c45 mono main
-__stream24__audio__ c24 c47 mono main
-__stream25__audio__ c25 c49 mono main
+__stream1__audio__ remap1 c0 c1 stereo distribute
+__stream2__audio__ remap1 c2 c3 stereo distribute
+__stream3__audio__ remap1 c4 c0 mono distribute
+__stream4__audio__ remap1 c5 c0 mono distribute
+__stream5__audio__ remap1 c6 c0 mono distribute
+__stream6__audio__ remap1 c7 c0 mono distribute
+__stream7__audio__ remap1 c8 c0 mono distribute
+__stream8__audio__ remap1 c9 c0 mono distribute
+__stream9__audio__ remap1 c10 c0 mono distribute
+__stream10__audio__ remap1 c11 c0 mono distribute
+__stream11__audio__ remap1 c12 c0 mono distribute
+__stream12__audio__ remap1 c13 c0 mono distribute
+__stream13__audio__ remap1 c14 c0 mono distribute
+__stream14__audio__ remap1 c15 c0 mono distribute
+__stream15__audio__ remap2 c1 c0 mono distribute
+__stream16__audio__ remap2 c2 c0 mono distribute
+__stream17__audio__ remap2 c3 c0 mono distribute
+__stream18__audio__ remap2 c4 c0 mono distribute
+__stream19__audio__ remap2 c5 c0 mono distribute
+__stream20__audio__ remap2 c6 c0 mono distribute
+__stream21__audio__ remap2 c7 c0 mono distribute
+__stream22__audio__ remap2 c8 c0 mono distribute
+__stream23__audio__ remap2 c9 c0 mono distribute
+__stream24__audio__ remap2 c10 c0 mono distribute
+__stream25__audio__ remap2 c11 c0 mono distribute
 
 ***NAME CONFIG***
 __stream__name__ English,.,.,.,.,.,.,.,.,.,.,,,,,,,,,,,,,,,
 
-***NEXT CONFIG***
+***LAST CONFIG***
