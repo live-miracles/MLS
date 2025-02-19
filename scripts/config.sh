@@ -109,7 +109,7 @@ audiopreset)
 		;;
 
 	one_stereo)
-		sudo sed -i "s|stream1__audio__.*|stream1__audio__ c0 c1 stereo $dest|" /usr/local/nginx/scripts/config.txt
+		sudo sed -i "s|stream1__audio__.*|stream1__audio__ remap1 c0 c1 stereo $dest|" /usr/local/nginx/scripts/config.txt
 		for ((i = 2; i <= 15; i++)); do
 			input_channel=$i
 			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ remap1 c$input_channel c0 mono $dest|" /usr/local/nginx/scripts/config.txt
@@ -122,8 +122,8 @@ audiopreset)
 		;;
 
 	two_stereo)
-		sudo sed -i "s|stream1__audio__.*|stream1__audio__ c0 c1 stereo $dest|" /usr/local/nginx/scripts/config.txt
-		sudo sed -i "s|stream2__audio__.*|stream2__audio__ c2 c3 stereo $dest|" /usr/local/nginx/scripts/config.txt
+		sudo sed -i "s|stream1__audio__.*|stream1__audio__ remap1 c0 c1 stereo $dest|" /usr/local/nginx/scripts/config.txt
+		sudo sed -i "s|stream2__audio__.*|stream2__audio__ remap1 c2 c3 stereo $dest|" /usr/local/nginx/scripts/config.txt
 		for ((i = 3; i <= 14; i++)); do
 			input_channel=$((i + 1))
 			sudo sed -i "s|stream${i}__audio__.*|stream${i}__audio__ remap1 c$input_channel c0 mono $dest|" /usr/local/nginx/scripts/config.txt
