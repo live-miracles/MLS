@@ -28,8 +28,7 @@
     </div>
 
     <div
-      id="logs"
-      class="fixed bottom-10 right-1 z-40 mx-auto h-[250px] w-[600px] overflow-y-scroll rounded-lg border border-accent bg-base-300 p-1 opacity-80"></div>
+      class="logs fixed bottom-10 right-1 z-40 mx-auto h-[250px] w-[600px] overflow-y-scroll rounded-lg border border-accent bg-base-300 p-1 opacity-80"></div>
     <div class="fixed bottom-1 right-1 z-50 flex items-center rounded bg-neutral px-1">
       <label class="badge badge-accent badge-outline m-1 min-w-28 rounded py-3">
         CPU: <span id="cpu-info" class="ml-1 text-neutral-content"></span>
@@ -47,7 +46,7 @@
         Up: <span id="uplink-info" class="ml-1 text-neutral-content"></span>
       </label>
       <label class="swap m-1">
-        <input id="show-logs" type="checkbox" checked class="show-toggle url-param" onclick="toggleLogs()" />
+        <input id="show-logs" type="checkbox" checked class="show-toggle url-param" />
         <div class="badge swap-on badge-accent rounded py-3">logs</div>
         <div class="badge swap-off badge-accent badge-outline rounded py-3">logs</div>
       </label>
@@ -116,7 +115,7 @@
           <div class="label pb-0">
             <span class="label-text text-sm">Name</span>
           </div>
-          <input id="outName" type="text" name="name_id" placeholder="English_YT..." class="input input-bordered input-xs w-44" />
+          <input id="outName" type="text" name="name_id" placeholder="English_YT..." class="input input-xs input-bordered w-44" />
         </label>
 
         <label class="input-label">
@@ -163,7 +162,7 @@
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Key or Custom URL</span>
           </div>
-          <input type="text" name="stream_key" placeholder="" id="stream-key" class="input input-bordered input-xs w-[40rem]" />
+          <input type="text" name="stream_key" placeholder="" id="stream-key" class="input input-xs input-bordered w-[40rem]" />
         </label>
 
         <label class="hidden">
@@ -393,7 +392,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Name</span>
           </div>
-          <input type="text" name="name" class="input input-bordered input-xs w-44" placeholder="English_YT..." />
+          <input type="text" name="name" class="input input-xs input-bordered w-44" placeholder="English_YT..." />
         </label>
 
         <label class="input-label">
@@ -440,14 +439,14 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Video Min</span>
           </div>
-          <input type="text" name="startmin" value="0" class="input input-bordered input-xs w-20" />
+          <input type="text" name="startmin" value="0" class="input input-xs input-bordered w-20" />
         </label>
 
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Video Sec</span>
           </div>
-          <input type="text" name="startsec" value="0" class="input input-bordered input-xs w-20" />
+          <input type="text" name="startsec" value="0" class="input input-xs input-bordered w-20" />
         </label>
         <br />
 
@@ -455,28 +454,28 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Month</span>
           </div>
-          <input type="text" name="month" class="input input-bordered input-xs w-12" placeholder="1-12" value="*" />
+          <input type="text" name="month" class="input input-xs input-bordered w-12" placeholder="1-12" value="*" />
         </label>
 
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Day</span>
           </div>
-          <input type="text" name="monthday" class="input input-bordered input-xs w-12" placeholder="1-31" value="*" />
+          <input type="text" name="monthday" class="input input-xs input-bordered w-12" placeholder="1-31" value="*" />
         </label>
 
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Hour</span>
           </div>
-          <input type="text" name="hour" class="input input-bordered input-xs w-12" placeholder="0-23" />
+          <input type="text" name="hour" class="input input-xs input-bordered w-12" placeholder="0-23" />
         </label>
 
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Min</span>
           </div>
-          <input type="text" name="minute" class="input input-bordered input-xs w-12" placeholder="0-59" />
+          <input type="text" name="minute" class="input input-xs input-bordered w-12" placeholder="0-59" />
         </label>
 
         <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?addschedule');">Add Schedule</button>
@@ -487,7 +486,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Job Name</span>
           </div>
-          <input type="text" name="removename" class="input input-bordered input-xs w-36" placeholder="English_YT..." />
+          <input type="text" name="removename" class="input input-xs input-bordered w-36" placeholder="English_YT..." />
         </label>
 
         <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?removeschedule')">Remove Schedule</button>
@@ -514,7 +513,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <div class="label pb-0">
             <span class="label-text text-sm">Video ID</span>
           </div>
-          <input type="text" name="video_id" class="input input-bordered input-xs w-96" />
+          <input type="text" name="video_id" class="input input-xs input-bordered w-96" />
         </label>
 
         <button

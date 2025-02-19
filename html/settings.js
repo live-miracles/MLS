@@ -154,6 +154,16 @@ async function resetStreamOutputs() {
 }
 
 window.onload = async function () {
+    setInputElements();
+    document
+        .querySelectorAll('.url-param')
+        .forEach((elem) => elem.addEventListener('change', updateUrlParams));
+
+    showElements();
+    document
+        .querySelectorAll('.show-toggle')
+        .forEach((elem) => elem.addEventListener('click', showElements));
+
     await updateConfigs();
     renderOutputs();
     renderStreamSelectors();
