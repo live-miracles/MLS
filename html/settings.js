@@ -43,7 +43,12 @@ function isValidUrl(str) {
 function setOutBtnClick(event) {
     const serverUrlInput = document.getElementById('server-url');
     const streamKeyInput = document.getElementById('stream-key');
-    const rtmpUrl = serverUrlInput.value + streamKeyInput.value;
+    let rtmpUrl = serverUrlInput.value + streamKeyInput.value;
+    if (serverUrlInput.options[serverUrlInput.selectedIndex].text === 'Instagram') {
+        const queryString = streamKeyInput.value.split('?')[1];
+        const params = new URLSearchParams(queryString);
+        rtmpUrl = rtmpUrl.replaceAll('${s_prp}', params.get('s_prp'));
+    }
     const isRtmpUrlValid = rtmpUrl === '' || isValidUrl(rtmpUrl);
     if (isRtmpUrlValid) {
         document.getElementById('rtmp-url').value = rtmpUrl;
