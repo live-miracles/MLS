@@ -333,12 +333,12 @@ remap)
 			((j = j + 1))
 		done
 
-		if ((ch_num >= 1 && ch_num <= 16)); then
+		if ((ch_cnt >= 1 && ch_num <= 16)); then
 			while true; do
 				filter_complex=""
 				output_streams=""
 
-				for ((k = 0; k < ch_num; k++)); do
+				for ((k = 0; k < ch_cnt; k++)); do
 					filter_complex+="${map[k]};"
 					output_streams+=" ${stream[k + 1]}"
 				done
