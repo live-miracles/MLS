@@ -40,7 +40,7 @@ function isValidUrl(str) {
     return pattern.test(str);
 }
 
-function setOutBtnClick() {
+function setOutBtnClick(event) {
     const serverUrlInput = document.getElementById('server-url');
     const streamKeyInput = document.getElementById('stream-key');
     const rtmpUrl = serverUrlInput.value + streamKeyInput.value;
@@ -63,7 +63,7 @@ function setOutBtnClick() {
     }
 
     if (isRtmpUrlValid & isOutNameValid) {
-        submitForm('outForm', 'config.php?destadd');
+        submitForm(event, 'config.php?destadd');
     }
 }
 

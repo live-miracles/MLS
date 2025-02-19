@@ -53,13 +53,13 @@ function renderStreamControls() {
                     Backup Live stream
             </div>
 
-            <form method="post" id="videoInputForm${i}" class="my-1">
+            <form class="my-1">
                 <span class="badge badge-xs badge-outline" id="video-status${i}"></span>
-                <input
-                    type="submit"
+                <button
+                    type="button"
                     class="btn btn-xs btn-primary"
-                    style="display: inline" value="on"
-                    onclick="event.preventDefault(); submitForm('videoInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
+                    style="display: inline"
+                    onclick="submitForm(event,'control.php?streamno=${i}&action=video&actnumber=&state=turnon');">on</button>
                 Local
                 <select name="video_no" class="select select-bordered select-xs max-w-xs">
                     <option selected value="video">Video</option>
@@ -68,13 +68,13 @@ function renderStreamControls() {
                 <input type="text" style="display: inline" name="startsec" size="1" value="0" class="input input-bordered input-neutral input-xs w-10"/>s
             </form>
 
-            <form method="post" id="holdingInputForm${i}" class="my-1">
+            <form class="my-1">
                 <span class="badge badge-xs badge-outline" id="holding-status${i}"></span>
-                <input
-                    type="submit"
+                <button
+                    type="button"
                     class="btn btn-xs btn-primary"
-                    style="display: inline" value="on"
-                    onclick="event.preventDefault(); submitForm('holdingInputForm${i}','control.php?streamno=${i}&action=video&actnumber=&state=turnon');" />
+                    style="display: inline"
+                    onclick="submitForm(event,'control.php?streamno=${i}&action=video&actnumber=&state=turnon');">on</button>
                 Local
                 <select name="video_no" class="select select-bordered select-xs max-w-xs">
                     <option selected value="holding">Holding</option>

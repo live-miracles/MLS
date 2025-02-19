@@ -16,8 +16,8 @@ function clearAndAddChooseOption(selector) {
 }
 
 // AJAX request function
-async function submitForm(formId, phpUrl, show = true) {
-    const form = document.getElementById(formId);
+async function submitForm(event, phpUrl, show = true) {
+    const form = event.target.closest('form');
     if (form.checkValidity()) {
         const formData = new FormData(form);
         executePhp(phpUrl, {}, formData, show);
@@ -251,14 +251,19 @@ function hideBadConnectionAlert() {
 }
 
 async function updateConfigs() {
+    statsJson = await fetchStats();
+    processes = await fetchProcesses();
+
     const config = await fetchConfigFile();
     streamNames = config.names;
     streamOutsConfig = config.outs;
-    statsJson = await fetchStats();
-    processes = await fetchProcesses();
 }
 
 async function updateSystemStats() {
+    const address = window.location.hostname;
+    if (address === 'localhost') {
+        return;
+    }
     let stats = await fetchSystemStats();
     document.getElementById('cpu-info').innerHTML = stats.cpu;
     document.getElementById('ram-info').innerHTML = stats.ram;
@@ -283,7 +288,9 @@ const OUT_NUM = 95;
 const LOG_SIZE = 200;
 
 // This will be fetched from a file
-let streamNames = null;
-let streamOutsConfig = null;
+let streamNames = new Array(STREAM_NUM + 1).fill('.');
+let streamOutsConfig = Array.from({ length: STREAM_NUM + 1 }, () =>
+    Array.from({ length: OUT_NUM + 1 }, () => ({})),
+);
 let statsJson = null;
 let processes = null;

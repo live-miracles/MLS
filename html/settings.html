@@ -106,12 +106,12 @@
             <li>
               If a login/password has to be added, enter the details in the format:
               <br />
-              <code> rtmp://server/streamkey-+-+flashver=FMLE/3.020(compatible;20FMSc/1.0)-+-+pubUser=login-+-+pubPasswd=password </code>
+              <code>rtmp://server/streamkey-+-+flashver=FMLE/3.020(compatible;20FMSc/1.0)-+-+pubUser=login-+-+pubPasswd=password</code>
             </li>
           </ul>
         </div>
       </div>
-      <form method="post" id="outForm">
+      <form>
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Name</span>
@@ -182,7 +182,7 @@
 
         <br />
 
-        <input type="submit" class="btn btn-accent btn-sm my-2" value="Set Output" onclick="event.preventDefault(); setOutBtnClick();" />
+        <button type="button" class="btn btn-accent btn-sm my-2" onclick="setOutBtnClick(event)">Set Output</button>
       </form>
 
       <div class="mt-8">
@@ -222,7 +222,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           </p>
         </div>
       </div>
-      <form method="post" id="addConfigForm">
+      <form>
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Id</span>
@@ -262,11 +262,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
             <option value="mainbackfail">Main-Backup-Failover</option>
           </select>
         </label>
-        <input
-          type="submit"
-          class="btn btn-accent btn-sm my-2"
-          value="Add Config"
-          onclick="event.preventDefault(); submitForm('addConfigForm','config.php?streamadd');" />
+        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?streamadd')">Add Config</button>
       </form>
 
       <div class="divider"></div>
@@ -283,7 +279,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           </p>
         </div>
       </div>
-      <form method="post" id="audio-config-form">
+      <form>
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Id</span>
@@ -360,14 +356,10 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           </select>
         </label>
 
-        <input
-          type="submit"
-          value="Add Config"
-          class="btn btn-accent btn-sm my-2"
-          onclick="event.preventDefault(); submitForm('audio-config-form','config.php?audioadd');" />
+        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?audioadd')">Add Config</button>
       </form>
 
-      <form method="post" id="audio-preset-form" class="mt-8">
+      <form class="mt-8">
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Audio Preset</span>
@@ -379,11 +371,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           </select>
         </label>
 
-        <input
-          type="submit"
-          value="Load Preset"
-          class="btn btn-accent btn-sm my-2"
-          onclick="event.preventDefault(); submitForm('audio-preset-form','config.php?audiopreset');" />
+        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?audiopreset')">Load Preset</button>
       </form>
 
       <div class="divider"></div>
@@ -400,7 +388,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           </p>
         </div>
       </div>
-      <form method="post" id="add-schedule-form">
+      <form>
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Name</span>
@@ -491,14 +479,10 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <input type="text" name="minute" class="input input-bordered input-xs w-12" placeholder="0-59" />
         </label>
 
-        <input
-          type="submit"
-          class="btn btn-accent btn-sm my-2"
-          value="Add Schedule"
-          onclick="event.preventDefault(); submitForm('add-schedule-form','config.php?addschedule');" />
+        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?addschedule');">Add Schedule</button>
       </form>
 
-      <form method="post" id="remove-schedule-form" class="mt-8">
+      <form class="mt-8">
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Job Name</span>
@@ -506,11 +490,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <input type="text" name="removename" class="input input-bordered input-xs w-36" placeholder="English_YT..." />
         </label>
 
-        <input
-          type="submit"
-          class="btn btn-accent btn-sm my-2"
-          value="Remove Schedule"
-          onclick="event.preventDefault(); submitForm('remove-schedule-form','config.php?removeschedule');" />
+        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?removeschedule')">Remove Schedule</button>
       </form>
 
       <div class="divider"></div>
@@ -522,7 +502,7 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
         </div>
       </div>
 
-      <form method="post" id="uploadVideo">
+      <form>
         <label class="input-label">
           <div class="label pb-0">
             <span class="label-text text-sm">Stream Id</span>
@@ -537,13 +517,12 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
           <input type="text" name="video_id" class="input input-bordered input-xs w-96" />
         </label>
 
-        <input
-          type="submit"
+        <button
+          type="button"
           class="btn btn-accent btn-sm my-2"
-          value="Upload"
-          onclick="event.preventDefault();
-            showResponse('Uploading started, please wait...');
-            submitForm('uploadVideo','config.php?upload-video');" />
+          onclick="showResponse('Uploading started, please wait...');submitForm(event, 'config.php?upload-video');">
+          Upload
+        </button>
       </form>
 
       <div class="divider"></div>

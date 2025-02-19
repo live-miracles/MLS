@@ -83,7 +83,7 @@
         <summary class="collapse-title text-center"><b>More</b></summary>
         <div class="collapse-content">
           <div class="mx-6 my-3 text-center">
-            <form method="post" id="remap-form">
+            <form>
               <p>
                 Multichannel Remap 1:
                 <input
@@ -98,16 +98,8 @@
                   <option selected value="main">Main</option>
                   <option value="backup">Backup</option>
                 </select>
-                <input
-                  type="submit"
-                  value="on"
-                  class="btn btn-primary btn-xs"
-                  onclick="event.preventDefault(); submitForm('remap-form','config.php?remap');" />
-                <input
-                  type="submit"
-                  value="off"
-                  class="btn btn-error btn-xs"
-                  onclick="event.preventDefault(); submitForm('remap-form','config.php?remapoff');" />
+                <button type="button" class="btn btn-primary btn-xs" onclick="submitForm(event,'config.php?remap')">on</button>
+                <button type="button" class="btn btn-error btn-xs" onclick="submitForm(event,'config.php?remapoff')">off</button>
               </p>
             </form>
           </div>
