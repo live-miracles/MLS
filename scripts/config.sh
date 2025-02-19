@@ -227,28 +227,23 @@ srtsend)
 ##### END SRT SEND - START REMAP ##########
 remap)
 
-	LCK="/usr/local/nginx/scripts/tmp/remap$3.LCK"
+	chcount=$2
+	out_dest=$3
+	LCK="/usr/local/nginx/scripts/tmp/remap$out_dest.LCK"
 
 	exec 8>$LCK
 
 	if flock -n -x 8; then
-
-		chcount=$2
 		if [ -z "$STY" ]; then
-			if [ $chcount == "6" ]; then
-				#echo "6 channel remapping is not possible due to OBS issues. Set OBS audio to 7.0 and remap in NGINX with 7. Stream 1-6 will have channels 1-6. Stream 7 will have no audio."
-				chcount=1000
-			else
-				echo "Remapping $2 channels of $3 audio"
-				exec screen -dm -S remap$3 /bin/bash "$0" "$1" "$2" "$3"
-			fi
+			echo "Remapping $chcount channels of $out_dest audio"
+			exec screen -dm -S remap$out_dest /bin/bash "$0" "$1" "$2" "$3"
 		fi
 
 		i=0
 		j=1
 
 		for ((i = 0; i < $chcount; i++)); do
-			while true; do #Keep checking till mapping is not none
+			while true; do
 				mapping=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 4)
 				if [ $mapping == "mono" ] || [ $mapping == "stereo" ]; then
 					break
@@ -259,9 +254,156 @@ remap)
 			c0=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 2)
 			c1=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 3)
 			rtmpapp=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 5)
+
 			if [ $rtmpapp == "main_back" ]; then
-				rtmpapp=$3
+				rtmpapp=$out_dest
 			fi
+
+			#Fix for OBS-ffmpeg remap diff
+			#To generate multi-channel files with ffmpeg for OBS use, upto 5.0 is safe. Beyond that there are mapping issues
+			#OBS-ffmpeg mapping match for 3,4,5,9,10,11,12,13,14. 6 seems to have lfe issue on channel 4 in OBS
+			#7,8 and 16 need to be remapped as below
+			#7 -- 1-2,2-3,3-1,4-6,5-7,6-4,7-5
+			#8 -- 1-2,2-3,3-1,4-6,5-7,6-8,7-4,8-5
+			#16 -- 1-3,2-4,3-15,4-16,5-1,6-2,7-7,8-8,9-5,10-6,11-9,12-10,13-11,14-12,15-13,16-14
+			case $2 in
+			7)
+				if [ $c0 == "c0" ]; then
+					c0="c2"
+				elif [ $c0 == "c1" ]; then
+					c0="c0"
+				elif [ $c0 == "c2" ]; then
+					c0="c1"
+				elif [ $c0 == "c3" ]; then
+					c0="c5"
+				elif [ $c0 == "c4" ]; then
+					c0="c6"
+				elif [ $c0 == "c5" ]; then
+					c0="c3"
+				elif [ $c0 == "c6" ]; then
+					c0="c4"
+				fi
+
+				if [ $c1 == "c0" ]; then
+					c1="c2"
+				elif [ $c1 == "c1" ]; then
+					c1="c0"
+				elif [ $c1 == "c2" ]; then
+					c1="c1"
+				elif [ $c1 == "c3" ]; then
+					c1="c5"
+				elif [ $c1 == "c4" ]; then
+					c1="c6"
+				elif [ $c1 == "c5" ]; then
+					c1="c3"
+				elif [ $c1 == "c6" ]; then
+					c1="c4"
+				fi
+				;;
+
+			8)
+				if [ $c0 == "c0" ]; then
+					c0="c2"
+				elif [ $c0 == "c1" ]; then
+					c0="c0"
+				elif [ $c0 == "c2" ]; then
+					c0="c1"
+				elif [ $c0 == "c3" ]; then
+					c0="c6"
+				elif [ $c0 == "c4" ]; then
+					c0="c7"
+				elif [ $c0 == "c5" ]; then
+					c0="c3"
+				elif [ $c0 == "c6" ]; then
+					c0="c4"
+				elif [ $c0 == "c7" ]; then
+					c0="c5"
+				fi
+
+				if [ $c1 == "c0" ]; then
+					c1="c2"
+				elif [ $c1 == "c1" ]; then
+					c1="c0"
+				elif [ $c1 == "c2" ]; then
+					c1="c1"
+				elif [ $c1 == "c3" ]; then
+					c1="c6"
+				elif [ $c1 == "c4" ]; then
+					c1="c7"
+				elif [ $c1 == "c5" ]; then
+					c1="c3"
+				elif [ $c1 == "c6" ]; then
+					c1="c4"
+				elif [ $c1 == "c7" ]; then
+					c1="c5"
+				fi
+				;;
+
+			16)
+				if [ $c0 == "c0" ]; then
+					c0="c4"
+				elif [ $c0 == "c1" ]; then
+					c0="c5"
+				elif [ $c0 == "c2" ]; then
+					c0="c0"
+				elif [ $c0 == "c3" ]; then
+					c0="c1"
+				elif [ $c0 == "c4" ]; then
+					c0="c8"
+				elif [ $c0 == "c5" ]; then
+					c0="c9"
+				#No change for c6 and c7
+				elif [ $c0 == "c8" ]; then
+					c0="c10"
+				elif [ $c0 == "c9" ]; then
+					c0="c11"
+				elif [ $c0 == "c10" ]; then
+					c0="c12"
+				elif [ $c0 == "c11" ]; then
+					c0="c13"
+				elif [ $c0 == "c12" ]; then
+					c0="c14"
+				elif [ $c0 == "c13" ]; then
+					c0="c15"
+				elif [ $c0 == "c14" ]; then
+					c0="c2"
+				elif [ $c0 == "c15" ]; then
+					c0="c3"
+				fi
+
+				if [ $c1 == "c0" ]; then
+					c1="c4"
+				elif [ $c1 == "c1" ]; then
+					c1="c5"
+				elif [ $c1 == "c2" ]; then
+					c1="c0"
+				elif [ $c1 == "c3" ]; then
+					c1="c1"
+				elif [ $c1 == "c4" ]; then
+					c1="c8"
+				elif [ $c1 == "c5" ]; then
+					c1="c9"
+				#No change for c6 and c7
+				elif [ $c1 == "c8" ]; then
+					c1="c10"
+				elif [ $c1 == "c9" ]; then
+					c1="c11"
+				elif [ $c1 == "c10" ]; then
+					c1="c12"
+				elif [ $c1 == "c11" ]; then
+					c1="c13"
+				elif [ $c1 == "c12" ]; then
+					c1="c14"
+				elif [ $c1 == "c13" ]; then
+					c1="c15"
+				elif [ $c1 == "c14" ]; then
+					c1="c2"
+				elif [ $c1 == "c15" ]; then
+					c1="c3"
+				fi
+				;;
+			esac
+			#OBS-ffmpeg remap adjustment complete
 
 			if [[ $mapping = "mono" ]]; then
 				stream[i + 1]="-map 0:v -map [a$i] -vcodec copy -acodec aac -ab 128k -f flv -strict -2 rtmp://127.0.0.1/$rtmpapp/stream$j"
@@ -277,11 +419,6 @@ remap)
 		done
 
 		case $chcount in
-		0)
-			echo "You don't have enough channels to do that!"
-			exec bash
-			;;
-
 		1)
 			while true; do
 				/usr/bin/ffmpeg -re -i rtmp://127.0.0.1/$3/stream1080 -filter_complex "${map[0]}" ${stream[1]}
@@ -411,8 +548,8 @@ remap)
 			;;
 
 		*)
-			echo "6 channel remapping is not possible due to OBS issues. Set OBS audio to 7.0 and remap in NGINX with 7. Stream 1-6 will have channels 1-6. Stream 7 will have no audio."
-			exit 0
+			echo "Invalid number of channels"
+			exec bash
 			;;
 		esac
 

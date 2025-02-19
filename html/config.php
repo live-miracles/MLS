@@ -84,16 +84,16 @@ if (isset($_GET['uploadfile'])) {
     echo $output;
 }
 
+if (isset($_GET['audiolist'])) {
+    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh audiolist");
+    echo "<pre>$output</pre>";
+}
+
 if (isset($_GET['remap'])) {
     $channel = $_POST['channel_no'];
     $outputdest = $_POST['outputdest'];
     $output = exec("sudo /bin/bash $scriptPath/config.sh remap \"$channel\" $outputdest");
     echo $output;
-}
-
-if (isset($_GET['audiolist'])) {
-    $output = shell_exec("sudo /bin/bash $scriptPath/config.sh audiolist");
-    echo "<pre>$output</pre>";
 }
 
 if (isset($_GET['remapoff'])) {
