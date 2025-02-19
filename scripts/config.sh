@@ -274,7 +274,8 @@ remap)
 		for ((i = 0; i < $ch_cnt; i++)); do
 			for (( ; j <= $STREAM_NUM; j++)); do
 				mapping=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 5)
-				if [ $mapping == "mono" ] || [ $mapping == "stereo" ]; then
+				stream_remap_id=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 2)
+				if [ "$mapping" != "none" ] && [ "$remap_id" == "$stream_remap_id" ]; then
 					break
 				fi
 			done
