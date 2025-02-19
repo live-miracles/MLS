@@ -27,7 +27,7 @@ function renderStreamControls() {
                 </button>
                 <button
                     class="btn btn-xs btn-error"
-                    onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=98&state=off')"
+                    onclick="executePhp('/control.php?streamno=${i}&action=out&actnumber=98&state=off')">
                     off
                 </button>
                 Record

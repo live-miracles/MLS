@@ -2468,17 +2468,17 @@ __stream11__audio__ remap1 c12 c0 mono distribute
 __stream12__audio__ remap1 c13 c0 mono distribute
 __stream13__audio__ remap1 c14 c0 mono distribute
 __stream14__audio__ remap1 c15 c0 mono distribute
-__stream15__audio__ remap2 c1 c0 mono distribute
-__stream16__audio__ remap2 c2 c0 mono distribute
-__stream17__audio__ remap2 c3 c0 mono distribute
-__stream18__audio__ remap2 c4 c0 mono distribute
+__stream15__audio__ remap2 c0 c0 mono distribute
+__stream16__audio__ remap2 c1 c0 mono distribute
+__stream17__audio__ remap2 c2 c0 mono distribute
+__stream18__audio__ remap2 c3 c0 mono distribute
 __stream19__audio__ remap2 c5 c0 mono distribute
 __stream20__audio__ remap2 c6 c0 mono distribute
-__stream21__audio__ remap2 c7 c0 mono distribute
-__stream22__audio__ remap2 c8 c0 mono distribute
-__stream23__audio__ remap2 c9 c0 mono distribute
-__stream24__audio__ remap2 c10 c0 mono distribute
-__stream25__audio__ remap2 c11 c0 mono distribute
+__stream21__audio__ remap2 c6 c0 mono distribute
+__stream22__audio__ remap2 c7 c0 mono distribute
+__stream23__audio__ remap2 c8 c0 mono distribute
+__stream24__audio__ remap2 c9 c0 mono distribute
+__stream25__audio__ remap2 c10 c0 mono distribute
 
 ***NAME CONFIG***
 __stream__name__ English,.,.,.,.,.,.,.,.,.,.,,,,,,,,,,,,,,,
