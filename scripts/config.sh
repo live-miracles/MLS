@@ -269,9 +269,10 @@ remap)
 			fi
 		fi
 
-		ch_cnt=$ch_num
-		j=1
-		for ((i = 0; i < $ch_cnt; i++)); do
+		stream_num=$ch_num
+		j=0
+		for ((i = 0; i < $stream_num; i++)); do
+			((j = j + 1))
 			for (( ; j <= $STREAM_NUM; j++)); do
 				mapping=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 5)
 				stream_remap_id=$(cat /usr/local/nginx/scripts/config.txt | grep '__stream'$j'__audio__' | cut -d ' ' -f 2)
@@ -281,6 +282,7 @@ remap)
 			done
 
 			if ((j > $STREAM_NUM)); then
+				stream_num=$i
 				break
 			fi
 
@@ -328,17 +330,16 @@ remap)
 			else
 				map[i]="[0:a]pan=stereo|c0=$c0|c1=$c1,aresample=async=1000[a$i]"
 				stream[i + 1]="-map 0:v -map [a$i] -vcodec copy -acodec aac -ac 2 -ab 256k -f flv -strict -2 rtmp://127.0.0.1/$rtmpapp/stream$j"
-				((ch_cnt = ch_cnt - 1))
+				((stream_num = stream_num - 1))
 			fi
-			((j = j + 1))
 		done
 
-		if ((ch_cnt >= 1 && ch_num <= 16)); then
+		if ((stream_num >= 1 && ch_num <= 16)); then
 			while true; do
 				filter_complex=""
 				output_streams=""
 
-				for ((k = 0; k < ch_cnt; k++)); do
+				for ((k = 0; k < stream_num; k++)); do
 					filter_complex+="${map[k]};"
 					output_streams+=" ${stream[k + 1]}"
 				done
