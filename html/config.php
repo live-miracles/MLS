@@ -42,8 +42,8 @@ if (isset($_GET['audioadd'])) {
     $channel2 = $_POST['channel_2'];
     $dest = $_POST['dest'];
     echo "<h2>You entered the following information:</h2>";
-    echo "<br><b>Stream Id: </b> $stream_id";
-    echo "<b>Channel Layout: </b> $audio_type";
+    echo "<b>Stream Id: </b> $stream_id";
+    echo "<br><b>Channel Layout: </b> $audio_type";
     echo "<br><b>Remap Id: </b> $remap_id";
     echo "<br><b>Channel 1: </b> $channel1";
     echo "<br><b>Channel 2: </b> $channel2";
