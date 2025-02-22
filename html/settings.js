@@ -160,6 +160,7 @@ async function resetStreamOutputs() {
 
 window.onload = async function () {
     setInputElements();
+    updateUrlParams();
     document
         .querySelectorAll('.url-param')
         .forEach((elem) => elem.addEventListener('change', updateUrlParams));

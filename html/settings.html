@@ -15,8 +15,8 @@
       </div>
       <div class="flex-none">
         <ul class="menu menu-horizontal px-1">
-          <li><a href="/">Control</a></li>
-          <li><a href="/settings.html">Settings</a></li>
+          <li><a href="/" class="dynamic-params">Control</a></li>
+          <li><a href="/settings.html" class="dynamic-params">Settings</a></li>
           <li>
             <a href="/stat" target="_blank" t>Stats</a>
           </li>
@@ -26,6 +26,8 @@
         </ul>
       </div>
     </div>
+
+    <input id="show-more" type="checkbox" class="url-param hidden" />
 
     <div
       class="logs fixed bottom-10 right-1 z-40 mx-auto h-[250px] w-[600px] overflow-y-scroll rounded-lg border border-accent bg-base-300 p-1 opacity-80"></div>
@@ -64,157 +66,140 @@
     </div>
 
     <div class="prose mx-auto max-w-3xl">
-      <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title">Stream Names</div>
+      <details class="collapsible-header" style="display: block">
+        <summary class="collapse-title">Stream Names</summary>
         <div class="collapse-content">
-          <p>You can assign names for the streams.</p>
+          <div class="overflow-x-auto">
+            <table class="table" id="name-table">
+              <thead></thead>
+              <tbody id="name-table-body"></tbody>
+            </table>
+          </div>
+          <button onclick="saveStreamNamesTable()" class="btn btn-accent btn-sm my-2">Update Names</button>
         </div>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="table" id="name-table">
-          <thead></thead>
-          <tbody id="name-table-body"></tbody>
-        </table>
-      </div>
-
-      <button onclick="saveStreamNamesTable()" class="btn btn-accent btn-sm my-2">Update Names</button>
+      </details>
 
       <div class="divider"></div>
 
-      <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title">
+      <details class="collapsible-header" open>
+        <summary class="collapse-title">
           Set Outputs
-          <a href="/config.php?destlist" target="_blank" class="link link-accent">[file]</a>
-        </div>
+          <a href="/config.php?destlist" target="_blank" class="link link-accent">[View Config]</a>
+        </summary>
         <div class="collapse-content">
           <p>
-            The nginx server receives the feed and sends it to a multiple outputs, such as when streaming on the YouTube or Facebook. You can use this
-            interface to add such destination.
-            <br />
-            A few important points:
+            The NGINX server can destribute the feed to multiple destinations, such as YouTube or Facebook. A few important points when configuring
+            the outs:
           </p>
           <ul>
-            <li>"Name" field should not contain any spaces. Please use underscores "_".</li>
-            <li>"Name" field should be unique within the stream.</li>
-            <li>When streaming locally between streams use the localhost IP: 127.0.0.1</li>
             <li>
-              Select "Vertical" when streaming to Instagram. It will rotate the video by 90 degrees clockwise and encode into
-              <code>720p</code> resolution. Server will need around 3 vCPU for each vertical stream.
+              The <code>Name</code> field should be unique within the stream and can not contain any spaces. Please use underscores <code>_</code>.
             </li>
-            <li>If you keep the source resolution for all destinations the server is capable of streaming 100+ outs with just 10 vCPU cores.</li>
+            <li>When streaming locally between streams use the localhost IP: <code>127.0.0.1</code></li>
             <li>
-              If a login/password has to be added, enter the details in the format:
-              <br />
+              Select <code>Vertical</code> when streaming to Instagram. It will rotate the video by 90 degrees clockwise and encode into
+              <code>720p</code> resolution. Server will use up to 6 vCPU for each <code>Vertical</code> out.
+            </li>
+            <li>Server will use up to 10 vCPU for 100+ <code>Source</code> outs.</li>
+            <li>
+              A login/password can be added in the format:
               <code>rtmp://server/streamkey-+-+flashver=FMLE/3.020(compatible;20FMSc/1.0)-+-+pubUser=login-+-+pubPasswd=password</code>
             </li>
           </ul>
-        </div>
-      </div>
-      <form>
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Name</span>
-          </div>
-          <input id="outName" type="text" name="name_id" placeholder="English_YT..." class="input input-xs input-bordered w-44" />
-        </label>
 
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Stream Id</span>
-          </div>
-          <select name="stream_id" class="stream-selector labeled-select w-36"></select>
-        </label>
+          <form>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Name</span>
+              </div>
+              <input id="outName" type="text" name="name_id" placeholder="English_YT..." class="input input-xs input-bordered w-44" />
+            </label>
 
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Out Id</span>
-          </div>
-          <select name="output_id" id="out-selector" class="select select-bordered select-xs w-32"></select>
-        </label>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Stream Id</span>
+              </div>
+              <select name="stream_id" class="stream-selector labeled-select w-36"></select>
+            </label>
 
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Resolution</span>
-          </div>
-          <select name="resolution" class="labeled-select">
-            <option selected value="source">Source</option>
-            <option value="vertical">Vertical</option>
-            <option value="720p">720p</option>
-            <option value="540p">540p</option>
-            <option value="576p">PAL-720x576</option>
-          </select>
-        </label>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Out Id</span>
+              </div>
+              <select name="output_id" id="out-selector" class="select select-bordered select-xs w-32"></select>
+            </label>
 
-        <br />
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Resolution</span>
+              </div>
+              <select name="resolution" class="labeled-select">
+                <option selected value="source">Source</option>
+                <option value="vertical">Vertical</option>
+                <option value="720p">720p</option>
+                <option value="540p">540p</option>
+                <option value="576p">PAL-720x576</option>
+              </select>
+            </label>
 
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Server URL</span>
-          </div>
-          <select id="server-url" class="select select-bordered select-xs max-w-xs">
-            <option selected value="">Custom</option>
-            <option value="rtmp://a.rtmp.youtube.com/live2/">YouTube</option>
-            <option value="rtmp://b.rtmp.youtube.com/live2?backup=1/">YT Backup</option>
-            <option value="rtmps://live-api-s.facebook.com:443/rtmp/">Facebook</option>
-            <option value="rtmps://edgetee-upload-${s_prp}.xx.fbcdn.net:443/rtmp/">Instagram</option>
-            <option value="rtmp://ovsu.okcdn.ru/input/">VK Video</option>
-            <option value="rtmp://rtmp-lb.m9.rutube.ru/live_push/">Rutube</option>
-          </select>
-        </label>
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Stream Key or Custom URL</span>
-          </div>
-          <input type="text" name="stream_key" placeholder="" id="stream-key" class="input input-xs input-bordered w-[40rem]" />
-        </label>
+            <br />
 
-        <label class="hidden">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Full RTMP URL</span>
-          </div>
-          <input
-            type="text"
-            name="rtmp_url"
-            size="65"
-            placeholder="Generated as Server URL + Stream Key"
-            id="rtmp-url"
-            class="input input-xs max-w-md"
-            readonly />
-        </label>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Server URL</span>
+              </div>
+              <select id="server-url" class="select select-bordered select-xs max-w-xs">
+                <option selected value="">Custom</option>
+                <option value="rtmp://a.rtmp.youtube.com/live2/">YouTube</option>
+                <option value="rtmp://b.rtmp.youtube.com/live2?backup=1/">YT Backup</option>
+                <option value="rtmps://live-api-s.facebook.com:443/rtmp/">Facebook</option>
+                <option value="rtmps://edgetee-upload-${s_prp}.xx.fbcdn.net:443/rtmp/">Instagram</option>
+                <option value="rtmp://ovsu.okcdn.ru/input/">VK Video</option>
+                <option value="rtmp://rtmp-lb.m9.rutube.ru/live_push/">Rutube</option>
+              </select>
+            </label>
+            <label class="input-label w-[30rem]">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Stream Key or Custom URL</span>
+              </div>
+              <input type="text" name="stream_key" placeholder="" id="stream-key" class="input input-xs input-bordered w-full" />
+            </label>
 
-        <br />
+            <input type="text" name="rtmp_url" id="rtmp-url" class="hidden" />
 
-        <button type="button" class="btn btn-accent btn-sm my-2" onclick="setOutBtnClick(event)">Set Output</button>
-      </form>
+            <button type="button" class="btn btn-accent btn-sm my-2" onclick="setOutBtnClick(event)">Set Output</button>
+          </form>
 
-      <div class="mt-8">
-        <textarea
-          id="bulk-outs"
-          class="textarea textarea-bordered mx-auto h-48 w-full"
-          placeholder="__stream1__out1__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 source LB_Wb_Eng
+          <div class="mt-8">
+            <textarea
+              id="bulk-outs"
+              class="textarea textarea-bordered mx-auto h-48 w-full"
+              placeholder="__stream1__out1__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 source LB_Wb_Eng
 __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_Foundation_YT
 ..."></textarea>
-      </div>
-
-      <button onclick="bulkSetOuts()" class="btn btn-accent btn-sm my-2">Bulk Set Outputs</button>
-
-      <div class="mt-8">
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Stream Id</span>
           </div>
-          <select id="reset-stream" class="stream-selector labeled-select w-36"></select>
-        </label>
-        <button onclick="resetStreamOutputs()" class="btn btn-accent btn-sm my-2">Reset Stream Outputs</button>
-      </div>
+
+          <button onclick="bulkSetOuts()" class="btn btn-accent btn-sm my-2">Bulk Set Outputs</button>
+
+          <div class="mt-8">
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Stream Id</span>
+              </div>
+              <select id="reset-stream" class="stream-selector labeled-select w-36"></select>
+            </label>
+            <button onclick="resetStreamOutputs()" class="btn btn-accent btn-sm my-2">Reset Stream Outputs</button>
+          </div>
+        </div>
+      </details>
 
       <div class="divider"></div>
 
-      <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title">
+      <details class="collapsible-header">
+        <summary class="collapse-title">
           Add Stream Config
-          <a href="/config.php?streamlist" target="_blank" class="link link-accent">[file]</a>
-        </div>
+          <a href="/config.php?streamlist" target="_blank" class="link link-accent">[View Config]</a>
+        </summary>
         <div class="collapse-content">
           <p>
             You can apply an encoding to the stream. When encoding <code>1080p</code> video into <code>720p</code> it takes about 2.5 vCPU per stream.
@@ -222,377 +207,380 @@ __stream1__out2__ rtmp://a.rtmp.youtube.com/live2/1111-aaaa-1111 vertical Isha_F
             Select "None" if you don't want any encodings then it will not take much CPU resources since it will be be only copying the data and not
             processing it.
           </p>
+          <form>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Stream Id</span>
+              </div>
+              <select name="stream_id" class="stream-selector labeled-select w-36"></select>
+            </label>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Config</span>
+              </div>
+              <select name="encodeparam" class="labeled-select">
+                <option selected value="none">None</option>
+                <option value="audio">Audio</option>
+                <option value="both">Audio & Video</option>
+              </select>
+            </label>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Resolution</span>
+              </div>
+              <select name="stream_res" class="labeled-select">
+                <!-- <option selected value="vertical">Vertical</option> -->
+                <option selected value="1080p">1080p</option>
+                <option value="720p">720p</option>
+                <option value="480p">480p</option>
+                <option value="576p">PAL-720x576</option>
+              </select>
+            </label>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Failover</span>
+              </div>
+              <select name="failover_method" class="labeled-select">
+                <option value="nofailover">No Failover</option>
+                <option value="mainback">Main-Backup</option>
+                <option value="mainfail">Main-Failover</option>
+                <option value="mainbackfail">Main-Backup-Failover</option>
+              </select>
+            </label>
+            <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?streamadd')">Set Config</button>
+          </form>
         </div>
-      </div>
-      <form>
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Stream Id</span>
-          </div>
-          <select name="stream_id" class="stream-selector labeled-select w-36"></select>
-        </label>
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Config</span>
-          </div>
-          <select name="encodeparam" class="labeled-select">
-            <option selected value="none">None</option>
-            <option value="audio">Audio</option>
-            <option value="both">Audio & Video</option>
-          </select>
-        </label>
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Resolution</span>
-          </div>
-          <select name="stream_res" class="labeled-select">
-            <!-- <option selected value="vertical">Vertical</option> -->
-            <option selected value="1080p">1080p</option>
-            <option value="720p">720p</option>
-            <option value="480p">480p</option>
-            <option value="576p">PAL-720x576</option>
-          </select>
-        </label>
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Failover</span>
-          </div>
-          <select name="failover_method" class="labeled-select">
-            <option value="nofailover">No Failover</option>
-            <option value="mainback">Main-Backup</option>
-            <option value="mainfail">Main-Failover</option>
-            <option value="mainbackfail">Main-Backup-Failover</option>
-          </select>
-        </label>
-        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?streamadd')">Set Config</button>
-      </form>
+      </details>
 
       <div class="divider"></div>
 
-      <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title">
+      <details class="collapsible-header">
+        <summary class="collapse-title">
           Add Audio Config
-          <a href="/config.php?audiolist" target="_blank" class="link link-accent">[file]</a>
-        </div>
+          <a href="/config.php?audiolist" target="_blank" class="link link-accent">[View Config]</a>
+        </summary>
         <div class="collapse-content">
           <p>
-            You can stream multichannel audio to nginx using stream1080 main or backup. Then you can split these audio channels into streams. In this
-            audio config you can choose which channel you want to give to each stream.
+            You can stream multi-channel audio to nginx using <code>main/remap1</code> or <code>remap2</code>. NGINX can split these audio channels
+            into streams.
           </p>
+          <form>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Stream Id</span>
+              </div>
+              <select name="stream_id" class="stream-selector labeled-select w-36"></select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Type</span>
+              </div>
+              <select name="audio_type" class="labeled-select">
+                <option value="mono">Mono</option>
+                <option value="stereo">Stereo</option>
+                <option value="none">None</option>
+              </select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Remap Id</span>
+              </div>
+              <select name="remap_id" class="labeled-select">
+                <option value="remap1">Remap 1</option>
+                <option value="remap2">Remap 2</option>
+              </select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Channel 1</span>
+              </div>
+              <select name="channel_1" class="labeled-select">
+                <option value="c0">Ch 1</option>
+                <option value="c1">Ch 2</option>
+                <option value="c2">Ch 3</option>
+                <option value="c3">Ch 4</option>
+                <option value="c4">Ch 5</option>
+                <option value="c5">Ch 6</option>
+                <option value="c6">Ch 7</option>
+                <option value="c7">Ch 8</option>
+                <option value="c8">Ch 9</option>
+                <option value="c9">Ch 10</option>
+                <option value="c10">Ch 11</option>
+                <option value="c11">Ch 12</option>
+                <option value="c12">Ch 13</option>
+                <option value="c13">Ch 14</option>
+                <option value="c14">Ch 15</option>
+                <option value="c15">Ch 16</option>
+              </select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Channel 2</span>
+              </div>
+              <select name="channel_2" class="labeled-select">
+                <option value="c0">Ch 1</option>
+                <option value="c1">Ch 2</option>
+                <option value="c2">Ch 3</option>
+                <option value="c3">Ch 4</option>
+                <option value="c4">Ch 5</option>
+                <option value="c5">Ch 6</option>
+                <option value="c6">Ch 7</option>
+                <option value="c7">Ch 8</option>
+                <option value="c8">Ch 9</option>
+                <option value="c9">Ch 10</option>
+                <option value="c10">Ch 11</option>
+                <option value="c11">Ch 12</option>
+                <option value="c12">Ch 13</option>
+                <option value="c13">Ch 14</option>
+                <option value="c14">Ch 15</option>
+                <option value="c15">Ch 16</option>
+              </select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Destination</span>
+              </div>
+              <select name="dest" class="labeled-select">
+                <option value="distribute">Distribute</option>
+                <option value="main_back">Main-Backup</option>
+              </select>
+            </label>
+
+            <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?audioadd')">Set Config</button>
+          </form>
+
+          <form class="mt-8">
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Destination</span>
+              </div>
+              <select name="dest" class="labeled-select">
+                <option value="distribute">Distribute</option>
+                <option value="main_back">Main-Backup</option>
+              </select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Audio Preset</span>
+              </div>
+              <select name="audiopreset" class="labeled-select">
+                <option value="all_mono">All Mono</option>
+                <option value="one_stereo" selected>One Stereo</option>
+                <option value="two_stereo" selected>Two Stereo</option>
+              </select>
+            </label>
+
+            <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?audiopreset')">Load Preset</button>
+          </form>
         </div>
-      </div>
-      <form>
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Stream Id</span>
-          </div>
-          <select name="stream_id" class="stream-selector labeled-select w-36"></select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Type</span>
-          </div>
-          <select name="audio_type" class="labeled-select">
-            <option value="mono">Mono</option>
-            <option value="stereo">Stereo</option>
-            <option value="none">None</option>
-          </select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Remap Id</span>
-          </div>
-          <select name="remap_id" class="labeled-select">
-            <option value="remap1">Remap 1</option>
-            <option value="remap2">Remap 2</option>
-          </select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Channel 1</span>
-          </div>
-          <select name="channel_1" class="labeled-select">
-            <option value="c0">Ch 1</option>
-            <option value="c1">Ch 2</option>
-            <option value="c2">Ch 3</option>
-            <option value="c3">Ch 4</option>
-            <option value="c4">Ch 5</option>
-            <option value="c5">Ch 6</option>
-            <option value="c6">Ch 7</option>
-            <option value="c7">Ch 8</option>
-            <option value="c8">Ch 9</option>
-            <option value="c9">Ch 10</option>
-            <option value="c10">Ch 11</option>
-            <option value="c11">Ch 12</option>
-            <option value="c12">Ch 13</option>
-            <option value="c13">Ch 14</option>
-            <option value="c14">Ch 15</option>
-            <option value="c15">Ch 16</option>
-          </select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Channel 2</span>
-          </div>
-          <select name="channel_2" class="labeled-select">
-            <option value="c0">Ch 1</option>
-            <option value="c1">Ch 2</option>
-            <option value="c2">Ch 3</option>
-            <option value="c3">Ch 4</option>
-            <option value="c4">Ch 5</option>
-            <option value="c5">Ch 6</option>
-            <option value="c6">Ch 7</option>
-            <option value="c7">Ch 8</option>
-            <option value="c8">Ch 9</option>
-            <option value="c9">Ch 10</option>
-            <option value="c10">Ch 11</option>
-            <option value="c11">Ch 12</option>
-            <option value="c12">Ch 13</option>
-            <option value="c13">Ch 14</option>
-            <option value="c14">Ch 15</option>
-            <option value="c15">Ch 16</option>
-          </select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Destination</span>
-          </div>
-          <select name="dest" class="labeled-select">
-            <option value="distribute">Distribute</option>
-            <option value="main_back">Main-Backup</option>
-          </select>
-        </label>
-
-        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?audioadd')">Set Config</button>
-      </form>
-
-      <form class="mt-8">
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Destination</span>
-          </div>
-          <select name="dest" class="labeled-select">
-            <option value="distribute">Distribute</option>
-            <option value="main_back">Main-Backup</option>
-          </select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Audio Preset</span>
-          </div>
-          <select name="audiopreset" class="labeled-select">
-            <option value="all_mono">All Mono</option>
-            <option value="one_stereo" selected>One Stereo</option>
-            <option value="two_stereo" selected>Two Stereo</option>
-          </select>
-        </label>
-
-        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?audiopreset')">Load Preset</button>
-      </form>
+      </details>
 
       <div class="divider"></div>
 
-      <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title">
+      <details class="collapsible-header">
+        <summary class="collapse-title">
           Add/Remove Schedule
-          <a href="/config.php?schedulelist" target="_blank" class="link link-accent">[file]</a>
-        </div>
+          <a href="/config.php?schedulelist" target="_blank" class="link link-accent">[View Config]</a>
+        </summary>
         <div class="collapse-content">
           <p>
             Use it to schedule a cron job. You can add multiple jobs with the same name, but if you click the remove button, it will remove all of
             them at once.
           </p>
+          <form>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Name</span>
+              </div>
+              <input type="text" name="name" class="input input-xs input-bordered w-44" placeholder="English_YT..." />
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Stream Id</span>
+              </div>
+              <select name="stream_no" class="stream-selector labeled-select w-36"></select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Type</span>
+              </div>
+              <select name="type_id" class="labeled-select">
+                <option value="">Choose</option>
+                <option value="out1">Out 1</option>
+                <option value="out2">Out 2</option>
+                <option value="out3">Out 3</option>
+                <option value="out4">Out 4</option>
+                <option value="out5">Out 5</option>
+                <option value="out6">Out 6</option>
+                <option value="out7">Out 7</option>
+                <option value="out8">Out 8</option>
+                <option value="out9">Out 9</option>
+                <option value="out10">Out 10</option>
+                <option value="video">Video</option>
+                <option value="holding">Holding</option>
+                <option value="out98">Record</option>
+              </select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">On/Off</span>
+              </div>
+              <select name="on_off" class="labeled-select">
+                <option value="">Choose</option>
+                <option value="on">On</option>
+                <option value="off">Off</option>
+              </select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Video Min</span>
+              </div>
+              <input type="text" name="startmin" value="0" class="input input-xs input-bordered w-20" />
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Video Sec</span>
+              </div>
+              <input type="text" name="startsec" value="0" class="input input-xs input-bordered w-20" />
+            </label>
+            <br />
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Month</span>
+              </div>
+              <input type="text" name="month" class="input input-xs input-bordered w-12" placeholder="1-12" value="*" />
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Day</span>
+              </div>
+              <input type="text" name="monthday" class="input input-xs input-bordered w-12" placeholder="1-31" value="*" />
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Hour</span>
+              </div>
+              <input type="text" name="hour" class="input input-xs input-bordered w-12" placeholder="0-23" />
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Min</span>
+              </div>
+              <input type="text" name="minute" class="input input-xs input-bordered w-12" placeholder="0-59" />
+            </label>
+
+            <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?addschedule');">Add Schedule</button>
+          </form>
+
+          <form class="mt-8">
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Job Name</span>
+              </div>
+              <input type="text" name="removename" class="input input-xs input-bordered w-36" placeholder="English_YT..." />
+            </label>
+
+            <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?removeschedule')">Remove Schedule</button>
+          </form>
         </div>
-      </div>
-      <form>
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Name</span>
-          </div>
-          <input type="text" name="name" class="input input-xs input-bordered w-44" placeholder="English_YT..." />
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Stream Id</span>
-          </div>
-          <select name="stream_no" class="stream-selector labeled-select w-36"></select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Type</span>
-          </div>
-          <select name="type_id" class="labeled-select">
-            <option value="">Choose</option>
-            <option value="out1">Out 1</option>
-            <option value="out2">Out 2</option>
-            <option value="out3">Out 3</option>
-            <option value="out4">Out 4</option>
-            <option value="out5">Out 5</option>
-            <option value="out6">Out 6</option>
-            <option value="out7">Out 7</option>
-            <option value="out8">Out 8</option>
-            <option value="out9">Out 9</option>
-            <option value="out10">Out 10</option>
-            <option value="video">Video</option>
-            <option value="holding">Holding</option>
-            <option value="out98">Record</option>
-          </select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">On/Off</span>
-          </div>
-          <select name="on_off" class="labeled-select">
-            <option value="">Choose</option>
-            <option value="on">On</option>
-            <option value="off">Off</option>
-          </select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Video Min</span>
-          </div>
-          <input type="text" name="startmin" value="0" class="input input-xs input-bordered w-20" />
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Video Sec</span>
-          </div>
-          <input type="text" name="startsec" value="0" class="input input-xs input-bordered w-20" />
-        </label>
-        <br />
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Month</span>
-          </div>
-          <input type="text" name="month" class="input input-xs input-bordered w-12" placeholder="1-12" value="*" />
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Day</span>
-          </div>
-          <input type="text" name="monthday" class="input input-xs input-bordered w-12" placeholder="1-31" value="*" />
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Hour</span>
-          </div>
-          <input type="text" name="hour" class="input input-xs input-bordered w-12" placeholder="0-23" />
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Min</span>
-          </div>
-          <input type="text" name="minute" class="input input-xs input-bordered w-12" placeholder="0-59" />
-        </label>
-
-        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?addschedule');">Add Schedule</button>
-      </form>
-
-      <form class="mt-8">
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Job Name</span>
-          </div>
-          <input type="text" name="removename" class="input input-xs input-bordered w-36" placeholder="English_YT..." />
-        </label>
-
-        <button type="button" class="btn btn-accent btn-sm my-2" onclick="submitForm(event, 'config.php?removeschedule')">Remove Schedule</button>
-      </form>
+      </details>
 
       <div class="divider"></div>
 
-      <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title">Upload Google Drive Video</div>
+      <details class="collapsible-header">
+        <summary class="collapse-title">Upload Google Drive Video</summary>
         <div class="collapse-content">
-          <p>Description...</p>
+          <p>This is currently not working.</p>
+          <form>
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Stream Id</span>
+              </div>
+              <select name="stream_id" class="stream-selector labeled-select w-36"></select>
+            </label>
+
+            <label class="input-label">
+              <div class="label pb-0">
+                <span class="label-text text-sm">Video ID</span>
+              </div>
+              <input type="text" name="video_id" class="input input-xs input-bordered w-96" />
+            </label>
+
+            <button
+              type="button"
+              class="btn btn-accent btn-sm my-2"
+              onclick="showResponse('Uploading started, please wait...');submitForm(event, 'config.php?upload-video');">
+              Upload
+            </button>
+          </form>
         </div>
-      </div>
-
-      <form>
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Stream Id</span>
-          </div>
-          <select name="stream_id" class="stream-selector labeled-select w-36"></select>
-        </label>
-
-        <label class="input-label">
-          <div class="label pb-0">
-            <span class="label-text text-sm">Video ID</span>
-          </div>
-          <input type="text" name="video_id" class="input input-xs input-bordered w-96" />
-        </label>
-
-        <button
-          type="button"
-          class="btn btn-accent btn-sm my-2"
-          onclick="showResponse('Uploading started, please wait...');submitForm(event, 'config.php?upload-video');">
-          Upload
-        </button>
-      </form>
+      </details>
 
       <div class="divider"></div>
 
-      <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title">Upload Lowerthirds</div>
+      <details class="collapsible-header">
+        <summary class="collapse-title">Upload Lowerthirds</summary>
         <div class="collapse-content">
           <p>Description...</p>
+          <form method="post" target="_blank" action="config.php?uploadlower" enctype="multipart/form-data">
+            Select image to upload:
+            <input type="file" name="fileToUpload" id="fileToUpload" />
+            <br />
+            <input type="submit" value="Upload Image" name="submit" class="btn btn-accent btn-sm my-2" />
+          </form>
         </div>
-      </div>
-      <form method="post" target="_blank" action="config.php?uploadlower" enctype="multipart/form-data">
-        Select image to upload:
-        <input type="file" name="fileToUpload" id="fileToUpload" />
-        <br />
-        <input type="submit" value="Upload Image" name="submit" class="btn btn-accent btn-sm my-2" />
-      </form>
+      </details>
 
       <div class="divider"></div>
 
-      <div tabindex="0" class="collapsible-header">
-        <div class="collapse-title">Upload Holding Screens</div>
+      <details class="collapsible-header">
+        <summary class="collapse-title">Upload Holding Screens</summary>
         <div class="collapse-content">
           <p>Description...</p>
+          <form method="post" target="_blank" action="config.php?uploadfile">
+            URL:
+            <input type="text" name="file_url" size="35" placeholder="https://www.dropbox.com/s/25xhzrtvom/filename.mp4?dl=0" />
+            <br />
+            Stream Id:
+            <select name="stream_no" class="stream-selector"></select>
+            <br />
+            Video Type:
+            <select name="type_id">
+              <option value="">Choose</option>
+              <option value="holding.mp4">Holding</option>
+              <option value="video.mp4">Video</option>
+              <option value="failover.mp4">Failover</option>
+              <option value="lowerthird.png">Lower 3rd</option>
+            </select>
+            <br />
+            <input type="submit" value="Upload File" class="btn btn-accent btn-sm my-2" /> <br />
+          </form>
         </div>
-      </div>
-      <form method="post" target="_blank" action="config.php?uploadfile">
-        URL:
-        <input type="text" name="file_url" size="35" placeholder="https://www.dropbox.com/s/25xhzrtvom/filename.mp4?dl=0" />
-        <br />
-        Stream Id:
-        <select name="stream_no" class="stream-selector"></select>
-        <br />
-        Video Type:
-        <select name="type_id">
-          <option value="">Choose</option>
-          <option value="holding.mp4">Holding</option>
-          <option value="video.mp4">Video</option>
-          <option value="failover.mp4">Failover</option>
-          <option value="lowerthird.png">Lower 3rd</option>
-        </select>
-        <br />
-        <input type="submit" value="Upload File" class="btn btn-accent btn-sm my-2" /> <br />
-      </form>
+      </details>
     </div>
 
-    <footer class="footer footer-center mt-10 bg-base-300 p-4 text-base-content">
+    <footer class="footer footer-center mt-10 bg-base-300 p-4 pb-10 text-base-content">
       <aside>
-        <p>Copyright © 2024 - All right reserved by MLS</p>
+        <p>
+          For any bug / feature requests, please open an issue in our
+          <a class="link" href="https://github.com/isha-live/MLS/" target="_blank">GitHub</a> repo (ʃƪ˶˘ ﻬ ˘˶).
+        </p>
+        <p>Check out our <a class="link" href="https://isha-live.github.io/">homepage</a> for more streaming tools (=ↀωↀ=).</p>
       </aside>
     </footer>
   </body>

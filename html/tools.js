@@ -67,6 +67,12 @@ function parseDocumentConfig() {
 function updateUrlParams() {
     const configParams = parseDocumentConfig();
     window.history.pushState({}, '', `?${configParams.toString()}`);
+    document.querySelectorAll('.dynamic-params').forEach((elem) => {
+        console.assert(elem instanceof HTMLAnchorElement);
+        const url = new URL(elem.href, window.location.origin);
+        url.search = window.location.search;
+        elem.href = url.toString();
+    });
 }
 
 function showElements() {
@@ -135,13 +141,17 @@ function renderResponse(value, error, time) {
 }
 
 function logResponse(value, error, time) {
-    const logs = localStorage.getItem('logs') ? JSON.parse(localStorage.getItem('logs')) : [];
+    const logs = localStorage.getItem('mls-logs')
+        ? JSON.parse(localStorage.getItem('mls-logs'))
+        : [];
     logs.unshift({ time: time, value: value, error: error });
-    localStorage.setItem('logs', JSON.stringify(logs.slice(0, LOG_SIZE)));
+    localStorage.setItem('mls-logs', JSON.stringify(logs.slice(0, LOG_SIZE)));
 }
 
 function renderLogs() {
-    const logs = localStorage.getItem('logs') ? JSON.parse(localStorage.getItem('logs')) : [];
+    const logs = localStorage.getItem('mls-logs')
+        ? JSON.parse(localStorage.getItem('mls-logs'))
+        : [];
     logs.reverse().forEach((log) => renderResponse(log.value, log.error, log.time));
 }
 
