@@ -210,7 +210,7 @@ function isOutEmpty(out) {
 function getOutSize(stream) {
     if (streamOutsConfig === null) return 0;
     const size = streamOutsConfig[stream]
-        .slice(0, STREAM_NUM)
+        .slice(0, OUT_NUM)
         .findLastIndex((info) => !isOutEmpty(info));
     return size === -1 ? 0 : size;
 }
