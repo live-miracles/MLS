@@ -10,7 +10,7 @@ module.exports = {
     plugins: ['prettier-plugin-tailwindcss'],
     overrides: [
         {
-            files: '*.html',
+            files: '*.{html,ejs}',
             options: {
                 printWidth: 150,
                 tabWidth: 2,

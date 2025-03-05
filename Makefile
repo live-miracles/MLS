@@ -1,7 +1,7 @@
 .PHONY: *
 
 pretty:
-	npx prettier --write .
+	npx prettier --plugin=prettier-plugin-ejs --write .
 	shfmt -w .
 
 install:
@@ -26,4 +26,4 @@ exec:
 dev: build run
 
 css:
-	npx tailwindcss -i ./html/input.css -o ./html/output.css --watch
+	npx tailwindcss -i ./public/input.css -o ./public/output.css --watch

@@ -28,11 +28,6 @@ cd ~
 sudo curl -sS https://getcomposer.org/installer -o composer-setup.php
 sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
-#Install Instagram-Live scripts
-sudo unzip ~/MLS/insta_php.zip -d ~/
-#sudo git clone https://github.com/regstuff/InstagramLive-PHP.git
-#sudo composer install -d InstagramLive-PHP/
-
 # Download and move config files
 cd ~/MLS/scripts/
 sudo mkdir images
@@ -71,25 +66,6 @@ sudo systemctl restart php7.0-fpm
 sudo cp /usr/local/nginx/scripts/nginx.conf /usr/local/nginx/conf/
 sudo rm -R /usr/local/nginx/html
 sudo cp -R ~/MLS/html /usr/local/nginx
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/2.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/3.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/4.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/5.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/6.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/7.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/8.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/9.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/10.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/11.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/12.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/13.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/14.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/15.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/16.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/17.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/18.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/19.php
-#sudo cp /usr/local/nginx/html/1.php /usr/local/nginx/html/20.php
 
 #Setup HLS & Recording folders
 sudo mkdir /usr/local/nginx/html/hls
@@ -151,18 +127,6 @@ sudo make install && hash -r
 
 #Shift Latest FFMPEG & Tools to local/bin folder to avoid conflict with apt-get FFMPEG
 sudo cp -R tools /usr/local/bin && sudo cp ~/ffmpeg_build/bin/ffmpeg /usr/local/bin && sudo cp ~/ffmpeg_build/bin/ffplay /usr/local/bin && sudo cp ~/ffmpeg_build/bin/ffprobe /usr/local/bin
-
-#Shift Instagram-Live to generic folder
-sudo cp -R ~/InstagramLive-PHP /usr/local/nginx/scripts/ && sudo mv /usr/local/nginx/scripts/InstagramLive-PHP/ /usr/local/nginx/scripts/InstagramLive-PHP1/
-sudo cp -R /usr/local/nginx/scripts/InstagramLive-PHP1/ /usr/local/nginx/scripts/InstagramLive-PHP2/
-sudo cp -R /usr/local/nginx/scripts/InstagramLive-PHP1/ /usr/local/nginx/scripts/InstagramLive-PHP3/
-sudo cp -R /usr/local/nginx/scripts/InstagramLive-PHP1/ /usr/local/nginx/scripts/InstagramLive-PHP4/
-sudo cp -R /usr/local/nginx/scripts/InstagramLive-PHP1/ /usr/local/nginx/scripts/InstagramLive-PHP5/
-sudo cp -R /usr/local/nginx/scripts/InstagramLive-PHP1/ /usr/local/nginx/scripts/InstagramLive-PHP6/
-sudo cp -R /usr/local/nginx/scripts/InstagramLive-PHP1/ /usr/local/nginx/scripts/InstagramLive-PHP7/
-sudo cp -R /usr/local/nginx/scripts/InstagramLive-PHP1/ /usr/local/nginx/scripts/InstagramLive-PHP8/
-sudo cp -R /usr/local/nginx/scripts/InstagramLive-PHP1/ /usr/local/nginx/scripts/InstagramLive-PHP9/
-sudo cp -R /usr/local/nginx/scripts/InstagramLive-PHP1/ /usr/local/nginx/scripts/InstagramLive-PHP10/
 
 sudo cp -R ~/ffmpeg_sources/srt /usr/local/nginx/scripts/
 sudo cp -R ~/MLS /usr/local/nginx/scripts

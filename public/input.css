@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.collapse-title {
+    @apply text-xl font-medium;
+}
+
+.table :where(th, td) {
+    @apply p-1;
+}
+
+.input-label {
+    @apply form-control mr-1 inline-block max-w-md;
+}
+
+.labeled-input {
+    @apply input input-xs input-bordered w-full max-w-md;
+}
+
+.labeled-select {
+    @apply select select-bordered select-xs;
+}
+
+.collapsible-header {
+    @apply collapse collapse-arrow border border-base-300 bg-base-200;
+}
