@@ -128,8 +128,6 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci
 
-COPY . .
-
 
 ##########################
 # Build the release image.
@@ -153,10 +151,12 @@ RUN apt-get install -y \
 # Add NGINX path, config and static files.
 ENV PATH "${PATH}:/usr/local/nginx/sbin"
 COPY nginx.conf /etc/nginx/nginx.conf
-RUN mkdir -p /opt/data
+RUN mkdir -p /opt/data /app/public/logs /app/public/recording
 
-EXPOSE 1935
-EXPOSE 80
+RUN apt-get install -y supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/app.conf
 
 WORKDIR /app
-CMD nginx
+COPY . .
+
+CMD ["supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
