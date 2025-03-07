@@ -63,8 +63,6 @@ RUN apt-get install -y \
     # Video codecs
     libx264-dev \
     libx265-dev \
-    libx264-164 \
-    libx265-199 \
     libvpx-dev \
     libwebp-dev \
     # Other dependencies
@@ -85,9 +83,6 @@ RUN wget http://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz && \
 # Compile ffmpeg.
 WORKDIR /tmp/ffmpeg-${FFMPEG_VERSION}
 RUN ./configure \
-    --pkg-config-flags="--static" \
-    --extra-cflags="-I/usr/include" \
-    --extra-ldflags="-L/usr/lib" \
     --prefix=${FFMPEG_PREFIX} \
     --enable-version3 \
     --enable-gpl \
@@ -118,7 +113,7 @@ RUN apt-get clean
 ######################
 # Build Express image.
 
-ARG NODE_VERSION=22.14.0
+ARG NODE_VERSION=20.x
 
 RUN apt-get install -y \
     gnupg
@@ -146,7 +141,9 @@ RUN apt-get install -y \
     lame \
     libogg0 \
     libass9 \
-    libvpx7 \
+    libx264-164 \
+    libx265-199 \
+    libvpx-dev \
     libvorbis0a \
     libwebp7 \
     libtheora0 \
