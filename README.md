@@ -8,7 +8,7 @@ Don't use Ubuntu minimal. Use the regular 16.04 image
 
 ## Design
 
-<img src="https://github.com/user-attachments/assets/0d913222-c192-42c4-b611-a5fa3d319eb0" align="center" width="500" >
+<img src="https://github.com/user-attachments/assets/499f3309-eed3-49b3-8eaf-6d3a365751de" align="center" width="500" >
 
 ## Steps to Install
 
