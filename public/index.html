@@ -1,0 +1,3136 @@
+<!doctype html>
+<html lang="en" data-theme="dim">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Alexs-MacBook-Air.local Control</title>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="stylesheet" type="text/css" href="output.css" />
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" /> -->
+    <!-- <script type="text/javascript" src="jsmpeg.min.js"></script> -->
+    <!-- <script type="text/javascript" src="jsmpeg.js" defer></script> -->
+    <script type="text/javascript" src="tools.js"></script>
+    <script type="text/javascript" src="control.js" defer></script>
+  </head>
+  <body class="bg-base-100 text-base-content">
+    <div class="navbar bg-base-100">
+  <div class="flex-1">
+    <a class="btn btn-ghost text-xl" href="/" id="server-name">MLS: Alexs-MacBook-Air.local</a>
+  </div>
+  <div class="flex-none">
+    <ul class="menu menu-horizontal px-1">
+      <li><a href="/" class="dynamic-params">Control</a></li>
+      <li><a href="/settings.html" class="dynamic-params">Settings</a></li>
+      <li>
+        <a href="/stat" target="_blank" t>Stats</a>
+      </li>
+      <li><a href="/recording" target="_blank">Recordings</a></li>
+      <li><a href="/config.php?proclist" target="_blank">Processes</a></li>
+      <li><a href="https://github.com/live-miracles/MLS" target="_blank">GitHub</a></li>
+    </ul>
+  </div>
+</div>
+
+<div
+  class="logs fixed bottom-10 right-1 z-40 mx-auto hidden h-[250px] w-[600px] overflow-y-scroll rounded-lg border border-accent bg-base-300 p-1 opacity-80"></div>
+<div class="fixed bottom-1 right-1 z-50 flex items-center rounded bg-neutral px-1">
+  <label class="badge badge-accent badge-outline m-1 min-w-28 rounded py-3">
+    CPU: <span id="cpu-info" class="ml-1 text-neutral-content"></span>
+  </label>
+  <label class="badge badge-accent badge-outline m-1 min-w-36 rounded py-3">
+    RAM: <span id="ram-info" class="ml-1 text-neutral-content"></span>
+  </label>
+  <label class="badge badge-accent badge-outline m-1 min-w-32 rounded py-3">
+    Disk: <span id="disk-info" class="ml-1 text-neutral-content"></span>
+  </label>
+  <label class="badge badge-accent badge-outline m-1 min-w-32 rounded py-3">
+    Down: <span id="downlink-info" class="ml-1 text-neutral-content"></span>
+  </label>
+  <label class="badge badge-accent badge-outline m-1 min-w-32 rounded py-3">
+    Up: <span id="uplink-info" class="ml-1 text-neutral-content"></span>
+  </label>
+  <label class="swap m-1">
+    <input id="show-logs" type="checkbox" checked class="show-toggle url-param" />
+    <div class="badge swap-on badge-accent rounded py-3">logs</div>
+    <div class="badge swap-off badge-accent badge-outline rounded py-3">logs</div>
+  </label>
+</div>
+
+<div role="alert" id="badConnectionAlert" class="alert alert-error fixed left-1/2 z-[999] hidden w-96 -translate-x-1/2 transform opacity-90">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+  <span>Unable to connect to the server...</span>
+</div>
+
+
+    <section class="mx-6 my-3 text-center">
+      <p>
+        Distribute - <code>rtmp://47.247.113.51/distribute/stream1</code> or <code>stream2</code> or <code>stream3</code> ...
+        <br />
+        Primary - <code>rtmp://47.247.113.51/main/stream1</code><br />
+        Backup - <code>rtmp://47.247.113.51/backup/stream1</code><br />
+        Local (between streams) - <code>rtmp://127.0.0.1/distribute/stream1</code><br />
+        Multichannel Main Audio - <code>rtmp://47.247.113.51/main/remap1</code> or
+        <code>remap2</code>
+      </p>
+    </section>
+
+    <div class="mx-10 my-3">
+      <div class="collapse mx-auto bg-base-200">
+        <input id="show-more" type="checkbox" class="url-param" />
+        <div class="collapse-title text-center"><b>More</b></div>
+        <div class="collapse-content">
+          <div class="mx-6 my-3 text-center">
+            <p>Multi-Channel Remap</p>
+            <form>
+              <button type="button" class="btn btn-primary btn-xs" onclick="submitForm(event,'config.php?remap')">on</button>
+              <button type="button" class="btn btn-error btn-xs" onclick="submitForm(event,'config.php?remapoff')">off</button>
+              <select name="remap_id" class="select select-bordered select-xs max-w-xs">
+                <option disabled value="">Remap Id</option>
+                <option selected value="remap1">Remap 1</option>
+                <option value="remap2">Remap 2</option>
+              </select>
+              <select name="outputdest" class="select select-bordered select-xs max-w-xs">
+                <option disabled value="">Destination</option>
+                <option selected value="main">Main</option>
+                <option value="backup">Backup</option>
+              </select>
+              <select name="remap_type" class="select select-bordered select-xs max-w-xs">
+                <option disabled value="">Remap Type</option>
+                <option selected value="obs">OBS</option>
+                <option value="none">None</option>
+              </select>
+              <input
+                type="number"
+                name="ch_num"
+                placeholder="Ch Number"
+                value="16"
+                min="1"
+                max="16"
+                class="input-neutral input input-xs input-bordered mx-1 w-24" />
+            </form>
+          </div>
+
+          <div class="mx-6 my-3 text-center">
+            <p>
+              SRT Accept:
+              <a href="/config.php?srtaccept" target="_blank" class="btn btn-primary btn-xs">on</a>
+              <a href="/config.php?srtacceptoff" target="_blank" class="btn btn-error btn-xs">off</a>
+            </p>
+          </div>
+
+          <div class="mx-6 my-3 text-center">
+            <p>
+              Supers - Global Control:
+              <a href="/control.php?allsuper1on" target="_blank" class="btn btn-primary btn-xs">Add 1</a>
+              <a href="/control.php?allsuper2on" target="_blank" class="btn btn-primary btn-xs">Add 2</a>
+              <a href="/control.php?allsuper3on" target="_blank" class="btn btn-primary btn-xs">Add 3</a>
+              <a href="/control.php?allsuper4on" target="_blank" class="btn btn-primary btn-xs">Add 4</a>
+              <a href="/control.php?allsuper5on" target="_blank" class="btn btn-primary btn-xs">Add 5</a>
+              <a href="/control.php?allsuper6on" target="_blank" class="btn btn-primary btn-xs">Add 6</a>
+              <a href="/control.php?allsuper7on" target="_blank" class="btn btn-primary btn-xs">Add 7</a>
+              <a href="/control.php?allsuper8on" target="_blank" class="btn btn-primary btn-xs">Add 8</a>
+              <a href="/control.php?allsuperoff" target="_blank" class="btn btn-error btn-xs">Remove</a>
+            </p>
+          </div>
+
+          <div class="mx-6 my-3 text-center">
+            Batch Input Control: &nbsp;
+
+            <select id="inputType" class="labeled-select">
+              <option value="" disabled>Input Type</option>
+              <option value="main" selected>Main</option>
+              <option value="back">Backup</option>
+              <option value="video">Video</option>
+              <option value="holding">Holding</option>
+            </select>
+
+            <input type="text" id="batchInputControl" placeholder="Stream IDs: 3 4 5 7" class="input input-xs input-bordered w-[30rem]" />
+
+            <button class="btn btn-primary btn-xs" onclick="batchInputControlClick(true);">on</button>
+            <button class="btn btn-error btn-xs" onclick="batchInputControlClick(false);">off</button>
+          </div>
+
+          <div class="mx-6 my-3 text-center">
+            Refresh Time (seconds):
+            <input type="number" min="1" id="refreshTime" value="5" class="input input-xs input-bordered w-16" />
+            <button class="btn btn-primary btn-xs" onclick="updateRefreshTime();">Update</button>
+
+            <button class="btn btn-outline btn-xs ml-3" onclick="rerender();">Refresh Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <section id="stream-controls" class="text-center">
+      
+      <div id="stream-container1" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader1" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-1"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status1"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=1&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=1&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status1"></span>
+              <button onclick="executePhp('/control.php?streamno=1&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status1"></span>
+              <button onclick="executePhp('/control.php?streamno=1&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status1"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=1&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status1"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=1&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=1&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=1&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=1&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=1&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=1&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=1&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=1&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=1&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=1&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=1&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=1&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=1&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container2" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader2" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-2"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status2"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=2&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=2&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status2"></span>
+              <button onclick="executePhp('/control.php?streamno=2&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status2"></span>
+              <button onclick="executePhp('/control.php?streamno=2&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status2"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=2&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status2"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=2&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=2&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=2&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=2&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=2&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=2&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=2&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=2&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=2&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=2&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=2&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=2&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=2&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container3" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader3" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-3"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status3"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=3&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=3&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status3"></span>
+              <button onclick="executePhp('/control.php?streamno=3&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status3"></span>
+              <button onclick="executePhp('/control.php?streamno=3&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status3"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=3&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status3"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=3&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=3&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=3&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=3&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=3&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=3&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=3&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=3&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=3&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=3&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=3&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=3&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=3&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container4" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader4" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-4"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status4"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=4&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=4&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status4"></span>
+              <button onclick="executePhp('/control.php?streamno=4&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status4"></span>
+              <button onclick="executePhp('/control.php?streamno=4&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status4"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=4&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status4"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=4&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=4&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=4&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=4&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=4&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=4&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=4&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=4&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=4&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=4&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=4&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=4&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=4&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container5" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader5" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-5"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status5"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=5&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=5&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status5"></span>
+              <button onclick="executePhp('/control.php?streamno=5&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status5"></span>
+              <button onclick="executePhp('/control.php?streamno=5&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status5"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=5&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status5"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=5&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=5&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=5&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=5&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=5&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=5&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=5&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=5&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=5&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=5&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=5&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=5&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=5&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container6" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader6" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-6"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status6"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=6&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=6&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status6"></span>
+              <button onclick="executePhp('/control.php?streamno=6&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status6"></span>
+              <button onclick="executePhp('/control.php?streamno=6&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status6"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=6&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status6"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=6&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=6&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=6&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=6&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=6&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=6&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=6&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=6&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=6&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=6&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=6&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=6&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=6&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container7" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader7" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-7"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status7"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=7&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=7&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status7"></span>
+              <button onclick="executePhp('/control.php?streamno=7&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status7"></span>
+              <button onclick="executePhp('/control.php?streamno=7&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status7"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=7&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status7"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=7&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=7&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=7&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=7&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=7&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=7&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=7&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=7&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=7&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=7&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=7&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=7&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=7&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container8" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader8" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-8"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status8"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=8&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=8&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status8"></span>
+              <button onclick="executePhp('/control.php?streamno=8&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status8"></span>
+              <button onclick="executePhp('/control.php?streamno=8&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status8"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=8&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status8"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=8&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=8&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=8&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=8&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=8&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=8&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=8&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=8&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=8&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=8&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=8&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=8&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=8&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container9" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader9" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-9"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status9"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=9&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=9&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status9"></span>
+              <button onclick="executePhp('/control.php?streamno=9&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status9"></span>
+              <button onclick="executePhp('/control.php?streamno=9&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status9"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=9&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status9"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=9&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=9&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=9&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=9&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=9&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=9&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=9&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=9&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=9&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=9&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=9&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=9&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=9&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container10" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader10" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-10"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status10"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=10&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=10&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status10"></span>
+              <button onclick="executePhp('/control.php?streamno=10&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status10"></span>
+              <button onclick="executePhp('/control.php?streamno=10&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status10"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=10&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status10"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=10&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=10&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=10&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=10&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=10&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=10&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=10&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=10&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=10&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=10&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=10&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=10&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=10&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container11" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader11" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-11"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status11"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=11&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=11&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status11"></span>
+              <button onclick="executePhp('/control.php?streamno=11&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status11"></span>
+              <button onclick="executePhp('/control.php?streamno=11&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status11"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=11&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status11"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=11&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=11&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=11&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=11&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=11&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=11&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=11&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=11&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=11&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=11&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=11&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=11&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=11&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container12" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader12" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-12"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status12"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=12&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=12&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status12"></span>
+              <button onclick="executePhp('/control.php?streamno=12&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status12"></span>
+              <button onclick="executePhp('/control.php?streamno=12&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status12"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=12&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status12"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=12&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=12&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=12&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=12&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=12&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=12&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=12&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=12&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=12&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=12&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=12&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=12&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=12&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container13" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader13" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-13"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status13"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=13&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=13&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status13"></span>
+              <button onclick="executePhp('/control.php?streamno=13&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status13"></span>
+              <button onclick="executePhp('/control.php?streamno=13&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status13"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=13&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status13"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=13&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=13&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=13&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=13&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=13&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=13&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=13&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=13&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=13&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=13&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=13&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=13&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=13&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container14" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader14" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-14"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status14"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=14&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=14&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status14"></span>
+              <button onclick="executePhp('/control.php?streamno=14&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status14"></span>
+              <button onclick="executePhp('/control.php?streamno=14&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status14"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=14&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status14"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=14&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=14&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=14&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=14&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=14&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=14&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=14&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=14&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=14&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=14&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=14&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=14&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=14&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container15" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader15" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-15"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status15"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=15&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=15&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status15"></span>
+              <button onclick="executePhp('/control.php?streamno=15&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status15"></span>
+              <button onclick="executePhp('/control.php?streamno=15&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status15"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=15&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status15"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=15&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=15&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=15&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=15&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=15&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=15&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=15&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=15&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=15&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=15&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=15&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=15&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=15&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container16" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader16" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-16"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status16"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=16&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=16&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status16"></span>
+              <button onclick="executePhp('/control.php?streamno=16&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status16"></span>
+              <button onclick="executePhp('/control.php?streamno=16&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status16"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=16&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status16"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=16&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=16&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=16&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=16&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=16&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=16&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=16&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=16&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=16&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=16&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=16&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=16&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=16&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container17" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader17" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-17"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status17"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=17&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=17&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status17"></span>
+              <button onclick="executePhp('/control.php?streamno=17&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status17"></span>
+              <button onclick="executePhp('/control.php?streamno=17&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status17"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=17&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status17"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=17&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=17&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=17&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=17&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=17&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=17&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=17&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=17&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=17&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=17&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=17&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=17&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=17&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container18" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader18" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-18"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status18"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=18&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=18&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status18"></span>
+              <button onclick="executePhp('/control.php?streamno=18&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status18"></span>
+              <button onclick="executePhp('/control.php?streamno=18&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status18"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=18&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status18"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=18&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=18&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=18&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=18&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=18&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=18&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=18&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=18&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=18&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=18&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=18&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=18&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=18&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container19" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader19" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-19"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status19"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=19&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=19&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status19"></span>
+              <button onclick="executePhp('/control.php?streamno=19&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status19"></span>
+              <button onclick="executePhp('/control.php?streamno=19&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status19"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=19&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status19"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=19&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=19&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=19&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=19&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=19&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=19&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=19&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=19&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=19&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=19&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=19&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=19&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=19&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container20" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader20" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-20"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status20"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=20&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=20&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status20"></span>
+              <button onclick="executePhp('/control.php?streamno=20&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status20"></span>
+              <button onclick="executePhp('/control.php?streamno=20&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status20"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=20&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status20"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=20&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=20&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=20&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=20&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=20&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=20&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=20&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=20&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=20&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=20&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=20&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=20&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=20&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container21" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader21" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-21"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status21"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=21&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=21&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status21"></span>
+              <button onclick="executePhp('/control.php?streamno=21&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status21"></span>
+              <button onclick="executePhp('/control.php?streamno=21&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status21"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=21&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status21"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=21&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=21&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=21&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=21&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=21&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=21&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=21&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=21&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=21&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=21&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=21&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=21&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=21&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container22" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader22" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-22"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status22"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=22&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=22&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status22"></span>
+              <button onclick="executePhp('/control.php?streamno=22&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status22"></span>
+              <button onclick="executePhp('/control.php?streamno=22&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status22"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=22&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status22"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=22&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=22&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=22&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=22&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=22&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=22&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=22&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=22&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=22&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=22&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=22&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=22&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=22&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container23" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader23" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-23"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status23"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=23&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=23&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status23"></span>
+              <button onclick="executePhp('/control.php?streamno=23&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status23"></span>
+              <button onclick="executePhp('/control.php?streamno=23&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status23"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=23&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status23"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=23&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=23&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=23&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=23&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=23&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=23&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=23&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=23&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=23&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=23&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=23&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=23&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=23&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container24" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader24" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-24"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status24"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=24&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=24&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status24"></span>
+              <button onclick="executePhp('/control.php?streamno=24&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status24"></span>
+              <button onclick="executePhp('/control.php?streamno=24&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status24"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=24&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status24"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=24&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=24&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=24&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=24&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=24&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=24&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=24&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=24&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=24&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=24&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=24&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=24&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=24&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+      <div id="stream-container25" class="inline-block max-w-[400px] m-2 rounded-box bg-base-300 text-left p-2">
+        <div id="streamHeader25" class="text-xl"></div>
+        {getJsmpegPlayerHtml(i)}
+        <div id="stream-outs-25"></div>
+        <div class="collapse collapse-arrow bg-base-200 mt-2">
+          <input type="checkbox" />
+          <div class="collapse-title text-xl font-medium">More</div>
+          <div class="collapse-content">
+            <div class="my-1">
+              <div class="badge badge-xs badge-outline" id="recording-status25"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=25&action=out&actnumber=98&state=on')">
+                on
+              </button>
+              <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=25&action=out&actnumber=98&state=off')">
+                off
+              </button>
+              Record
+            </div>
+
+            <div class="mt-3 font-bold">Choose Input:</div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="main-status25"></span>
+              <button onclick="executePhp('/control.php?streamno=25&action=main&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Main Live Stream
+            </div>
+            <div class="my-1">
+              <span class="badge badge-xs badge-outline" id="backup-status25"></span>
+              <button onclick="executePhp('/control.php?streamno=25&action=back&actnumber=&state=turnon')" class="btn btn-xs btn-primary">
+                on
+              </button>
+              Backup Live stream
+            </div>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="video-status25"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=25&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="video">Video</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <form class="my-1">
+              <span class="badge badge-xs badge-outline" id="holding-status25"></span>
+              <button
+                type="button"
+                class="btn btn-xs btn-primary"
+                style="display: inline"
+                onclick="submitForm(event,'control.php?streamno=25&action=video&actnumber=&state=turnon');">
+                on
+              </button>
+              Local
+              <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <option selected value="holding">Holding</option>
+              </select>
+              <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9" />m
+              <input
+                type="text"
+                style="display: inline"
+                name="startsec"
+                size="1"
+                value="0"
+                class="input input-bordered input-neutral input-xs w-10" />s
+            </form>
+
+            <div class="my-1">
+              <button onclick="executePhp('/control.php?streamno=25&action=playlist&actnumber=&state=')" class="btn btn-xs btn-primary ml-4">
+                on
+              </button>
+              Playlist
+            </div>
+
+            <div>
+              <button onclick="executePhp('/control.php?streamno=25&action=off&actnumber=&state=')" class="btn btn-xs btn-error">off</button>
+              Current Input
+            </div>
+
+            <div class="my-1 mt-3">
+              <b>Overlays:</b>
+              <a href="/control.php?streamno=25&action=super&actnumber=1&state=" target="_blank" class="btn btn-xs btn-primary">Add 1</a>
+              <a href="/control.php?streamno=25&action=super&actnumber=2&state=" target="_blank" class="btn btn-xs btn-primary">Add 2</a>
+              <a href="/control.php?streamno=25&action=super&actnumber=3&state=" target="_blank" class="btn btn-xs btn-primary">Add 3</a>
+              <a href="/control.php?streamno=25&action=super&actnumber=4&state=" target="_blank" class="btn btn-xs btn-primary">Add 4</a>
+              <br />
+              <a href="/control.php?streamno=25&action=super&actnumber=5&state=" target="_blank" class="btn btn-xs btn-primary">Add 5</a>
+              <a href="/control.php?streamno=25&action=super&actnumber=6&state=" target="_blank" class="btn btn-xs btn-primary">Add 6</a>
+              <a href="/control.php?streamno=25&action=super&actnumber=7&state=" target="_blank" class="btn btn-xs btn-primary">Add 7</a>
+              <a href="/control.php?streamno=25&action=super&actnumber=8&state=" target="_blank" class="btn btn-xs btn-primary">Add 8</a>
+              <a href="/control.php?streamno=25&action=super&actnumber=off&state=" target="_blank" class="btn btn-xs btn-error">Remove</a>
+            </div>
+
+            <form method="post" target="_blank" action="/control.php?streamno=25&action=volume&actnumber=&state=volume">
+              <p>
+                <span class="font-bold">Volume:</span>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs" />
+                <input type="submit" value="Change" class="btn btn-xs btn-outline" />
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+      
+    </section>
+
+    <footer class="footer footer-center mt-10 bg-base-300 p-4 pb-10 text-base-content">
+  <aside>
+    <p>
+      For any bug / feature requests, please open an issue in our
+      <a class="link" href="https://github.com/live-miracles/MLS/" target="_blank">GitHub</a>
+      repo (ʃƪ˶˘ ﻬ ˘˶).
+    </p>
+    <p>
+      Check out our
+      <a class="link" href="https://live-miracles.github.io/">homepage</a> for more streaming tools (=ↀωↀ=).
+    </p>
+  </aside>
+</footer>
+
+  </body>
+</html>

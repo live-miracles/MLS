@@ -18,7 +18,7 @@ ARG NGINX_RTMP_VERSION=1.2.2
 # ARG MAKEFLAGS="-j4"
 
 # Build dependencies.
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     libpcre3 \
     libpcre3-dev \
     zlib1g-dev
@@ -54,7 +54,7 @@ ARG FFMPEG_VERSION=7.1.1
 ARG FFMPEG_PREFIX=/usr/local
 
 # FFmpeg build dependencies.
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     # Audio codecs
     libmp3lame-dev \
     libopus-dev \
@@ -115,7 +115,7 @@ RUN apt-get clean
 
 ARG NODE_VERSION=20.x
 
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     gnupg
 
 RUN curl -sL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - && \
@@ -132,7 +132,7 @@ RUN npm ci
 ##########################
 # Build the release image.
 
-RUN apt-get install -y \
+RUN apt-get update && apt-get install -y \
     gettext \
     openssl \
     libpcre3 \
@@ -153,7 +153,7 @@ ENV PATH "${PATH}:/usr/local/nginx/sbin"
 COPY nginx.conf /etc/nginx/nginx.conf
 RUN mkdir -p /opt/data /app/public/logs /app/public/recording
 
-RUN apt-get install -y supervisor
+RUN apt-get update && apt-get install -y supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/app.conf
 
 WORKDIR /app

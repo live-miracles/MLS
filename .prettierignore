@@ -4,3 +4,5 @@ output.css
 .next/
 node_modules/
 package-lock.json
+public/index.html
+public/settings.html

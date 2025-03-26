@@ -1,5 +1,8 @@
 .PHONY: *
 
+build-ejs:
+	node build-ejs.js
+
 pretty:
 	npx prettier --plugin=prettier-plugin-ejs --write .
 	shfmt -w .
