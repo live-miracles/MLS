@@ -21,7 +21,7 @@ function buildEjs(name, data) {
         removeComments: true,
         removeEmptyAttributes: true,
         minifyCSS: true,
-        minifyJS: true
+        minifyJS: true,
     });
 
     fs.writeFileSync(`public/${name}.html`, minifiedHtml);

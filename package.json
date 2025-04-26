@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "start": "node ./bin/www"
+        "start": "npx nodemon --legacy-watch ./bin/www"
     },
     "dependencies": {
         "cookie-parser": "1.4.4",
@@ -17,7 +17,7 @@
         "daisyui": "4.12.23",
         "express": "^4.19.2",
         "html-minifier": "^4.0.0",
-        "nodemon": "^3.0.1",
+        "nodemon": "^3.1.10",
         "prettier": "^3.2.5",
         "prettier-plugin-ejs": "^1.0.3",
         "prettier-plugin-tailwindcss": "^0.5.11",

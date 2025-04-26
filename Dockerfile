@@ -146,12 +146,13 @@ RUN apt-get update && apt-get install -y \
     libwebp7 \
     libtheora0 \
     libopus0 \
+    screen \
     rtmpdump
 
 # Add NGINX path, config and static files.
 ENV PATH "${PATH}:/usr/local/nginx/sbin"
 COPY nginx.conf /etc/nginx/nginx.conf
-RUN mkdir -p /opt/data /app/public/logs /app/public/recording
+RUN mkdir -p /opt/data /app/public/logs /app/public/recording /var/run/screen/S-root/
 
 RUN apt-get update && apt-get install -y supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/app.conf
