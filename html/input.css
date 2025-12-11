@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@plugin "daisyui" {
+@import 'tailwindcss';
+@plugin 'daisyui' {
     themes: dim;
 }
 
@@ -24,5 +24,5 @@
 }
 
 .collapsible-header {
-    @apply collapse collapse-arrow border border-base-300 bg-base-200;
+    @apply collapse-arrow border-base-300 bg-base-200 collapse border;
 }
