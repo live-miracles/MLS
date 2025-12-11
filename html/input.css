@@ -1,6 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "daisyui" {
+    themes: dim;
+}
 
 .collapse-title {
     @apply text-xl font-medium;
@@ -11,15 +12,15 @@
 }
 
 .input-label {
-    @apply form-control mr-1 inline-block max-w-md;
+    @apply mr-1 inline-block max-w-md;
 }
 
 .labeled-input {
-    @apply input input-xs input-bordered w-full max-w-md;
+    @apply input input-xs w-full max-w-md;
 }
 
 .labeled-select {
-    @apply select select-bordered select-xs;
+    @apply select select-xs;
 }
 
 .collapsible-header {
