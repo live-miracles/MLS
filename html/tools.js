@@ -156,6 +156,18 @@ function renderLogs() {
 }
 
 async function fetchProcesses() {
+    if (window.location.hostname === 'localhost') {
+        return `2025-12-12 16:57:15 4829.fftotsstream2_distribute
+2025-12-12 16:49:24 4068.2out1
+2025-12-12 16:41:50 3163.1out1
+2025-12-12 16:41:43 3071.wstoff
+2025-12-12 16:41:40 2968.2video
+2025-12-12 16:41:40 2871.2on
+2025-12-12 16:41:34 2770.1video
+2025-12-12 16:41:34 2673.1on`
+            .split('\n')
+            .map((s) => s.split('.')[1]);
+    }
     try {
         const response = await fetch('/config.php?proclist');
         const data = await response.text();
@@ -243,7 +255,7 @@ async function fetchConfigFile() {
                 names = (',' + line.substring(17)).split(',');
             }
             const out = parseOutLine(line);
-            if (!isOutEmpty(out)) outs[out.stream][out.out] = out;
+            if (!isOutEmpty(out) && parseInt(out.out) < 96) outs[out.stream][out.out] = out;
         });
 
     return { outs: outs, names: names };
@@ -321,11 +333,15 @@ function escapeHTML(str) {
 }
 
 function showBadConnectionAlert() {
-    document.getElementById('badConnectionAlert').classList.remove('hidden');
+    const alert = document.getElementById('badConnectionAlert');
+    if (!alert) return;
+    alert.classList.remove('hidden');
 }
 
 function hideBadConnectionAlert() {
-    document.getElementById('badConnectionAlert').classList.add('hidden');
+    const alert = document.getElementById('badConnectionAlert');
+    if (!alert) return;
+    alert.classList.add('hidden');
 }
 
 async function updateConfigs() {
