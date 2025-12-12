@@ -12,9 +12,13 @@ function getRtmpStats(type) {
     return outputs.map((s) => {
         const streamNo = s.name['#text'].split('-')[0].replace('stream', '');
         const name = s.name['#text'].split('-')[1];
+        const id =
+            type === 'output'
+                ? streamOutsConfig[parseInt(streamNo)].find((o) => o && o.name === name).out
+                : null;
 
         return {
-            id: streamOutsConfig[parseInt(streamNo)].find((o) => o && o.name === name).out,
+            id: id,
             input: streamNo,
             video: {
                 codec: s.meta.video.codec['#text'],
@@ -45,7 +49,11 @@ function getPipelinesConfig() {
         const pipe = {
             name: name,
             key: 'stream' + i,
-            input: null,
+            input: {
+                status: 'off',
+                video: null,
+                audio: null,
+            },
             outs: [],
         };
         newPipelines.push(pipe);
@@ -57,13 +65,14 @@ function getPipelinesConfig() {
 
             const pipe = newPipelines.find((p) => p.key === 'stream' + out.stream);
             if (!pipe) return;
+            const status = processes.includes(i + 'out' + out.out) ? 'error' : 'off';
 
             pipe.outs.push({
                 id: out.out,
                 name: out.name,
                 encoding: out.encoding,
                 url: out.url,
-                status: 'off',
+                status: status,
                 video: null,
                 audio: null,
             });
@@ -83,9 +92,23 @@ function getPipelinesConfig() {
             return;
         }
 
-        out.status = 'on';
+        out.status = s.video.bw > 0 ? 'on' : 'warning';
         out.video = s.video;
         out.audio = s.audio;
+    });
+
+    getRtmpStats('distribute').forEach((s) => {
+        const pipe = newPipelines.find((p) => p.key === 'stream' + s.input);
+        if (!pipe) {
+            console.error('Pipeline not found for stats', s);
+            return;
+        }
+
+        pipe.input = {
+            status: s.video.bw > 0 ? 'on' : 'warning',
+            video: s.video,
+            audio: s.audio,
+        };
     });
 
     return newPipelines;
