@@ -1,5 +1,6 @@
 let oldPipelines = [];
 let pipelines = [];
+let stats = {};
 
 function setUrlParam(param, value) {
     const url = new URL(window.location);
@@ -164,6 +165,12 @@ function renderPipelines() {
         })
         .join('');
     document.getElementById('pipelines').innerHTML = html;
+
+    document.getElementById('cpu-info').innerHTML = stats.cpu;
+    document.getElementById('ram-info').innerHTML = stats.ram;
+    document.getElementById('disk-info').innerHTML = stats.disk;
+    document.getElementById('uplink-info').innerHTML = stats.uplink;
+    document.getElementById('downlink-info').innerHTML = stats.downlink;
 }
 
 function selectPipeline(id) {
@@ -173,6 +180,7 @@ function selectPipeline(id) {
 
 (async () => {
     await updateConfigs();
+    stats = await fetchSystemStats();
     pipelines = getPipelinesInfo();
     renderPipelines();
 })();

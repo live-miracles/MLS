@@ -51,7 +51,51 @@
 
       <!-- Middle Column -->
       <div class="bg-base-200 rounded-xl p-4 shadow">
+        <div class="stats shadow">
+          <div class="stat">
+            <div class="stat-title">CPU</div>
+            <div class="stat-value text-lg" id="cpu-info"></div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">RAM</div>
+            <div class="stat-value text-lg" id="ram-info"></div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Disk</div>
+            <div class="stat-value text-lg" id="disk-info"></div>
+          </div>
+        </div>
+        <div class="stats shadow">
+          <div class="stat">
+            <div class="stat-title">Download</div>
+            <div class="stat-value text-lg" id="downlink-info"></div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">Upload</div>
+            <div class="stat-value text-lg" id="uplink-info"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
         <h2 class="mb-3 text-xl font-bold">English</h2>
+
+        <div class="jsmpeg text-center">
+          <canvas width="300" height="169" id="video-canvas" class="inline border border-solid border-gray-400"></canvas>
+          <p id="stream1">
+            <a href="javascript:void(0);" onclick="genericFunction('player.php?appname=main&streamname=', jsmpegPlay, this)" class="mx-1">
+              <i class="material-icons text-3xl">play_arrow</i>M</a
+            >
+            <a href="javascript:void(0);" onclick="genericFunction('player.php?appname=backup&streamname=', jsmpegPlay, this)" class="mx-1">
+              <i class="material-icons text-3xl">play_arrow</i>B</a
+            >
+            <a href="javascript:void(0);" onclick="genericFunction('player.php?appname=distribute&streamname=', jsmpegPlay, this)" class="mx-1">
+              <i class="material-icons text-3xl">play_arrow</i>D</a
+            >
+            <a href="javascript:void(0);" onclick="jsmpegStop()" class="mx-1"><i class="material-icons text-3xl">stop</i></a>
+            <a href="javascript:void(0);" onclick="jsmpegVolumeup()" class="mx-1"><i class="material-icons text-3xl">volume_up</i></a>
+            <a href="javascript:void(0);" onclick="jsmpegVolumedown()" class="mx-1"><i class="material-icons text-3xl">volume_down</i></a>
+          </p>
+        </div>
 
         <div class="stats stats-vertical lg:stats-horizontal w-full shadow">
           <div class="stat">

@@ -270,6 +270,15 @@ async function fetchSystemStats() {
         downlink: '...',
     };
     let data = JSON.stringify(stats);
+    if (window.location.hostname === 'localhost') {
+        return {
+            cpu: '0.08 / 6',
+            ram: '160M / 5.3G',
+            disk: '160M / 5.3G',
+            uplink: '3503 KB/s',
+            downlink: '29 KB/s',
+        };
+    }
     try {
         const response = await fetch('/config.php?stats');
         data = await response.text();
