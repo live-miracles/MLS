@@ -160,7 +160,7 @@ function renderPipelines() {
             <div class="flex items-center gap-2 ${style}" onclick=selectPipeline('${p.id}')>
               <div class="rounded-box h-5 w-5"
                 style="background: linear-gradient(90deg, ${getStatusColor(p.input.status)}, ${getStatusColor(p.input.status)} 45%, #242933 45%, #242933 55%, ${getStatusColor(outStatus)} 55%)"></div>
-              <a class="active">${p.name}</a>
+              <a class="active">${p.name}</a> <div class="badge badge-sm">${p.outs.length}</div>
             </div>
           </li>`;
         })
@@ -197,15 +197,17 @@ function renderPipelines() {
         document.getElementById('input-video-fps').innerHTML = pipe.input.video.fps;
         document.getElementById('input-video-level').innerHTML = pipe.input.video.level;
         document.getElementById('input-video-profile').innerHTML = pipe.input.video.profile;
-        document.getElementById('input-video-bw').innerHTML =
-            Math.trunc(pipe.input.video.bw / 1000) + ' Kb/s';
+        document.getElementById('input-video-bw').innerHTML = Math.trunc(
+            pipe.input.video.bw / 1000,
+        );
 
         document.getElementById('input-audio-codec').innerHTML = pipe.input.audio.codec;
         document.getElementById('input-audio-channels').innerHTML = pipe.input.audio.channels;
         document.getElementById('input-audio-sample-rate').innerHTML = pipe.input.audio.sample_rate;
         document.getElementById('input-audio-profile').innerHTML = pipe.input.audio.profile;
-        document.getElementById('input-audio-bw').innerHTML =
-            Math.trunc(pipe.input.audio.bw / 1000) + ' Kb/s';
+        document.getElementById('input-audio-bw').innerHTML = Math.trunc(
+            pipe.input.audio.bw / 1000,
+        );
     }
 }
 
