@@ -1858,6 +1858,9 @@
       }
     }
   }
+  .mt-1 {
+    margin-top: calc(var(--spacing) * 1);
+  }
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
   }
@@ -2207,19 +2210,6 @@
   .resize {
     resize: both;
   }
-  .stats-vertical {
-    @layer daisyui.l1.l2 {
-      grid-auto-flow: row;
-      overflow-y: auto;
-      .stat:not(:last-child) {
-        border-inline-end: none;
-        border-block-end: var(--border) dashed currentColor;
-        @supports (color: color-mix(in lab, red, red)) {
-          border-block-end: var(--border) dashed color-mix(in oklab, currentColor 10%, #0000);
-        }
-      }
-    }
-  }
   .grid-cols-\[300px_1fr_1fr\] {
     grid-template-columns: 300px 1fr 1fr;
   }
@@ -2335,6 +2325,9 @@
   }
   .py-3 {
     padding-block: calc(var(--spacing) * 3);
+  }
+  .pt-0 {
+    padding-top: calc(var(--spacing) * 0);
   }
   .pb-0 {
     padding-bottom: calc(var(--spacing) * 0);
@@ -2546,21 +2539,6 @@
     @layer daisyui.l1.l2 {
       &, &:focus, &:focus-within {
         --input-color: var(--color-neutral);
-      }
-    }
-  }
-  .lg\:stats-horizontal {
-    @media (width >= 64rem) {
-      @layer daisyui.l1.l2 {
-        grid-auto-flow: column;
-        overflow-x: auto;
-        .stat:not(:last-child) {
-          border-inline-end: var(--border) dashed currentColor;
-          @supports (color: color-mix(in lab, red, red)) {
-            border-inline-end: var(--border) dashed color-mix(in oklab, currentColor 10%, #0000);
-          }
-          border-block-end: none;
-        }
       }
     }
   }

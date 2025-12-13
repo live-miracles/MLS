@@ -1,4 +1,3 @@
-let oldPipelines = [];
 let pipelines = [];
 let stats = {};
 
@@ -143,23 +142,25 @@ function getStatusColor(status) {
 }
 
 function renderPipelines() {
+    const selectedPipeline = getUrlParam('pipeline');
+
     const html = pipelines
-        .map((pipe) => {
+        .map((p) => {
             let outStatus = 'off';
-            if (pipe.outs.some((o) => o.status === 'error')) {
+            if (p.outs.some((o) => o.status === 'error')) {
                 outStatus = 'error';
-            } else if (pipe.outs.some((o) => o.status === 'warning')) {
+            } else if (p.outs.some((o) => o.status === 'warning')) {
                 outStatus = 'warning';
-            } else if (pipe.outs.some((o) => o.status === 'on')) {
+            } else if (p.outs.some((o) => o.status === 'on')) {
                 outStatus = 'on';
             }
-            const style = getUrlParam('pipeline') === pipe.id ? 'bg-base-100' : '';
+            const style = p.id === selectedPipeline ? 'bg-base-100' : '';
 
             return `<li>
-            <div class="flex items-center gap-2 ${style}" onclick=selectPipeline('${pipe.id}')>
+            <div class="flex items-center gap-2 ${style}" onclick=selectPipeline('${p.id}')>
               <div class="rounded-box h-5 w-5"
-                style="background: linear-gradient(90deg, ${getStatusColor(pipe.input.status)}, ${getStatusColor(pipe.input.status)} 45%, #242933 45%, #242933 55%, ${getStatusColor(outStatus)} 55%)"></div>
-              <a class="active">${pipe.name}</a>
+                style="background: linear-gradient(90deg, ${getStatusColor(p.input.status)}, ${getStatusColor(p.input.status)} 45%, #242933 45%, #242933 55%, ${getStatusColor(outStatus)} 55%)"></div>
+              <a class="active">${p.name}</a>
             </div>
           </li>`;
         })
@@ -171,6 +172,41 @@ function renderPipelines() {
     document.getElementById('disk-info').innerHTML = stats.disk;
     document.getElementById('uplink-info').innerHTML = stats.uplink;
     document.getElementById('downlink-info').innerHTML = stats.downlink;
+
+    const pipe = pipelines.find((p) => p.id === selectedPipeline);
+    const pipeInfoElem = document.getElementById('pipe-info');
+    if (!pipe) {
+        pipeInfoElem.classList.add('hidden');
+        return;
+    }
+    pipeInfoElem.classList.remove('hidden');
+    document.getElementById('pipe-name').innerHTML = pipe.name;
+
+    const playerElem = document.getElementById('video-player');
+    const inputStatsElem = document.getElementById('input-stats');
+    if (pipe.input.status === 'off') {
+        playerElem.classList.add('hidden');
+        inputStatsElem.classList.add('hidden');
+    } else {
+        playerElem.classList.remove('hidden');
+        inputStatsElem.classList.remove('hidden');
+
+        document.getElementById('input-video-codec').innerHTML = pipe.input.video.codec;
+        document.getElementById('input-video-resolution').innerHTML =
+            pipe.input.video.width + 'x' + pipe.input.video.height;
+        document.getElementById('input-video-fps').innerHTML = pipe.input.video.fps;
+        document.getElementById('input-video-level').innerHTML = pipe.input.video.level;
+        document.getElementById('input-video-profile').innerHTML = pipe.input.video.profile;
+        document.getElementById('input-video-bw').innerHTML =
+            Math.trunc(pipe.input.video.bw / 1000) + ' Kb/s';
+
+        document.getElementById('input-audio-codec').innerHTML = pipe.input.audio.codec;
+        document.getElementById('input-audio-channels').innerHTML = pipe.input.audio.channels;
+        document.getElementById('input-audio-sample-rate').innerHTML = pipe.input.audio.sample_rate;
+        document.getElementById('input-audio-profile').innerHTML = pipe.input.audio.profile;
+        document.getElementById('input-audio-bw').innerHTML =
+            Math.trunc(pipe.input.audio.bw / 1000) + ' Kb/s';
+    }
 }
 
 function selectPipeline(id) {
