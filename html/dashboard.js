@@ -1,4 +1,16 @@
+let oldPipelines = [];
 let pipelines = [];
+
+function setUrlParam(param, value) {
+    const url = new URL(window.location);
+    url.searchParams.set(param, value);
+    window.history.pushState({}, '', url);
+}
+
+function getUrlParam(param) {
+    const url = new URL(window.location);
+    return url.searchParams.get(param);
+}
 
 function getRtmpStats(type) {
     if (statsJson === null) {
@@ -40,13 +52,14 @@ function getRtmpStats(type) {
     });
 }
 
-function getPipelinesConfig() {
+function getPipelinesInfo() {
     const newPipelines = [];
 
     streamNames.forEach((name, i) => {
         if (name === '') return;
 
         const pipe = {
+            id: String(i),
             name: name,
             key: 'stream' + i,
             input: {
@@ -114,7 +127,52 @@ function getPipelinesConfig() {
     return newPipelines;
 }
 
+function getStatusColor(status) {
+    switch (status) {
+        case 'on':
+            return 'green';
+        case 'warning':
+            return 'yellow';
+        case 'error':
+            return 'red';
+        case 'off':
+        default:
+            return 'grey';
+    }
+}
+
+function renderPipelines() {
+    const html = pipelines
+        .map((pipe) => {
+            let outStatus = 'off';
+            if (pipe.outs.some((o) => o.status === 'error')) {
+                outStatus = 'error';
+            } else if (pipe.outs.some((o) => o.status === 'warning')) {
+                outStatus = 'warning';
+            } else if (pipe.outs.some((o) => o.status === 'on')) {
+                outStatus = 'on';
+            }
+            const style = getUrlParam('pipeline') === pipe.id ? 'bg-base-100' : '';
+
+            return `<li>
+            <div class="flex items-center gap-2 ${style}" onclick=selectPipeline('${pipe.id}')>
+              <div class="rounded-box h-5 w-5"
+                style="background: linear-gradient(90deg, ${getStatusColor(pipe.input.status)}, ${getStatusColor(pipe.input.status)} 45%, #242933 45%, #242933 55%, ${getStatusColor(outStatus)} 55%)"></div>
+              <a class="active">${pipe.name}</a>
+            </div>
+          </li>`;
+        })
+        .join('');
+    document.getElementById('pipelines').innerHTML = html;
+}
+
+function selectPipeline(id) {
+    setUrlParam('pipeline', id);
+    renderPipelines();
+}
+
 (async () => {
     await updateConfigs();
-    pipelines = getPipelinesConfig();
+    pipelines = getPipelinesInfo();
+    renderPipelines();
 })();
