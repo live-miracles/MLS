@@ -184,9 +184,9 @@ function renderOutsColumn(selectedPipeline) {
           <div class="card bg-base-100 p-4 shadow">
             <h3 class="font-semibold">
               <div aria-label="status" class="status status-lg ${statusColor} mx-1"></div>
-              <button class="btn btn-xs ${o.status === 'off' ? 'btn-primary' : 'btn-error'}" 
+              <button class="btn btn-xs ${o.status === 'off' ? 'btn-accent' : 'btn-accent btn-outline'}"
                 onclick="executePhp('/control.php?streamno=${pipe.id}&amp;action=out&amp;actnumber=${o.id}&amp;state=${o.status === 'off' ? 'on' : 'off'}')">
-                ${o.status === 'off' ? 'of' : 'off'}</button>
+                ${o.status === 'off' ? 'start' : 'stop'}</button>
               Out ${o.id}: ${o.name} (${o.encoding})
               ${o.time !== 0 ? `<span class="badge badge-sm">${msToHHMMSS(o.time)}</span>` : ''}
             </h3>
@@ -208,7 +208,7 @@ function renderStatsColumn(selectedPipeline) {
     document.querySelector('#stats-col .server-stats').innerHTML = getServerStatsHtml();
 
     const inputStatsHtml = pipelines
-        .filter((p) => p.input.status !== 'off')
+        .filter((p) => p.input.video)
         .map((p) => {
             return `
       <tr class="bg-base-100">

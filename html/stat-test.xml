@@ -1,76 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?xml-stylesheet type="text/xsl" href="stat.xsl" ?>
 <rtmp>
 <nginx_version>1.13.12</nginx_version>
 <nginx_rtmp_version>1.1.4</nginx_rtmp_version>
 <compiler>gcc 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.12) </compiler>
 <built>Feb 14 2021 14:34:22</built>
-<pid>1821</pid>
-<uptime>2545</uptime>
-<naccepted>1315</naccepted>
-<bw_in>25607024</bw_in>
-<bytes_in>4027782836</bytes_in>
-<bw_out>18479984</bw_out>
-<bytes_out>2557161163</bytes_out>
+<pid>7303</pid>
+<uptime>2495</uptime>
+<naccepted>927</naccepted>
+<bw_in>7243200</bw_in>
+<bytes_in>1127661694</bytes_in>
+<bw_out>5726864</bw_out>
+<bytes_out>821956655</bytes_out>
 <server>
 <application>
 <name>output</name>
 <live>
 <stream>
-<name>stream1-test</name>
-<time>19609</time><bw_in>3882168</bw_in>
-<bytes_in>7952373</bytes_in>
+<name>stream3-Test3</name>
+<time>1873775</time><bw_in>1130336</bw_in>
+<bytes_in>122295803</bytes_in>
 <bw_out>0</bw_out>
 <bytes_out>0</bytes_out>
-<bw_audio>137496</bw_audio>
-<bw_video>3744664</bw_video>
-<client><id>2232</id><address>127.0.0.1</address><time>19785</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>23</avsync><timestamp>22890</timestamp><publishing/><active/></client>
-<meta><video><width>1920</width><height>1080</height><frame_rate>30</frame_rate><codec>H264</codec><profile>Main</profile><compat>64</compat><level>4.0</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>1</channels><sample_rate>48000</sample_rate></audio></meta>
+<bw_audio>137208</bw_audio>
+<bw_video>993120</bw_video>
+<client><id>800</id><address>127.0.0.1</address><time>1873951</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>11</avsync><timestamp>1876544</timestamp><publishing/><active/></client>
+<meta><video><width>1280</width><height>720</height><frame_rate>30</frame_rate><codec>H264</codec><profile>High</profile><compat>0</compat><level>3.1</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>2</channels><sample_rate>44100</sample_rate></audio></meta>
 <nclients>1</nclients>
 <publishing/>
 <active/>
 </stream>
 <stream>
-<name>stream3-LB_Wb_Tamil</name>
-<time>343658</time><bw_in>1756400</bw_in>
-<bytes_in>277076232</bytes_in>
+<name>stream1-Test1</name>
+<time>2167945</time><bw_in>1205152</bw_in>
+<bytes_in>195468850</bytes_in>
 <bw_out>0</bw_out>
 <bytes_out>0</bytes_out>
-<bw_audio>107864</bw_audio>
-<bw_video>1648528</bw_video>
-<client><id>1998</id><address>127.0.0.1</address><time>343834</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>32</avsync><timestamp>347072</timestamp><publishing/><active/></client>
-<meta><video><width>1920</width><height>1080</height><frame_rate>25</frame_rate><codec>H264</codec><profile>Main</profile><compat>64</compat><level>4.0</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>1</channels><sample_rate>48000</sample_rate></audio></meta>
+<bw_audio>142896</bw_audio>
+<bw_video>1062256</bw_video>
+<client><id>472</id><address>127.0.0.1</address><time>2168121</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>10</avsync><timestamp>2174177</timestamp><publishing/><active/></client>
+<meta><video><width>1280</width><height>720</height><frame_rate>30</frame_rate><codec>H264</codec><profile>High</profile><compat>0</compat><level>3.1</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>2</channels><sample_rate>44100</sample_rate></audio></meta>
 <nclients>1</nclients>
 <publishing/>
 <active/>
 </stream>
 <stream>
-<name>stream1-LB_Wb_Eng</name>
-<time>352159</time><bw_in>3108648</bw_in>
-<bytes_in>469676226</bytes_in>
+<name>stream1-Test2</name>
+<time>1873131</time><bw_in>1294528</bw_in>
+<bytes_in>183169366</bytes_in>
 <bw_out>0</bw_out>
 <bytes_out>0</bytes_out>
-<bw_audio>111176</bw_audio>
-<bw_video>2997464</bw_video>
-<client><id>1988</id><address>127.0.0.1</address><time>352335</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>31</avsync><timestamp>354731</timestamp><publishing/><active/></client>
-<meta><video><width>1920</width><height>1080</height><frame_rate>30</frame_rate><codec>H264</codec><profile>Main</profile><compat>64</compat><level>4.0</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>1</channels><sample_rate>48000</sample_rate></audio></meta>
+<bw_audio>142992</bw_audio>
+<bw_video>1151528</bw_video>
+<client><id>801</id><address>127.0.0.1</address><time>1873303</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>27</avsync><timestamp>1875127</timestamp><publishing/><active/></client>
+<meta><video><width>1280</width><height>720</height><frame_rate>30</frame_rate><codec>H264</codec><profile>High</profile><compat>0</compat><level>3.1</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>2</channels><sample_rate>44100</sample_rate></audio></meta>
 <nclients>1</nclients>
 <publishing/>
 <active/>
 </stream>
-<stream>
-<name>stream2-LB_Wb_Hindi</name>
-<time>347235</time><bw_in>6104664</bw_in>
-<bytes_in>358935901</bytes_in>
-<bw_out>0</bw_out>
-<bytes_out>0</bytes_out>
-<bw_audio>107208</bw_audio>
-<bw_video>5997456</bw_video>
-<client><id>1993</id><address>127.0.0.1</address><time>347415</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>34</avsync><timestamp>350634</timestamp><publishing/><active/></client>
-<meta><video><width>1920</width><height>1080</height><frame_rate>25</frame_rate><codec>H264</codec><profile>Main</profile><compat>64</compat><level>4.0</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>1</channels><sample_rate>48000</sample_rate></audio></meta>
-<nclients>1</nclients>
-<publishing/>
-<active/>
-</stream>
-<nclients>4</nclients>
+<nclients>3</nclients>
 </live>
 </application>
 <application>
@@ -90,52 +78,51 @@
 <live>
 <stream>
 <name>stream1</name>
-<time>436379</time><bw_in>3130264</bw_in>
-<bytes_in>606316687</bytes_in>
-<bw_out>9390808</bw_out>
-<bytes_out>1080381775</bytes_out>
-<bw_audio>109656</bw_audio>
-<bw_video>3020608</bw_video>
-<client><id>2228</id><address>127.0.0.1</address><time>23358</time><flashver>LNX 9,0,124,2</flashver><dropped>0</dropped><avsync>28</avsync><timestamp>441228</timestamp><active/></client>
-<client><id>1985</id><address>127.0.0.1</address><time>355043</time><flashver>LNX 9,0,124,2</flashver><dropped>0</dropped><avsync>28</avsync><timestamp>441228</timestamp><active/></client>
-<client><id>1919</id><address>127.0.0.1</address><time>436219</time><flashver>LNX 9,0,124,2</flashver><dropped>0</dropped><avsync>28</avsync><timestamp>441228</timestamp><active/></client>
-<client><id>1918</id><address>127.0.0.1</address><time>436555</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>28</avsync><timestamp>441228</timestamp><publishing/><active/></client>
-<meta><video><width>1920</width><height>1080</height><frame_rate>30</frame_rate><codec>H264</codec><profile>Main</profile><compat>64</compat><level>4.0</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>1</channels><sample_rate>48000</sample_rate></audio></meta>
+<time>2489713</time><bw_in>1294544</bw_in>
+<bytes_in>207707759</bytes_in>
+<bw_out>3883648</bw_out>
+<bytes_out>584923605</bytes_out>
+<bw_audio>143000</bw_audio>
+<bw_video>1151544</bw_video>
+<client><id>796</id><address>127.0.0.1</address><time>1875175</time><flashver>LNX 9,0,124,2</flashver><dropped>0</dropped><avsync>25</avsync><timestamp>2495007</timestamp><active/></client>
+<client><id>464</id><address>127.0.0.1</address><time>2174294</time><flashver>LNX 9,0,124,2</flashver><dropped>0</dropped><avsync>25</avsync><timestamp>2495007</timestamp><active/></client>
+<client><id>185</id><address>127.0.0.1</address><time>2436629</time><flashver>LNX 9,0,124,2</flashver><dropped>0</dropped><avsync>25</avsync><timestamp>2495007</timestamp><active/></client>
+<client><id>22</id><address>127.0.0.1</address><time>2489889</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>25</avsync><timestamp>2495007</timestamp><publishing/><active/></client>
+<meta><video><width>1280</width><height>720</height><frame_rate>30</frame_rate><codec>H264</codec><profile>High</profile><compat>0</compat><level>3.1</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>2</channels><sample_rate>44100</sample_rate></audio></meta>
 <nclients>4</nclients>
 <publishing/>
 <active/>
 </stream>
 <stream>
 <name>stream2</name>
-<time>427406</time><bw_in>5499688</bw_in>
-<bytes_in>430162462</bytes_in>
-<bw_out>5499688</bw_out>
-<bytes_out>359194023</bytes_out>
-<bw_audio>107144</bw_audio>
-<bw_video>5392544</bw_video>
-<client><id>1990</id><address>127.0.0.1</address><time>350623</time><flashver>LNX 9,0,124,2</flashver><dropped>0</dropped><avsync>0</avsync><timestamp>433000</timestamp><active/></client>
-<client><id>1927</id><address>127.0.0.1</address><time>427582</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>0</avsync><timestamp>433000</timestamp><publishing/><active/></client>
-<meta><video><width>1920</width><height>1080</height><frame_rate>25</frame_rate><codec>H264</codec><profile>Main</profile><compat>64</compat><level>4.0</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>1</channels><sample_rate>48000</sample_rate></audio></meta>
-<nclients>2</nclients>
+<time>2235730</time><bw_in>297872</bw_in>
+<bytes_in>143788005</bytes_in>
+<bw_out>28480</bw_out>
+<bytes_out>108062332</bytes_out>
+<bw_audio>144464</bw_audio>
+<bw_video>153408</bw_video>
+<client><id>398</id><address>127.0.0.1</address><time>2235910</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>19</avsync><timestamp>2240852</timestamp><publishing/><active/></client>
+<meta><video><width>1280</width><height>720</height><frame_rate>30</frame_rate><codec>H264</codec><profile>High</profile><compat>0</compat><level>3.1</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>2</channels><sample_rate>44100</sample_rate></audio></meta>
+<nclients>1</nclients>
 <publishing/>
 <active/>
 </stream>
 <stream>
 <name>stream3</name>
-<time>420737</time><bw_in>1750832</bw_in>
-<bytes_in>358274226</bytes_in>
-<bw_out>1750832</bw_out>
-<bytes_out>277081029</bytes_out>
-<bw_audio>108216</bw_audio>
-<bw_video>1642608</bw_video>
-<client><id>1995</id><address>127.0.0.1</address><time>347299</time><flashver>LNX 9,0,124,2</flashver><dropped>0</dropped><avsync>3</avsync><timestamp>426323</timestamp><active/></client>
-<client><id>1934</id><address>127.0.0.1</address><time>420913</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>3</avsync><timestamp>426323</timestamp><publishing/><active/></client>
-<meta><video><width>1920</width><height>1080</height><frame_rate>25</frame_rate><codec>H264</codec><profile>Main</profile><compat>64</compat><level>4.0</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>1</channels><sample_rate>48000</sample_rate></audio></meta>
+<time>2233326</time><bw_in>1166544</bw_in>
+<bytes_in>158285064</bytes_in>
+<bw_out>1166544</bw_out>
+<bytes_out>122297841</bytes_out>
+<bw_audio>144224</bw_audio>
+<bw_video>1022320</bw_video>
+<client><id>794</id><address>127.0.0.1</address><time>1876523</time><flashver>LNX 9,0,124,2</flashver><dropped>0</dropped><avsync>6</avsync><timestamp>2238506</timestamp><active/></client>
+<client><id>400</id><address>127.0.0.1</address><time>2233498</time><flashver>FMLE/3.0 (compatible; Lavf58.12</flashver><dropped>0</dropped><avsync>6</avsync><timestamp>2238506</timestamp><publishing/><active/></client>
+<meta><video><width>1280</width><height>720</height><frame_rate>30</frame_rate><codec>H264</codec><profile>High</profile><compat>0</compat><level>3.1</level></video><audio><codec>AAC</codec><profile>LC</profile><channels>2</channels><sample_rate>44100</sample_rate></audio></meta>
 <nclients>2</nclients>
 <publishing/>
 <active/>
 </stream>
-<nclients>8</nclients>
+<nclients>7</nclients>
 </live>
 </application>
 <application>
