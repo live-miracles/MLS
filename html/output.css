@@ -1710,6 +1710,9 @@
   .z-50 {
     z-index: 50;
   }
+  .z-999 {
+    z-index: 999;
+  }
   .z-\[999\] {
     z-index: 999;
   }
@@ -2289,6 +2292,12 @@
       color: var(--color-error);
     }
   }
+  .status-neutral {
+    @layer daisyui.l1.l2 {
+      background-color: var(--color-neutral);
+      color: var(--color-neutral);
+    }
+  }
   .status-success {
     @layer daisyui.l1.l2 {
       background-color: var(--color-success);
@@ -2379,6 +2388,12 @@
     @layer daisyui.l1.l2 {
       --size: calc(var(--size-selector, 0.25rem) * 7);
       font-size: 1rem;
+    }
+  }
+  .badge-md {
+    @layer daisyui.l1.l2 {
+      --size: calc(var(--size-selector, 0.25rem) * 6);
+      font-size: 0.875rem;
     }
   }
   .badge-sm {

@@ -224,7 +224,8 @@ function renderPipelines() {
     }
     pipeInfoElem.classList.remove('hidden');
     document.getElementById('pipe-name').innerHTML = pipe.name;
-    document.getElementById('input-time').innerHTML = msToHHMMSS(pipe.input.time);
+    document.getElementById('input-time').innerHTML =
+        pipe.input.time !== 0 ? msToHHMMSS(pipe.input.time) : '';
     document.getElementById('server-url').innerHTML =
         'rtmp://' + document.location.hostname + '/distribute/';
     document.getElementById('server-url').dataset.copy =
@@ -259,6 +260,35 @@ function renderPipelines() {
             pipe.input.audio.bw / 1000,
         );
     }
+
+    // Render outputs info
+    const outsHtml = pipe.outs
+        .map((o) => {
+            const statusColor =
+                o.status === 'on'
+                    ? 'status-success'
+                    : o.status === 'warning'
+                      ? 'status-warning'
+                      : o.status === 'error'
+                        ? 'status-error'
+                        : 'status-neutral';
+            return `
+          <div class="card bg-base-100 p-4 shadow">
+            <h3 class="font-semibold">
+              <div aria-label="status" class="status ${statusColor} mx-1"></div>
+              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=${pipe.id}&amp;action=out&amp;actnumber=${o.id}&amp;state=on')">
+                on</button>
+             <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=${pipe.id}&amp;action=out&amp;actnumber=${o.id}&amp;state=off')">
+                off</button>
+              <span class="badge badge-md">${o.id}</span>
+              ${o.name} (${o.encoding})
+              ${o.time !== 0 ? `<span class="badge badge-sm">${msToHHMMSS(o.time)}</span>` : ''}
+            </h3>
+            <p class="text-sm opacity-70">${o.url}</p>
+          </div>`;
+        })
+        .join('');
+    document.getElementById('outputs-list').innerHTML = outsHtml;
 }
 
 function selectPipeline(id) {
