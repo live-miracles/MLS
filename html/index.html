@@ -71,16 +71,18 @@
         <div>
           <h2 class="mb-3 text-xl font-bold"><span id="pipe-name"></span> <span class="badge" id="input-time"></span></h2>
 
+
+
           <div class="jsmpeg text-center" id="video-player">
             <canvas width="300" height="169" id="video-canvas" class="inline border border-solid border-gray-400"></canvas>
             <p id="player-controls">
-              <a href="javascript:void(0);" onclick="genericFunction('player.php?appname=main&streamname=stream')" class="mx-1">
+              <a href="javascript:void(0);" onclick="playVideo('player.php?appname=main&streamname=stream')" class="mx-1">
                 <i class="material-icons text-3xl">play_arrow</i>M</a
               >
-              <a href="javascript:void(0);" onclick="genericFunction('player.php?appname=backup&streamname=stream')" class="mx-1">
+              <a href="javascript:void(0);" onclick="playVideo('player.php?appname=backup&streamname=stream')" class="mx-1">
                 <i class="material-icons text-3xl">play_arrow</i>B</a
               >
-              <a href="javascript:void(0);" onclick="genericFunction('player.php?appname=distribute&streamname=stream')" class="mx-1">
+              <a href="javascript:void(0);" onclick="playVideo('player.php?appname=distribute&streamname=stream')" class="mx-1">
                 <i class="material-icons text-3xl">play_arrow</i>D</a
               >
               <a href="javascript:void(0);" onclick="jsmpegStop()" class="mx-1"><i class="material-icons text-3xl">stop</i></a>

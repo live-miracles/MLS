@@ -61,7 +61,7 @@ function renderStreamControls() {
                     style="display: inline"
                     onclick="submitForm(event,'control.php?streamno=${i}&action=video&actnumber=&state=turnon');">on</button>
                 Local
-                <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <select name="video_no" class="select select-bordered select-xs max-w-fit">
                     <option selected value="video">Video</option>
                 </select>
                 <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9"/>m
@@ -76,7 +76,7 @@ function renderStreamControls() {
                     style="display: inline"
                     onclick="submitForm(event,'control.php?streamno=${i}&action=video&actnumber=&state=turnon');">on</button>
                 Local
-                <select name="video_no" class="select select-bordered select-xs max-w-xs">
+                <select name="video_no" class="select select-bordered select-xs max-w-fit">
                     <option selected value="holding">Holding</option>
                 </select>
                 <input type="text" name="startmin" size="1" value="0" class="input input-bordered input-neutral input-xs w-9"/>m
@@ -153,8 +153,8 @@ function renderStreamHeaders() {
             document.getElementById('stream-container' + i).classList.remove('hidden');
         }
         headerElem.innerHTML = `
-            <div class="mb-2 badge badge-lg bg-base-100 font-semibold">${i}</div>
-            <div class="mb-2 badge ${statuses.distribute[i] ? 'badge-primary' : 'badge-outline'}">dist</div>
+            <div class="badge badge-lg bg-base-100 font-semibold">${i}</div>
+            <div class="badge ${statuses.distribute[i] ? 'badge-primary' : 'badge-outline'}">dist</div>
             <div class="badge ${statuses.main[i] ? 'badge-primary' : 'badge-outline'}">main</div>
             <div class="badge ${statuses.backup[i] ? 'badge-primary' : 'badge-outline'}">back</div>
             <span class="badge badge-lg bg-base-200 rounded-md">${streamName}</span>`;

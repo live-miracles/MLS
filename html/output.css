@@ -2167,6 +2167,9 @@
   .max-w-\[400px\] {
     max-width: 400px;
   }
+  .max-w-fit {
+    max-width: fit-content;
+  }
   .max-w-sm {
     max-width: var(--container-sm);
   }

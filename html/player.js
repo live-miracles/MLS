@@ -1,4 +1,4 @@
-function playerPlay(url) {
+function playVideo(url) {
     const streamId = getUrlParam('pipeline');
     if (!streamId) {
         alert('No pipeline selected');
