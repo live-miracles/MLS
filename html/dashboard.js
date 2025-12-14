@@ -283,3 +283,15 @@ function selectPipeline(id) {
         renderPipelines();
     }, 5000);
 })();
+
+async function fetchServerName() {
+    const res = await fetch('server-name.txt');
+    const text = await res.text();
+    return text.trim();
+}
+
+(async () => {
+    const name = await fetchServerName();
+    document.title = name + ': Dashboard';
+    document.getElementById('server-name').innerHTML = 'MLS: ' + name;
+})();
