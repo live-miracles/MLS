@@ -20,7 +20,11 @@ async function copyData(id) {
 
 function setUrlParam(param, value) {
     const url = new URL(window.location);
-    url.searchParams.set(param, value);
+    if (value === null) {
+        url.searchParams.delete(param);
+    } else {
+        url.searchParams.set(param, value);
+    }
     window.history.pushState({}, '', url);
 }
 
