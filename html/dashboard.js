@@ -270,7 +270,19 @@ function selectPipeline(id) {
     renderPipelines();
 }
 
+async function fetchServerName() {
+    const res = await fetch('server-name.txt');
+    const text = await res.text();
+    return text.trim();
+}
+
 (async () => {
+    const name = await fetchServerName();
+    document.title = name + ': Dashboard';
+    document.getElementById('server-name').innerHTML = 'MLS: ' + name;
+
+    setVideoPlayers();
+
     await updateConfigs();
     serverStats = await fetchSystemStats();
     pipelines = getPipelinesInfo();
@@ -282,16 +294,4 @@ function selectPipeline(id) {
         pipelines = getPipelinesInfo();
         renderPipelines();
     }, 5000);
-})();
-
-async function fetchServerName() {
-    const res = await fetch('server-name.txt');
-    const text = await res.text();
-    return text.trim();
-}
-
-(async () => {
-    const name = await fetchServerName();
-    document.title = name + ': Dashboard';
-    document.getElementById('server-name').innerHTML = 'MLS: ' + name;
 })();

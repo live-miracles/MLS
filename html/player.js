@@ -51,11 +51,7 @@ function jsmpegVolumedown() {
 }
 
 function setVideoPlayers() {
-    for (let i = 1; i <= STREAM_NUM; i++) {
-        for (let j = 1; j <= OUT_NUM; j++) {
-            eval(`window.canvas${i} = document.getElementById('video-canvas${i}');`);
-            eval(`window.url${i} = 'ws://' + document.location.hostname + ':443/';`);
-            eval(`window.player${i} = 'initial state';`);
-        }
-    }
+    window.canvas1 = document.getElementById('video-canvas');
+    window.url1 = 'ws://' + document.location.hostname + ':443/';
+    window.player1 = 'initial state';
 }

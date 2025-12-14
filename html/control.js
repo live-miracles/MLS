@@ -197,7 +197,7 @@ function renderOuts() {
                     ? 'badge-primary'
                     : 'badge-error'
                 : 'badge-outline';
-            console.assert(isProcRunning || !statuses[i][j]);
+            console.assert(isProcRunning || !statuses[i][j], i + 'out' + j + ' inconsistency');
 
             outsHtml += `
                 <div class="my-1">
