@@ -1,5 +1,22 @@
 let pipelines = [];
-let stats = {};
+let serverStats = {};
+
+function msToHHMMSS(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return [hours, minutes.toString().padStart(2, '0'), seconds.toString().padStart(2, '0')].join(
+        ':',
+    );
+}
+
+async function copyData(id) {
+    const elem = document.getElementById(id);
+    const text = elem.dataset.copy;
+    await navigator.clipboard.writeText(text);
+}
 
 function setUrlParam(param, value) {
     const url = new URL(window.location);
@@ -32,6 +49,7 @@ function getRtmpStats(type) {
         return {
             id: id,
             input: streamNo,
+            time: parseInt(s.time['#text']),
             video: {
                 codec: s.meta.video.codec['#text'],
                 fps: s.meta.video.frame_rate['#text'],
@@ -55,6 +73,9 @@ function getRtmpStats(type) {
 function getPipelinesInfo() {
     const newPipelines = [];
 
+    if (streamNames === null) {
+        streamNames = [];
+    }
     streamNames.forEach((name, i) => {
         if (name === '') return;
 
@@ -64,6 +85,7 @@ function getPipelinesInfo() {
             key: 'stream' + i,
             input: {
                 status: 'off',
+                time: 0,
                 video: null,
                 audio: null,
             },
@@ -72,6 +94,9 @@ function getPipelinesInfo() {
         newPipelines.push(pipe);
     });
 
+    if (streamOutsConfig === null) {
+        streamOutsConfig = [];
+    }
     streamOutsConfig.forEach((outConfig, i) => {
         outConfig.forEach((out, i) => {
             if (Object.keys(out).length === 0) return;
@@ -86,6 +111,7 @@ function getPipelinesInfo() {
                 encoding: out.encoding,
                 url: out.url,
                 status: status,
+                time: 0,
                 video: null,
                 audio: null,
             });
@@ -106,6 +132,7 @@ function getPipelinesInfo() {
         }
 
         out.status = s.video.bw > 0 ? 'on' : 'warning';
+        out.time = s.time;
         out.video = s.video;
         out.audio = s.audio;
     });
@@ -119,6 +146,7 @@ function getPipelinesInfo() {
 
         pipe.input = {
             status: s.video.bw > 0 ? 'on' : 'warning',
+            time: s.time,
             video: s.video,
             audio: s.audio,
         };
@@ -144,6 +172,20 @@ function getStatusColor(status) {
 function renderPipelines() {
     const selectedPipeline = getUrlParam('pipeline');
 
+    // Render pipeline list
+    document.getElementById('on-pipes').innerHTML = pipelines.filter(
+        (p) => p.input.status === 'on',
+    ).length;
+    document.getElementById('on-outs').innerHTML = pipelines.reduce((sum, p) => {
+        return sum + p.outs.filter((o) => o.status === 'on').length;
+    }, 0);
+    document.getElementById('out-errors').innerHTML = pipelines.reduce((sum, p) => {
+        return sum + p.outs.filter((o) => o.status === 'error').length;
+    }, 0);
+    document.getElementById('out-warnings').innerHTML = pipelines.reduce((sum, p) => {
+        return sum + p.outs.filter((o) => o.status === 'warning').length;
+    }, 0);
+
     const html = pipelines
         .map((p) => {
             let outStatus = 'off';
@@ -167,12 +209,13 @@ function renderPipelines() {
         .join('');
     document.getElementById('pipelines').innerHTML = html;
 
-    document.getElementById('cpu-info').innerHTML = stats.cpu;
-    document.getElementById('ram-info').innerHTML = stats.ram;
-    document.getElementById('disk-info').innerHTML = stats.disk;
-    document.getElementById('uplink-info').innerHTML = stats.uplink;
-    document.getElementById('downlink-info').innerHTML = stats.downlink;
+    document.getElementById('cpu-info').innerHTML = serverStats.cpu;
+    document.getElementById('ram-info').innerHTML = serverStats.ram;
+    document.getElementById('disk-info').innerHTML = serverStats.disk;
+    document.getElementById('uplink-info').innerHTML = serverStats.uplink;
+    document.getElementById('downlink-info').innerHTML = serverStats.downlink;
 
+    // Render selected pipeline info
     const pipe = pipelines.find((p) => p.id === selectedPipeline);
     const pipeInfoElem = document.getElementById('pipe-info');
     if (!pipe) {
@@ -181,6 +224,13 @@ function renderPipelines() {
     }
     pipeInfoElem.classList.remove('hidden');
     document.getElementById('pipe-name').innerHTML = pipe.name;
+    document.getElementById('input-time').innerHTML = msToHHMMSS(pipe.input.time);
+    document.getElementById('server-url').innerHTML =
+        'rtmp://' + document.location.hostname + '/distribute/';
+    document.getElementById('server-url').dataset.copy =
+        'rtmp://' + document.location.hostname + '/distribute/';
+    document.getElementById('stream-key').innerHTML = pipe.key.replace('stream', 'Stream ');
+    document.getElementById('stream-key').dataset.copy = pipe.key;
 
     const playerElem = document.getElementById('video-player');
     const inputStatsElem = document.getElementById('input-stats');
@@ -218,7 +268,14 @@ function selectPipeline(id) {
 
 (async () => {
     await updateConfigs();
-    stats = await fetchSystemStats();
+    serverStats = await fetchSystemStats();
     pipelines = getPipelinesInfo();
     renderPipelines();
+
+    setInterval(async () => {
+        await updateConfigs();
+        serverStats = await fetchSystemStats();
+        pipelines = getPipelinesInfo();
+        renderPipelines();
+    }, 5000);
 })();
