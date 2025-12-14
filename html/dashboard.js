@@ -270,8 +270,12 @@ function renderPipelines() {
 }
 
 function selectPipeline(id) {
+    jsmpegStop();
     setUrlParam('pipeline', id);
     renderPipelines();
+    if(id !== null) {
+        playVideo('player.php?appname=distribute&streamname=stream');
+    }
 }
 
 async function fetchServerName() {
