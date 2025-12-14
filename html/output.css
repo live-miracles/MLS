@@ -2089,6 +2089,12 @@
   .table {
     display: table;
   }
+  .status-lg {
+    @layer daisyui.l1.l2 {
+      width: calc(0.25rem * 3);
+      height: calc(0.25rem * 3);
+    }
+  }
   .h-5 {
     height: calc(var(--spacing) * 5);
   }
@@ -2213,8 +2219,11 @@
   .resize {
     resize: both;
   }
-  .grid-cols-\[200px_1fr_1fr\] {
-    grid-template-columns: 200px 1fr 1fr;
+  .grid-cols-\[200px_1fr\] {
+    grid-template-columns: 200px 1fr;
+  }
+  .grid-cols-\[200px_auto_1fr\] {
+    grid-template-columns: 200px auto 1fr;
   }
   .flex-col {
     flex-direction: column;
@@ -2242,6 +2251,9 @@
   }
   .overflow-x-auto {
     overflow-x: auto;
+  }
+  .overflow-y-auto {
+    overflow-y: auto;
   }
   .overflow-y-scroll {
     overflow-y: scroll;
@@ -2388,12 +2400,6 @@
     @layer daisyui.l1.l2 {
       --size: calc(var(--size-selector, 0.25rem) * 7);
       font-size: 1rem;
-    }
-  }
-  .badge-md {
-    @layer daisyui.l1.l2 {
-      --size: calc(var(--size-selector, 0.25rem) * 6);
-      font-size: 0.875rem;
     }
   }
   .badge-sm {
@@ -2559,6 +2565,12 @@
     @layer daisyui.l1.l2.l3 {
       --btn-color: var(--color-error);
       --btn-fg: var(--color-error-content);
+    }
+  }
+  .btn-neutral {
+    @layer daisyui.l1.l2.l3 {
+      --btn-color: var(--color-neutral);
+      --btn-fg: var(--color-neutral-content);
     }
   }
   .btn-primary {

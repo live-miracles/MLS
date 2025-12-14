@@ -8,7 +8,8 @@
     <link rel="stylesheet" type="text/css" href="output.css" />
     <script type="text/javascript" src="jsmpeg.min.js"></script>
     <script type="text/javascript" src="tools.js"></script>
-    <script type="text/javascript" src="player.js" defer></script>
+    <script type="text/javascript" src="player.js"></script>
+    <script type="text/javascript" src="pipeline.js"></script>
     <script type="text/javascript" src="dashboard.js" defer></script>
   </head>
   <body class="bg-base-100 text-base-content flex h-screen flex-col">
@@ -41,10 +42,10 @@
       <span>Unable to connect to the server...</span>
     </div>
 
-    <div class="grid min-h-0 flex-1 grid-cols-[200px_1fr_1fr] gap-4 p-4 pt-0">
+    <div class="grid h-screen min-h-0 flex-1 grid-cols-[200px_auto_1fr] gap-4 p-4 pt-0">
       <!-- Left Column -->
-      <div class="bg-base-300 rounded-box w-full">
-        <div id="pipe-overwiew" class="p-4 text-center">
+      <div class="bg-base-300 rounded-box w-full overflow-y-auto">
+        <div id="pipe-overwiew" class="p-4">
           <div>
             <div aria-label="status" class="status status-success"></div>
             <span id="on-pipes"></span> pipes | <span id="on-outs"></span> outs
@@ -62,33 +63,12 @@
       </div>
 
       <!-- Middle Column -->
-      <div class="bg-base-200 rounded-xl p-4 shadow">
-        <div class="stats shadow">
-          <div class="stat p-3">
-            <div class="stat-title">CPU</div>
-            <div class="stat-value text-sm" id="cpu-info"></div>
-          </div>
-          <div class="stat p-3">
-            <div class="stat-title">RAM</div>
-            <div class="stat-value text-sm" id="ram-info"></div>
-          </div>
-          <div class="stat p-3">
-            <div class="stat-title">Disk</div>
-            <div class="stat-value text-sm" id="disk-info"></div>
-          </div>
-          <div class="stat p-3">
-            <div class="stat-title">Download</div>
-            <div class="stat-value text-sm" id="downlink-info"></div>
-          </div>
-          <div class="stat p-3">
-            <div class="stat-title">Upload</div>
-            <div class="stat-value text-sm" id="uplink-info"></div>
-          </div>
-        </div>
+      <div class="bg-base-200 overflow-y-auto rounded-xl p-4 shadow" id="pipe-info-col">
+        <div class="stats server-stats shadow"></div>
 
         <div class="divider"></div>
 
-        <div id="pipe-info">
+        <div>
           <h2 class="mb-3 text-xl font-bold"><span id="pipe-name"></span> <span class="badge" id="input-time"></span></h2>
 
           <div class="jsmpeg text-center" id="video-player">
@@ -175,21 +155,59 @@
           <div class="prose mt-2">
             <div>
               Server URL: <code id="server-url" data-copy=""></code>
-              <button class="btn btn-xs btn-accent" onclick="copyData('server-url')">Copy</button>
+              <button class="btn btn-xs btn-neutral" onclick="copyData('server-url')">📋</button>
             </div>
             <div class="mt-1">
               Stream Key: <code id="stream-key" data-copy=""></code>
-              <button id="copy-btn" class="btn btn-xs btn-accent" onclick="copyData('stream-key')">Copy</button>
+              <button id="copy-btn" class="btn btn-xs btn-neutral" onclick="copyData('stream-key')">📋</button>
+            </div>
+            <div class="mt-1">
+              RTMP URL: <code id="rtmp-url" data-copy=""></code>
+              <button id="copy-btn" class="btn btn-xs btn-neutral" onclick="copyData('rtmp-url')">📋</button>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Right Column -->
-      <div class="bg-base-200 rounded-xl p-4 shadow">
+      <div class="bg-base-200 overflow-y-auto rounded-xl p-4 shadow" id="outs-col">
         <h2 class="mb-3 text-xl font-bold">Outputs</h2>
-
         <div class="space-y-3" id="outputs-list"></div>
+      </div>
+
+      <!-- Stats Column -->
+      <div class="bg-base-200 hidden overflow-y-auto rounded-xl p-4 shadow" id="stats-col">
+        <div class="stats server-stats shadow"></div>
+
+        <div class="divider"></div>
+
+        <div class="overflow-x-auto">
+          <table class="table">
+            <!-- head -->
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Name</th>
+                <th>Kb/s</th>
+                <th>Codec</th>
+                <th>Size</th>
+                <th>FPS</th>
+                <th>Kb/s</th>
+                <th>Codec</th>
+                <th>Ch</th>
+                <th>Freq</th>
+              </tr>
+            </thead>
+            <tbody id="stats-table">
+              <tr>
+                <th>1</th>
+                <td>Cy Ganderton</td>
+                <td>Quality Control Specialist</td>
+                <td>Blue</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </body>

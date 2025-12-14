@@ -29,132 +29,6 @@ function getUrlParam(param) {
     return url.searchParams.get(param);
 }
 
-function getRtmpStats(type) {
-    if (statsJson === null) {
-        return [];
-    }
-    let outputs = statsJson.rtmp.server.application.find((app) => app.name['#text'] == type).live
-        .stream;
-    if (outputs === undefined) outputs = []; // no streams
-    if (!Array.isArray(outputs)) outputs = [outputs]; // only one stream
-
-    return outputs.map((s) => {
-        const streamNo = s.name['#text'].split('-')[0].replace('stream', '');
-        const name = s.name['#text'].split('-')[1];
-        const id =
-            type === 'output'
-                ? streamOutsConfig[parseInt(streamNo)].find((o) => o && o.name === name).out
-                : null;
-
-        return {
-            id: id,
-            input: streamNo,
-            time: parseInt(s.time['#text']),
-            video: {
-                codec: s.meta.video.codec['#text'],
-                fps: s.meta.video.frame_rate['#text'],
-                height: s.meta.video.height['#text'],
-                width: s.meta.video.width['#text'],
-                level: s.meta.video.level['#text'],
-                profile: s.meta.video.profile['#text'],
-                bw: s.bw_video['#text'],
-            },
-            audio: {
-                codec: s.meta.audio.codec['#text'],
-                profile: s.meta.audio.profile['#text'],
-                channels: s.meta.audio.channels['#text'],
-                sample_rate: s.meta.audio.sample_rate['#text'],
-                bw: s.bw_audio['#text'],
-            },
-        };
-    });
-}
-
-function getPipelinesInfo() {
-    const newPipelines = [];
-
-    if (streamNames === null) {
-        streamNames = [];
-    }
-    streamNames.forEach((name, i) => {
-        if (name === '') return;
-
-        const pipe = {
-            id: String(i),
-            name: name,
-            key: 'stream' + i,
-            input: {
-                status: 'off',
-                time: 0,
-                video: null,
-                audio: null,
-            },
-            outs: [],
-        };
-        newPipelines.push(pipe);
-    });
-
-    if (streamOutsConfig === null) {
-        streamOutsConfig = [];
-    }
-    streamOutsConfig.forEach((outConfig, i) => {
-        outConfig.forEach((out, i) => {
-            if (Object.keys(out).length === 0) return;
-
-            const pipe = newPipelines.find((p) => p.key === 'stream' + out.stream);
-            if (!pipe) return;
-            const status = processes.includes(i + 'out' + out.out) ? 'error' : 'off';
-
-            pipe.outs.push({
-                id: out.out,
-                name: out.name,
-                encoding: out.encoding,
-                url: out.url,
-                status: status,
-                time: 0,
-                video: null,
-                audio: null,
-            });
-        });
-    });
-
-    getRtmpStats('output').forEach((s) => {
-        const pipe = newPipelines.find((p) => p.key === 'stream' + s.input);
-        if (!pipe) {
-            console.error('Pipeline not found for stats', s);
-            return;
-        }
-
-        const out = pipe.outs.find((o) => o.id === s.id);
-        if (!out) {
-            console.error('Output not found for stats', s);
-            return;
-        }
-
-        out.status = s.video.bw > 0 ? 'on' : 'warning';
-        out.time = s.time;
-        out.video = s.video;
-        out.audio = s.audio;
-    });
-
-    getRtmpStats('distribute').forEach((s) => {
-        const pipe = newPipelines.find((p) => p.key === 'stream' + s.input);
-        if (!pipe) {
-            console.error('Pipeline not found for stats', s);
-            return;
-        }
-
-        pipe.input = {
-            status: s.video.bw > 0 ? 'on' : 'warning',
-            time: s.time,
-            video: s.video,
-            audio: s.audio,
-        };
-    });
-
-    return newPipelines;
-}
-
 function getStatusColor(status) {
     switch (status) {
         case 'on':
@@ -169,10 +43,35 @@ function getStatusColor(status) {
     }
 }
 
-function renderPipelines() {
-    const selectedPipeline = getUrlParam('pipeline');
+function getServerStatsHtml() {
+    return `
+        <div class="stats shadow">
+          <div class="stat p-3">
+            <div class="stat-title">CPU</div>
+            <div class="stat-value text-sm">${serverStats.cpu}</div>
+          </div>
+          <div class="stat p-3">
+            <div class="stat-title">RAM</div>
+            <div class="stat-value text-sm">${serverStats.ram}</div>
+          </div>
+          <div class="stat p-3">
+            <div class="stat-title">Disk</div>
+            <div class="stat-value text-sm">${serverStats.disk}</div>
+          </div>
+          <div class="stat p-3">
+            <div class="stat-title">Download</div>
+            <div class="stat-value text-sm">${serverStats.downlink}</div>
+          </div>
+          <div class="stat p-3">
+            <div class="stat-title">Upload</div>
+            <div class="stat-value text-sm">${serverStats.uplink}</div>
+          </div>
+        </div>
 
-    // Render pipeline list
+        <div class="divider"></div>`;
+}
+
+function renderPipelinesList(selectedPipeline) {
     document.getElementById('on-pipes').innerHTML = pipelines.filter(
         (p) => p.input.status === 'on',
     ).length;
@@ -208,30 +107,30 @@ function renderPipelines() {
         })
         .join('');
     document.getElementById('pipelines').innerHTML = html;
+}
 
-    document.getElementById('cpu-info').innerHTML = serverStats.cpu;
-    document.getElementById('ram-info').innerHTML = serverStats.ram;
-    document.getElementById('disk-info').innerHTML = serverStats.disk;
-    document.getElementById('uplink-info').innerHTML = serverStats.uplink;
-    document.getElementById('downlink-info').innerHTML = serverStats.downlink;
-
-    // Render selected pipeline info
-    const pipe = pipelines.find((p) => p.id === selectedPipeline);
-    const pipeInfoElem = document.getElementById('pipe-info');
-    if (!pipe) {
-        pipeInfoElem.classList.add('hidden');
+function renderPipelineInfoColumn(selectedPipeline) {
+    if (!selectedPipeline) {
+        document.getElementById('pipe-info-col').classList.add('hidden');
         return;
+    } else {
+        document.getElementById('pipe-info-col').classList.remove('hidden');
     }
-    pipeInfoElem.classList.remove('hidden');
+
+    document.querySelector('#pipe-info-col .server-stats').innerHTML = getServerStatsHtml();
+
+    const pipe = pipelines.find((p) => p.id === selectedPipeline);
     document.getElementById('pipe-name').innerHTML = pipe.name;
     document.getElementById('input-time').innerHTML =
         pipe.input.time !== 0 ? msToHHMMSS(pipe.input.time) : '';
-    document.getElementById('server-url').innerHTML =
-        'rtmp://' + document.location.hostname + '/distribute/';
-    document.getElementById('server-url').dataset.copy =
-        'rtmp://' + document.location.hostname + '/distribute/';
+
+    const serverUrl = 'rtmp://' + document.location.hostname + '/distribute/';
+    document.getElementById('server-url').innerHTML = serverUrl;
+    document.getElementById('server-url').dataset.copy = serverUrl;
     document.getElementById('stream-key').innerHTML = pipe.key.replace('stream', 'Stream ');
     document.getElementById('stream-key').dataset.copy = pipe.key;
+    document.getElementById('rtmp-url').innerHTML = serverUrl + pipe.key;
+    document.getElementById('rtmp-url').dataset.copy = serverUrl + pipe.key;
 
     const playerElem = document.getElementById('video-player');
     const inputStatsElem = document.getElementById('input-stats');
@@ -260,8 +159,17 @@ function renderPipelines() {
             pipe.input.audio.bw / 1000,
         );
     }
+}
 
-    // Render outputs info
+function renderOutsColumn(selectedPipeline) {
+    if (!selectedPipeline) {
+        document.getElementById('outs-col').classList.add('hidden');
+        return;
+    } else {
+        document.getElementById('outs-col').classList.remove('hidden');
+    }
+
+    const pipe = pipelines.find((p) => p.id === selectedPipeline);
     const outsHtml = pipe.outs
         .map((o) => {
             const statusColor =
@@ -275,13 +183,11 @@ function renderPipelines() {
             return `
           <div class="card bg-base-100 p-4 shadow">
             <h3 class="font-semibold">
-              <div aria-label="status" class="status ${statusColor} mx-1"></div>
-              <button class="btn btn-xs btn-primary" onclick="executePhp('/control.php?streamno=${pipe.id}&amp;action=out&amp;actnumber=${o.id}&amp;state=on')">
-                on</button>
-             <button class="btn btn-xs btn-error" onclick="executePhp('/control.php?streamno=${pipe.id}&amp;action=out&amp;actnumber=${o.id}&amp;state=off')">
-                off</button>
-              <span class="badge badge-md">${o.id}</span>
-              ${o.name} (${o.encoding})
+              <div aria-label="status" class="status status-lg ${statusColor} mx-1"></div>
+              <button class="btn btn-xs ${o.status === 'off' ? 'btn-primary' : 'btn-error'}" 
+                onclick="executePhp('/control.php?streamno=${pipe.id}&amp;action=out&amp;actnumber=${o.id}&amp;state=${o.status === 'off' ? 'on' : 'off'}')">
+                ${o.status === 'off' ? 'of' : 'off'}</button>
+              Out ${o.id}: ${o.name} (${o.encoding})
               ${o.time !== 0 ? `<span class="badge badge-sm">${msToHHMMSS(o.time)}</span>` : ''}
             </h3>
             <p class="text-sm opacity-70">${o.url}</p>
@@ -289,6 +195,74 @@ function renderPipelines() {
         })
         .join('');
     document.getElementById('outputs-list').innerHTML = outsHtml;
+}
+
+function renderStatsColumn(selectedPipeline) {
+    if (selectedPipeline) {
+        document.getElementById('stats-col').classList.add('hidden');
+        return;
+    } else {
+        document.getElementById('stats-col').classList.remove('hidden');
+    }
+
+    document.querySelector('#stats-col .server-stats').innerHTML = getServerStatsHtml();
+
+    const inputStatsHtml = pipelines
+        .filter((p) => p.input.status !== 'off')
+        .map((p) => {
+            return `
+      <tr class="bg-base-100">
+        <th>${msToHHMMSS(p.input.time)}</th>
+        <td>${p.name}</td>
+        <td>${Math.trunc(p.input.video.bw / 1000)}</td>
+        <td>${p.input.video.codec}</td>
+        <td>${p.input.video.width}x${p.input.video.height}</td>
+        <td>${p.input.video.fps}</td>
+        <td>${Math.trunc(p.input.audio.bw / 1000)}</td>
+        <td>${p.input.audio.codec}</td>
+        <td>${p.input.audio.channels}</td>
+        <td>${p.input.audio.sample_rate}</td>
+      </tr>`;
+        })
+        .join('');
+    const outputStatsHtml = pipelines
+        .flatMap((p) => p.outs)
+        .filter((o) => o.video)
+        .map((o) => {
+            return `
+      <tr>
+        <th>${msToHHMMSS(o.time)}</th>
+        <td>${o.pipe}: ${o.name}</td>
+        <td>${Math.trunc(o.video.bw / 1000)}</td>
+        <td>${o.video.codec}</td>
+        <td>${o.video.width}x${o.video.height}</td>
+        <td>${o.video.fps}</td>
+        <td>${Math.trunc(o.audio.bw / 1000)}</td>
+        <td>${o.audio.codec}</td>
+        <td>${o.audio.channels}</td>
+        <td>${o.audio.sample_rate}</td>
+      </tr>`;
+        })
+        .join('');
+    document.getElementById('stats-table').innerHTML = inputStatsHtml + outputStatsHtml;
+}
+
+function renderPipelines() {
+    const selectedPipeline = getUrlParam('pipeline');
+
+    const gridElem = document.querySelector('.grid');
+    if (selectedPipeline) {
+        gridElem.classList.remove('grid-cols-[200px_1fr]');
+        gridElem.classList.add('grid-cols-[200px_auto_1fr]');
+    } else {
+        gridElem.classList.remove('grid-cols-[200px_auto_1fr]');
+        gridElem.classList.add('grid-cols-[200px_1fr]');
+    }
+
+    renderPipelinesList(selectedPipeline);
+    renderPipelineInfoColumn(selectedPipeline);
+    renderOutsColumn(selectedPipeline);
+    renderStatsColumn(selectedPipeline);
 }
 
 function selectPipeline(id) {
