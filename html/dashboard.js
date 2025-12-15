@@ -200,16 +200,12 @@ function renderPipelineInfoColumn(selectedPipeline) {
 }
 
 function startOut(pipeId, outId) {
-    executePhp(
-        `/control.php?streamno=${pipeId}&action=out&actnumber=${outId}&state=on`,
-    );
+    executePhp(`/control.php?streamno=${pipeId}&action=out&actnumber=${outId}&state=on`);
     document.getElementById(`pipe${pipeId}-out${outId}-btn`).classList.add('btn-disabled');
 }
 
 function stopOut(pipeId, outId) {
-    executePhp(
-        `/control.php?streamno=${pipeId}&action=out&actnumber=${outId}&state=off`,
-    );
+    executePhp(`/control.php?streamno=${pipeId}&action=out&actnumber=${outId}&state=off`);
     document.getElementById(`pipe${pipeId}-out${outId}-btn`).classList.add('btn-disabled');
 }
 
