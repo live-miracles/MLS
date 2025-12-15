@@ -199,16 +199,18 @@ function renderPipelineInfoColumn(selectedPipeline) {
     }
 }
 
-function startOut(streamId, outId) {
+function startOut(pipeId, outId) {
     executePhp(
-        `/control.php?streamno=${streamId}&amp;action=out&amp;actnumber=${outId}}&amp;state=on`,
+        `/control.php?streamno=${pipeId}&amp;action=out&amp;actnumber=${outId}&amp;state=on`,
     );
+    document.getElementById(`pipe${pipeId}-out${outId}-btn`).classList.add('btn-disabled');
 }
 
-function stopOut(streamId, outId) {
+function stopOut(pipeId, outId) {
     executePhp(
-        `/control.php?streamno=${streamId}&amp;action=out&amp;actnumber=${outId}}&amp;state=off`,
+        `/control.php?streamno=${pipeId}&amp;action=out&amp;actnumber=${outId}&amp;state=off`,
     );
+    document.getElementById(`pipe${pipeId}-out${outId}-btn`).classList.add('btn-disabled');
 }
 
 function renderOutsColumn(selectedPipeline) {
@@ -234,7 +236,7 @@ function renderOutsColumn(selectedPipeline) {
           <div class="bg-base-100 px-3 py-2 shadow rounded-box">
             <span class="font-semibold mr-3">
               <div aria-label="status" class="status status-lg ${statusColor} mx-1"></div>
-              <button class="btn btn-xs ${o.status === 'off' ? 'btn-accent' : 'btn-accent btn-outline'}"
+              <button id="pipe${pipe.id}-out${o.id}-btn" class="btn btn-xs ${o.status === 'off' ? 'btn-accent' : 'btn-accent btn-outline'}"
                 onclick="${o.status === 'off' ? 'startOut' : 'stopOut'}(${pipe.id}, ${o.id})">
                 ${o.status === 'off' ? 'start' : 'stop'}</button>
               Out ${o.id}: ${o.name} (${o.encoding})
@@ -346,5 +348,5 @@ async function fetchServerName() {
         serverStats = await fetchSystemStats();
         pipelines = getPipelinesInfo();
         renderPipelines();
-    }, 500000);
+    }, 5000);
 })();
