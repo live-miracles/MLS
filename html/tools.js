@@ -132,6 +132,8 @@ function showResponse(value, error = false, time = Date.now()) {
 
 function renderResponse(value, error, time) {
     const logs = document.querySelector('.logs');
+    if (!logs) return;
+
     const timestamp = new Date(time).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
     logs.innerHTML =
         `<p class="${error ? 'text-error' : ''}">

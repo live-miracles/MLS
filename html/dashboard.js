@@ -199,6 +199,18 @@ function renderPipelineInfoColumn(selectedPipeline) {
     }
 }
 
+function startOut(streamId, outId) {
+    executePhp(
+        `/control.php?streamno=${streamId}&amp;action=out&amp;actnumber=${outId}}&amp;state=on`,
+    );
+}
+
+function stopOut(streamId, outId) {
+    executePhp(
+        `/control.php?streamno=${streamId}&amp;action=out&amp;actnumber=${outId}}&amp;state=off`,
+    );
+}
+
 function renderOutsColumn(selectedPipeline) {
     if (!selectedPipeline) {
         document.getElementById('outs-col').classList.add('hidden');
@@ -223,7 +235,7 @@ function renderOutsColumn(selectedPipeline) {
             <span class="font-semibold mr-3">
               <div aria-label="status" class="status status-lg ${statusColor} mx-1"></div>
               <button class="btn btn-xs ${o.status === 'off' ? 'btn-accent' : 'btn-accent btn-outline'}"
-                onclick="executePhp('/control.php?streamno=${pipe.id}&amp;action=out&amp;actnumber=${o.id}&amp;state=${o.status === 'off' ? 'on' : 'off'}')">
+                onclick="${o.status === 'off' ? 'startOut' : 'stopOut'}(${pipe.id}, ${o.id})">
                 ${o.status === 'off' ? 'start' : 'stop'}</button>
               Out ${o.id}: ${o.name} (${o.encoding})
               ${o.time !== 0 ? `<span class="badge badge-sm">${msToHHMMSS(o.time)}</span>` : ''}
