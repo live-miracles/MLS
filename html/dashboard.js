@@ -185,7 +185,7 @@ function renderOutsColumn(selectedPipeline) {
                         ? 'status-error'
                         : 'status-neutral';
             return `
-          <div class="bg-base-100 p-4 shadow">
+          <div class="bg-base-100 px-3 py-2 shadow rounded-box">
             <span class="font-semibold mr-3">
               <div aria-label="status" class="status status-lg ${statusColor} mx-1"></div>
               <button class="btn btn-xs ${o.status === 'off' ? 'btn-accent' : 'btn-accent btn-outline'}"
