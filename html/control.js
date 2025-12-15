@@ -114,7 +114,7 @@ function renderStreamControls() {
             <form method="post" target="_blank" action="/control.php?streamno=${i}&action=volume&actnumber=&state=volume">
             <p>
                 <span class="font-bold">Volume:</span>
-                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-xs"/>
+                <input type="text" name="vol_level" size="5" placeholder="1" class="input input-bordered input-neutral input-xs max-w-fit"/>
                 <input type="submit" value="Change" class="btn btn-xs btn-outline"/>
             </p>
             </form>`;
