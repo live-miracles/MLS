@@ -201,14 +201,14 @@ function renderPipelineInfoColumn(selectedPipeline) {
 
 function startOut(pipeId, outId) {
     executePhp(
-        `/control.php?streamno=${pipeId}&amp;action=out&actnumber=${outId}&state=on`,
+        `/control.php?streamno=${pipeId}&action=out&actnumber=${outId}&state=on`,
     );
     document.getElementById(`pipe${pipeId}-out${outId}-btn`).classList.add('btn-disabled');
 }
 
 function stopOut(pipeId, outId) {
     executePhp(
-        `/control.php?streamno=${pipeId}&action=out&amp;actnumber=${outId}&state=off`,
+        `/control.php?streamno=${pipeId}&action=out&actnumber=${outId}&state=off`,
     );
     document.getElementById(`pipe${pipeId}-out${outId}-btn`).classList.add('btn-disabled');
 }
