@@ -178,23 +178,23 @@ function renderOutsColumn(selectedPipeline) {
         .map((o) => {
             const statusColor =
                 o.status === 'on'
-                    ? 'status-success'
+                    ? 'status-primary'
                     : o.status === 'warning'
                       ? 'status-warning'
                       : o.status === 'error'
                         ? 'status-error'
                         : 'status-neutral';
             return `
-          <div class="card bg-base-100 p-4 shadow">
-            <h3 class="font-semibold">
+          <div class="bg-base-100 p-4 shadow">
+            <span class="font-semibold mr-3">
               <div aria-label="status" class="status status-lg ${statusColor} mx-1"></div>
               <button class="btn btn-xs ${o.status === 'off' ? 'btn-accent' : 'btn-accent btn-outline'}"
                 onclick="executePhp('/control.php?streamno=${pipe.id}&amp;action=out&amp;actnumber=${o.id}&amp;state=${o.status === 'off' ? 'on' : 'off'}')">
                 ${o.status === 'off' ? 'start' : 'stop'}</button>
               Out ${o.id}: ${o.name} (${o.encoding})
               ${o.time !== 0 ? `<span class="badge badge-sm">${msToHHMMSS(o.time)}</span>` : ''}
-            </h3>
-            <p class="text-sm opacity-70">${o.url}</p>
+            </span>
+            <code class="text-sm opacity-70">${o.url}</code>
           </div>`;
         })
         .join('');
@@ -300,5 +300,5 @@ async function fetchServerName() {
         serverStats = await fetchSystemStats();
         pipelines = getPipelinesInfo();
         renderPipelines();
-    }, 5000);
+    }, 500000);
 })();
