@@ -1,5 +1,6 @@
 let pipelines = [];
 let serverStats = {};
+let config = {};
 
 function msToHHMMSS(ms) {
     const totalSeconds = Math.floor(ms / 1000);
@@ -321,16 +322,15 @@ function selectPipeline(id) {
     renderPipelines();
 }
 
-async function fetchServerName() {
-    const res = await fetch('server-name.txt');
-    const text = await res.text();
-    return text.trim();
+async function fetchConfigs() {
+    const res = await fetch('restream.json');
+    return await res.json();
 }
 
 (async () => {
-    const name = await fetchServerName();
-    document.title = name + ': Dashboard';
-    document.getElementById('server-name').innerHTML = 'MLS: ' + name;
+    config = await fetchConfigs();
+    document.title = config['server-name'] + ': Dashboard';
+    document.getElementById('server-name').innerHTML = 'MLS: ' + config['server-name'];
 
     setVideoPlayers();
 
