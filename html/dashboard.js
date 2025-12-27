@@ -159,6 +159,11 @@ function renderPipelineInfoColumn(selectedPipeline) {
     document.querySelector('#pipe-info-col .server-stats').innerHTML = getServerStatsHtml();
 
     const pipe = pipelines.find((p) => p.id === selectedPipeline);
+    if (!pipe) {
+        console.error('Pipeline not found:', selectedPipeline);
+        return;
+    }
+
     document.getElementById('pipe-name').innerHTML = pipe.name;
     document.getElementById('input-time').innerHTML =
         pipe.input.time !== 0 ? msToHHMMSS(pipe.input.time) : '';
@@ -198,6 +203,15 @@ function renderPipelineInfoColumn(selectedPipeline) {
             pipe.input.audio.bw / 1000,
         );
     }
+
+    const addOutBtn = document.getElementById('add-out-btn');
+    if (pipe.outs.length >= config['out-limit']) {
+        addOutBtn.classList.add('btn-disabled');
+        addOutBtn.title = `Output limit reached: ${config['out-limit']} outs`;
+    } else {
+        addOutBtn.classList.remove('btn-disabled');
+        addOutBtn.title = '';
+    }
 }
 
 function startOut(pipeId, outId) {
@@ -229,21 +243,80 @@ function renderOutsColumn(selectedPipeline) {
                       : o.status === 'error'
                         ? 'status-error'
                         : 'status-neutral';
+
             return `
-          <div class="bg-base-100 px-3 py-2 shadow rounded-box">
-            <span class="font-semibold mr-3">
-              <div aria-label="status" class="status status-lg ${statusColor} mx-1"></div>
-              <button id="pipe${pipe.id}-out${o.id}-btn" class="btn btn-xs ${o.status === 'off' ? 'btn-accent' : 'btn-accent btn-outline'}"
-                onclick="${o.status === 'off' ? 'startOut' : 'stopOut'}(${pipe.id}, ${o.id})">
-                ${o.status === 'off' ? 'start' : 'stop'}</button>
-              Out ${o.id}: ${o.name} (${o.encoding})
-              ${o.time !== 0 ? `<span class="badge badge-sm">${msToHHMMSS(o.time)}</span>` : ''}
-            </span>
-            <code class="text-sm opacity-70">${o.url}</code>
+          <div class="bg-base-100 px-3 py-2 shadow rounded-box grid grid-cols-[1fr_auto] gap-2 w-full">
+            <div class="min-w-0">
+                <div class="font-semibold mr-3">
+                    <div aria-label="status" class="status status-lg ${statusColor} mx-1"></div>
+                    <button id="pipe${pipe.id}-out${o.id}-btn" class="btn btn-xs ${o.status === 'off' ? 'btn-accent' : 'btn-accent btn-outline'}"
+                        onclick="${o.status === 'off' ? 'startOut' : 'stopOut'}(${pipe.id}, ${o.id})">
+                        ${o.status === 'off' ? 'start' : 'stop'}</button>
+                    Out ${o.id}: ${o.name} (${o.encoding})
+                    ${o.time !== 0 ? `<span class="badge badge-sm">${msToHHMMSS(o.time)}</span>` : ''}
+                </div>
+                <code title="${o.url}" class="text-sm opacity-70 truncate block">${o.url}</code>
+            </div>
+            <div class="flex items-center gap-2 w-fit">
+                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}" onclick="editOut(${pipe.id}, ${o.id})">✏️</button>
+                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}" onclick="deleteOut(${pipe.id}, ${o.id})">🗑️</button>
+            </div>
           </div>`;
         })
         .join('');
     document.getElementById('outputs-list').innerHTML = outsHtml;
+}
+
+function editOut(pipeId, outId) {}
+
+function deleteOut(pipeId, outId) {
+    if (!confirm('Are you sure you want to delete this output?')) {
+        return;
+    }
+
+    const data = new FormData();
+    data.append('rtmp_url', '');
+    data.append('stream_id', pipeId);
+    data.append('output_id', outId);
+    data.append('resolution', '');
+    data.append('name_id', '');
+
+    executePhp('config.php?destadd', {}, data);
+}
+
+function addOut() {
+    const pipeId = getUrlParam('pipeline');
+    if (!pipeId) {
+        console.error('Please select a pipeline first.');
+        return;
+    }
+
+    const pipe = pipelines.find((p) => p.id === pipeId);
+    if (!pipe) {
+        console.error('Pipeline not found:', selectedPipeline);
+        return;
+    }
+
+    if (pipe.outs.length >= config['out-limit']) {
+        console.error(`Output limit reached. Max outputs per pipeline: ${config['out-limit']}`);
+        return;
+    }
+
+    const ids = pipe.outs.map((o) => o.id);
+    let newId = 1;
+    while (ids.includes(String(newId))) {
+        newId++;
+    }
+
+    const data = new FormData();
+    data.append('rtmp_url', '');
+    data.append('stream_id', pipe.id);
+    data.append('output_id', String(newId));
+    data.append('resolution', '');
+    data.append('name_id', 'Out ' + newId);
+
+    executePhp('config.php?destadd', {}, data);
+    document.getElementById('add-out-btn').classList.add('btn-disabled');
 }
 
 function renderStatsColumn(selectedPipeline) {

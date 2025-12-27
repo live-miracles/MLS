@@ -94,6 +94,7 @@ async function submitForm(event, phpUrl, show = true) {
     const form = event.target.closest('form');
     if (form.checkValidity()) {
         const formData = new FormData(form);
+        console.log(formData, String(formData));
         executePhp(phpUrl, {}, formData, show);
     } else {
         form.reportValidity();
@@ -103,16 +104,33 @@ async function submitForm(event, phpUrl, show = true) {
 async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
     let msg = null;
     let error = null;
+    const errorAlertElem = document.getElementById('error-alert');
+
     try {
         const response = await fetch(phpUrl, { method: 'POST', headers: headers, body: body });
         msg = await response.text();
 
         if (!response.ok) {
-            error = 'Request ' + phpUrl + ' failed with status ' + response.status + msg;
+            error =
+                'Request ' + phpUrl + ' failed with status ' + response.status + '. Error: ' + msg;
+            if (errorAlertElem) {
+                errorAlertElem.classList.remove('hidden');
+                document.getElementById('error-msg').innerText = error;
+                setTimeout(() => {
+                    errorAlertElem.classList.add('hidden');
+                }, 5000);
+            }
         }
         hideBadConnectionAlert();
     } catch (error) {
         error = 'Error: ' + error;
+        if (errorAlertElem) {
+            errorAlertElem.classList.remove('hidden');
+            document.getElementById('error-msg').innerText = error;
+            setTimeout(() => {
+                errorAlertElem.classList.add('hidden');
+            }, 5000);
+        }
         showBadConnectionAlert();
     }
 
