@@ -104,33 +104,19 @@ async function submitForm(event, phpUrl, show = true) {
 async function executePhp(phpUrl, headers = {}, body = undefined, show = true) {
     let msg = null;
     let error = null;
-    const errorAlertElem = document.getElementById('error-alert');
 
     try {
         const response = await fetch(phpUrl, { method: 'POST', headers: headers, body: body });
         msg = await response.text();
 
         if (!response.ok) {
-            error =
-                'Request ' + phpUrl + ' failed with status ' + response.status + '. Error: ' + msg;
-            if (errorAlertElem) {
-                errorAlertElem.classList.remove('hidden');
-                document.getElementById('error-msg').innerText = error;
-                setTimeout(() => {
-                    errorAlertElem.classList.add('hidden');
-                }, 5000);
-            }
+            error = 'Request ' + phpUrl + ' failed with error: ' + msg;
+            showErrorAlert(error);
         }
         hideBadConnectionAlert();
     } catch (error) {
         error = 'Error: ' + error;
-        if (errorAlertElem) {
-            errorAlertElem.classList.remove('hidden');
-            document.getElementById('error-msg').innerText = error;
-            setTimeout(() => {
-                errorAlertElem.classList.add('hidden');
-            }, 5000);
-        }
+        showErrorAlert(error);
         showBadConnectionAlert();
     }
 
@@ -203,6 +189,7 @@ async function fetchProcesses() {
         return procs;
     } catch (error) {
         showBadConnectionAlert();
+        showErrorAlert('Failed to fetch process list: ' + error);
         return null;
     }
 }
@@ -217,6 +204,7 @@ async function fetchStats() {
         return xml2json(xmlData);
     } catch (error) {
         showBadConnectionAlert();
+        showErrorAlert('Failed to fetch stats: ' + error);
         return null;
     }
 }
@@ -258,6 +246,7 @@ async function fetchConfigFile() {
         hideBadConnectionAlert();
     } catch (error) {
         showBadConnectionAlert();
+        showErrorAlert('Failed to fetch config file: ' + error);
         return { outs: null, names: null };
     }
 
@@ -307,6 +296,7 @@ async function fetchSystemStats() {
         hideBadConnectionAlert();
     } catch (error) {
         showBadConnectionAlert();
+        showErrorAlert('Failed to fetch system stats: ' + error);
         return stats;
     }
     try {
@@ -361,6 +351,16 @@ function xml2json(xml) {
 
 function escapeHTML(str) {
     return new Option(str).innerHTML;
+}
+
+function showErrorAlert(error) {
+    const errorAlertElem = document.getElementById('error-alert');
+    if (!errorAlertElem) return;
+    errorAlertElem.classList.remove('hidden');
+    document.getElementById('error-msg').innerText = error;
+    setTimeout(() => {
+        errorAlertElem.classList.add('hidden');
+    }, 5000);
 }
 
 function showBadConnectionAlert() {

@@ -233,6 +233,10 @@ function renderOutsColumn(selectedPipeline) {
     }
 
     const pipe = pipelines.find((p) => p.id === selectedPipeline);
+    if (!pipe) {
+        console.error('Pipeline not found:', selectedPipeline);
+        return;
+    }
     const outsHtml = pipe.outs
         .map((o) => {
             const statusColor =
@@ -258,8 +262,8 @@ function renderOutsColumn(selectedPipeline) {
                 <code title="${o.url}" class="text-sm opacity-70 truncate block">${o.url}</code>
             </div>
             <div class="flex items-center gap-2 w-fit">
-                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}" onclick="editOut(${pipe.id}, ${o.id})">✏️</button>
-                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}" onclick="deleteOut(${pipe.id}, ${o.id})">🗑️</button>
+                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}" onclick="editOutBtn(${pipe.id}, ${o.id})">✏️</button>
+                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}" onclick="deleteOutBtn(${pipe.id}, ${o.id})">🗑️</button>
             </div>
           </div>`;
         })
@@ -267,24 +271,20 @@ function renderOutsColumn(selectedPipeline) {
     document.getElementById('outputs-list').innerHTML = outsHtml;
 }
 
-function editOut(pipeId, outId) {}
+function editOutBtn(pipeId, outId) {
+    const modal = document.getElementById('edit-out-modal');
+    modal.showModal();
+}
 
-function deleteOut(pipeId, outId) {
+function deleteOutBtn(pipeId, outId) {
     if (!confirm('Are you sure you want to delete this output?')) {
         return;
     }
 
-    const data = new FormData();
-    data.append('rtmp_url', '');
-    data.append('stream_id', pipeId);
-    data.append('output_id', outId);
-    data.append('resolution', '');
-    data.append('name_id', '');
-
-    executePhp('config.php?destadd', {}, data);
+    deleteOut(pipeId, outId);
 }
 
-function addOut() {
+function addOutBtn() {
     const pipeId = getUrlParam('pipeline');
     if (!pipeId) {
         console.error('Please select a pipeline first.');
@@ -297,25 +297,7 @@ function addOut() {
         return;
     }
 
-    if (pipe.outs.length >= config['out-limit']) {
-        console.error(`Output limit reached. Max outputs per pipeline: ${config['out-limit']}`);
-        return;
-    }
-
-    const ids = pipe.outs.map((o) => o.id);
-    let newId = 1;
-    while (ids.includes(String(newId))) {
-        newId++;
-    }
-
-    const data = new FormData();
-    data.append('rtmp_url', '');
-    data.append('stream_id', pipe.id);
-    data.append('output_id', String(newId));
-    data.append('resolution', '');
-    data.append('name_id', 'Out ' + newId);
-
-    executePhp('config.php?destadd', {}, data);
+    addOut(pipe);
     document.getElementById('add-out-btn').classList.add('btn-disabled');
 }
 
