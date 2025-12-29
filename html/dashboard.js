@@ -450,11 +450,19 @@ async function deletePipeBtn() {
         return;
     }
 
-    const res = await setPipeName(pipeId, '');
-    if (res.error) {
+    const outsNum = Math.max(...pipe.outs.map((o) => parseInt(o.id)));
+    const res1 = await deletePipeOuts(pipeId, outsNum);
+    if (res1.error) {
+        return;
+    }
+    const res2 = await setPipeName(pipeId, '');
+    if (res2.error) {
         return;
     }
     streamNames[pipeId] = '';
+    for (let i = 1; i <= config['out-limit']; i++) {
+        streamOutsConfig[pipeId][i] = {};
+    }
     pipelines = getPipelinesInfo();
     setUrlParam('pipeline', null);
     renderPipelines();

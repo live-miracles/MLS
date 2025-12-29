@@ -44,6 +44,23 @@ async function setPipeName(pipeId, name) {
     );
 }
 
+async function deletePipeOuts(pipeId, outsNum) {
+    const outs = Array(outsNum)
+        .fill(0)
+        .map((_, j) => ({
+            name_id: '',
+            stream_id: pipeId,
+            output_id: String(j + 1),
+            resolution: '',
+            rtmp_url: '',
+        }));
+    return await fetchResponse(
+        `config.php?bulkset`,
+        { 'Content-Type': 'application/json' },
+        JSON.stringify(outs),
+    );
+}
+
 async function fetchResponse(url, headers = {}, body = undefined) {
     try {
         const response = await fetch(url, { method: 'POST', headers: headers, body: body });
