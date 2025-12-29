@@ -439,9 +439,9 @@ async function deletePipeBtn() {
         return;
     }
 
-    const pipe = pipelines.find((p) => p.id === String(pipeId));
+    const pipe = pipelines.find((p) => p.id === pipeId);
     if (!pipe) {
-        console.error('Pipeline not found:', selectedPipeline);
+        console.error('Pipeline not found:', pipeId);
         return;
     }
 

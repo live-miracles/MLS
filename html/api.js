@@ -49,7 +49,7 @@ async function deletePipeOuts(pipeId, outsNum) {
         console.error('Something went wrong', outsNum);
         return;
     }
-    if ((outsNum = 0)) {
+    if (outsNum === 0) {
         return;
     }
     const outs = Array(outsNum)
@@ -61,6 +61,7 @@ async function deletePipeOuts(pipeId, outsNum) {
             resolution: '',
             rtmp_url: '',
         }));
+
     return await fetchResponse(
         `config.php?bulkset`,
         { 'Content-Type': 'application/json' },
