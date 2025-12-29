@@ -47,10 +47,10 @@ async function setPipeName(pipeId, name) {
 async function deletePipeOuts(pipeId, outsNum) {
     if (outsNum < 0) {
         console.error('Something went wrong', outsNum);
-        return;
+        return { error: null, data: null };
     }
     if (outsNum === 0) {
-        return;
+        return { error: null, data: null };
     }
     const outs = Array(outsNum)
         .fill(0)
