@@ -450,7 +450,7 @@ async function deletePipeBtn() {
         return;
     }
 
-    const outsNum = Math.max(...pipe.outs.map((o) => parseInt(o.id)));
+    const outsNum = Math.max(0, ...pipe.outs.map((o) => parseInt(o.id)));
     const res1 = await deletePipeOuts(pipeId, outsNum);
     if (res1.error) {
         return;
