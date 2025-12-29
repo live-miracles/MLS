@@ -231,9 +231,6 @@ function renderOutsColumn(selectedPipeline) {
 }
 
 async function editOutBtn(pipeId, outId) {
-    const modal = document.getElementById('edit-out-modal');
-    modal.showModal();
-
     const pipe = pipelines.find((p) => p.id === String(pipeId));
     if (!pipe) {
         console.error('Pipeline not found:', pipeId);
@@ -262,18 +259,52 @@ async function editOutBtn(pipeId, outId) {
 
     const rtmpKey = output.url.replace(serverSelect.value, '');
     document.getElementById('out-rtmp-key-input').value = rtmpKey;
+
+    document.getElementById('out-rtmp-key-input').classList.remove('input-error');
+    document.getElementById('out-name-input').classList.remove('input-error');
+
+    document.getElementById('edit-out-modal').showModal();
 }
 
-async function editOutFormBtn() {
+async function editOutFormBtn(event) {
     const pipeId = document.getElementById('out-pipe-id-input').value;
+    const serverUrl = document.getElementById('out-server-url-input').value;
+    const rtmpKey = document.getElementById('out-rtmp-key-input').value;
     const outId = document.getElementById('out-id-input').value;
     const data = {
         name: document.getElementById('out-name-input').value,
         resolution: document.getElementById('out-encoding-input').value,
-        rtmpUrl:
-            document.getElementById('out-server-url-input').value +
-            document.getElementById('out-rtmp-key-input').value,
+        rtmpUrl: serverUrl + rtmpKey,
     };
+
+    console.log(serverUrl);
+
+    if (serverUrl.includes('${s_prp}')) {
+        const queryString = rtmpKey.value.split('?')[1];
+        const params = new URLSearchParams(queryString);
+        data.rtmpUrl = data.rtmpUrl.replaceAll('${s_prp}', params.get('s_prp'));
+    }
+
+    const isRtmpUrlValid = isValidUrl(data.rtmpUrl);
+    if (isRtmpUrlValid) {
+        document.getElementById('out-rtmp-key-input').classList.remove('input-error');
+    } else {
+        document.getElementById('out-rtmp-key-input').classList.add('input-error');
+    }
+
+    const isOutNameValid = /^[a-zA-Z0-9_]*$/.test(data.name);
+    if (isOutNameValid) {
+        document.getElementById('out-name-input').classList.remove('input-error');
+    } else {
+        document.getElementById('out-name-input').classList.add('input-error');
+    }
+
+    console.log(isOutNameValid);
+    if (!isRtmpUrlValid || !isOutNameValid) {
+        event.preventDefault();
+        return;
+    }
+
     const res = await setOut(pipeId, outId, data);
 
     if (res.error) {
@@ -344,14 +375,14 @@ async function addOutBtn() {
     }
     const outId = String(newId);
 
-    const res = await setOut(pipeId, outId, { name: 'Out ' + outId });
+    const res = await setOut(pipeId, outId, { name: 'Out_' + outId });
     if (res.error) {
         return;
     }
     streamOutsConfig[pipeId][outId] = {
         stream: pipeId,
         out: outId,
-        name: 'Out ' + outId,
+        name: 'Out_' + outId,
         encoding: '',
         url: '',
     };
@@ -532,16 +563,20 @@ async function updateStatuses() {
     pipelines = getPipelinesInfo();
 }
 
-async function checkStreamingConfigs() {
+async function checkStreamingConfigs(secondTime = false) {
     const config = await fetchConfigFile();
     if (
-        JSON.stringify(streamOutsConfig) === JSON.stringify(config.outs) &&
-        JSON.stringify(streamNames) === JSON.stringify(config.names)
+        config &&
+        JSON.stringify({ outs: streamOutsConfig, names: streamNames }) === JSON.stringify(config)
     ) {
         document.getElementById('streaming-config-changed-alert').classList.add('hidden');
         return;
     }
-    document.getElementById('streaming-config-changed-alert').classList.remove('hidden');
+    if (secondTime) {
+        document.getElementById('streaming-config-changed-alert').classList.remove('hidden');
+    } else {
+        setTimeout(() => checkStreamingConfigs(true), 5000);
+    }
 }
 
 async function rerenderStatuses() {
@@ -565,5 +600,5 @@ async function rerenderStatuses() {
     await rerenderStatuses();
     setInterval(rerenderStatuses, 5000);
 
-    setInterval(checkStreamingConfigs, 60000);
+    setInterval(() => checkStreamingConfigs(false), 30000);
 })();
