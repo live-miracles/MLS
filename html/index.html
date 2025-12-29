@@ -62,7 +62,7 @@
 
     <dialog id="edit-out-modal" class="modal">
       <div class="modal-box max-w-[800px]">
-        <input type="text" id="pipe-id-input" class="hidden" />
+        <input type="text" id="out-pipe-id-input" class="hidden" />
         <input type="text" id="out-id-input" class="hidden" />
 
         <div class="focus mx-auto mt-2 w-full max-w-[800px] space-y-3 px-4">
@@ -76,7 +76,7 @@
           <fieldset class="fieldset ml-2 inline-block w-40">
             <legend class="fieldset-legend">Encoding</legend>
 
-            <select class="select">
+            <select class="select" id="out-encoding-input">
               <option selected="" value="source">Source</option>
               <option value="vertical">Vertical</option>
               <option value="720p">720p</option>
@@ -108,7 +108,7 @@
         <div class="modal-action">
           <form method="dialog">
             <button class="btn mx-2">Cancel</button>
-            <button class="btn btn-accent" onclick="updateOutFormBtn()">Update</button>
+            <button class="btn btn-accent" onclick="editOutFormBtn()">Update</button>
           </form>
         </div>
       </div>

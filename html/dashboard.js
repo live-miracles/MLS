@@ -197,7 +197,7 @@ function renderOutsColumn(selectedPipeline) {
             </div>
             <div class="flex items-center gap-2 w-fit">
                 <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}"
-                  onclick="editOutBtn(this, ${pipe.id}, ${o.id})">✏️</button>
+                  onclick="editOutBtn(${pipe.id}, ${o.id})">✏️</button>
                 <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}"
                   onclick="deleteOutBtn(${pipe.id}, ${o.id})">🗑️</button>
             </div>
@@ -207,15 +207,75 @@ function renderOutsColumn(selectedPipeline) {
     document.getElementById('outputs-list').innerHTML = outsHtml;
 }
 
-function editOutBtn(pipeId, outId) {
+async function editOutBtn(pipeId, outId) {
     const modal = document.getElementById('edit-out-modal');
     modal.showModal();
+
+    const pipe = pipelines.find((p) => p.id === String(pipeId));
+    if (!pipe) {
+        console.error('Pipeline not found:', pipeId);
+        return;
+    }
+
+    const output = pipe.outs.find((o) => o.id === String(outId));
+    if (!output) {
+        console.error('Output not found:', pipeId, outId);
+        return;
+    }
+
+    document.getElementById('out-name-span').innerText = output.name;
+
+    document.getElementById('out-pipe-id-input').value = pipeId;
+    document.getElementById('out-id-input').value = outId;
+    document.getElementById('out-name-input').value = output.name;
+    document.getElementById('out-encoding-input').value = output.encoding;
+    const serverSelect = document.getElementById('out-server-url-input');
+    serverSelect.value = '';
+    for (const option of serverSelect.options) {
+        if (option.value && output.url.startsWith(option.value)) {
+            serverSelect.value = option.value;
+        }
+    }
+
+    const rtmpKey = output.url.replace(serverSelect.value, '');
+    document.getElementById('out-rtmp-key-input').value = rtmpKey;
 }
 
-function deleteOutBtn(pipeId, outId) {
-    const output = pipelines
-        .find((p) => p.id === String(pipeId))
-        .outs.find((o) => o.id === String(outId));
+async function editOutFormBtn() {
+    const pipeId = document.getElementById('out-pipe-id-input').value;
+    const outId = document.getElementById('out-id-input').value;
+    const data = {
+        name: document.getElementById('out-name-input').value,
+        resolution: document.getElementById('out-encoding-input').value,
+        rtmpUrl:
+            document.getElementById('out-server-url-input').value +
+            document.getElementById('out-rtmp-key-input').value,
+    };
+    const res = await setOut(pipeId, outId, data);
+
+    if (res.error) {
+        return;
+    }
+
+    streamOutsConfig[pipeId][outId] = {
+        stream: pipeId,
+        out: outId,
+        name: data.name,
+        encoding: data.resolution,
+        url: data.rtmpUrl,
+    };
+    pipelines = getPipelinesInfo();
+    renderPipelines();
+}
+
+async function deleteOutBtn(pipeId, outId) {
+    const pipe = pipelines.find((p) => p.id === String(pipeId));
+    if (!pipe) {
+        console.error('Pipeline not found:', pipeId);
+        return;
+    }
+
+    const output = pipe.outs.find((o) => o.id === String(outId));
     if (!output) {
         console.error('Output not found:', pipeId, outId);
         return;
@@ -225,11 +285,18 @@ function deleteOutBtn(pipeId, outId) {
         return;
     }
 
-    deleteOut(pipeId, outId);
-    elem.classList.add('btn-disabled');
+    const res = await deleteOut(pipeId, outId);
+
+    if (res.error) {
+        return;
+    }
+
+    streamOutsConfig[pipeId][outId] = {};
+    pipelines = getPipelinesInfo();
+    renderPipelines();
 }
 
-function addOutBtn() {
+async function addOutBtn() {
     const pipeId = getUrlParam('pipeline');
     if (!pipeId) {
         console.error('Please select a pipeline first.');
@@ -242,8 +309,31 @@ function addOutBtn() {
         return;
     }
 
-    addOut(pipe);
-    document.getElementById('add-out-btn').classList.add('btn-disabled');
+    if (pipe.outs.length >= config['out-limit']) {
+        console.error(`Output limit reached. Max outputs per pipeline: ${config['out-limit']}`);
+        return;
+    }
+
+    const outIds = pipe.outs.map((o) => o.id);
+    let newId = 1;
+    while (outIds.includes(String(newId))) {
+        newId++;
+    }
+    const outId = String(newId);
+
+    const res = await setOut(pipeId, outId, { name: 'Out ' + outId });
+    if (res.error) {
+        return;
+    }
+    streamOutsConfig[pipeId][outId] = {
+        stream: pipeId,
+        out: outId,
+        name: 'Out ' + outId,
+        encoding: '',
+        url: '',
+    };
+    pipelines = getPipelinesInfo();
+    renderPipelines();
 }
 
 function renderStatsColumn(selectedPipeline) {
@@ -339,6 +429,7 @@ async function checkStreamingConfigs() {
         JSON.stringify(streamOutsConfig) === JSON.stringify(config.outs) &&
         JSON.stringify(streamNames) === JSON.stringify(config.names)
     ) {
+        document.getElementById('streaming-config-changed-alert').classList.add('hidden');
         return;
     }
     document.getElementById('streaming-config-changed-alert').classList.remove('hidden');
@@ -365,5 +456,5 @@ async function rerenderStatuses() {
     await rerenderStatuses();
     setInterval(rerenderStatuses, 5000);
 
-    setInterval(checkStreamingConfigs, 6000);
+    setInterval(checkStreamingConfigs, 60000);
 })();
