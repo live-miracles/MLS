@@ -23,10 +23,10 @@ async function deleteOut(pipeId, outId) {
 
 async function setOut(pipeId, outId, data) {
     const formData = new FormData();
-    formData.append('rtmp_url', data.rtmpUrl);
+    formData.append('rtmp_url', data.rtmpUrl ?? 'rtmp://a.rtmp.youtube.com/live2/your-key');
     formData.append('stream_id', pipeId);
     formData.append('output_id', outId);
-    formData.append('resolution', data.resolution);
+    formData.append('resolution', data.resolution ?? 'source');
     formData.append('name_id', data.name);
 
     return await fetchResponse('config.php?destadd', {}, formData);
