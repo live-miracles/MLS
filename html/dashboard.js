@@ -452,8 +452,8 @@ function renderStatsColumn(selectedPipeline) {
 
     document.querySelector('#stats-col .server-stats').innerHTML = getServerStatsHtml();
 
-    const inputStatsHtml = pipelines
-        .filter((p) => p.input.video)
+    const activeInputs = pipelines.filter((p) => p.input.video);
+    const inputStatsHtml = activeInputs
         .map((p) => {
             return `
       <tr class="${p.status === 'warning' ? 'bg-warning/10' : ''}">
@@ -470,9 +470,8 @@ function renderStatsColumn(selectedPipeline) {
       </tr>`;
         })
         .join('');
-    const outputStatsHtml = pipelines
-        .flatMap((p) => p.outs)
-        .filter((o) => o.video)
+    const activeOuts = pipelines.flatMap((p) => p.outs).filter((o) => o.video);
+    const outputStatsHtml = activeOuts
         .map((o) => {
             return `
       <tr class="${o.status === 'warning' ? 'bg-warning/10' : ''}">
@@ -490,9 +489,9 @@ function renderStatsColumn(selectedPipeline) {
         })
         .join('');
     document.getElementById('stats-table').innerHTML =
-        `<tr class="bg-base-100"><th colspan="10">Inputs</th></tr>` +
+        `<tr class="bg-base-100"><th colspan="10">Inputs <span class="badge mx-1">${activeInputs.length}</span></th></tr>` +
         inputStatsHtml +
-        `<tr class="bg-base-100"><th colspan="10">Outputs</th></tr>` +
+        `<tr class="bg-base-100"><th colspan="10">Outputs <span class="badge mx-1">${activeOuts.length}</span></th></tr>` +
         outputStatsHtml;
 }
 
