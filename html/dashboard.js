@@ -373,9 +373,9 @@ async function addOutBtn() {
     const outId = String(newId);
 
     const data = {
-        name: 'Out_' + outId,
-        encoding: 'source',
         url: 'rtmp://a.rtmp.youtube.com/live2/your-key',
+        encoding: 'source',
+        name: 'Out_' + outId,
     };
     const res = await setOut(pipeId, outId, data);
     if (res.error) {
