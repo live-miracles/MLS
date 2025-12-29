@@ -297,7 +297,6 @@ async function editOutFormBtn(event) {
         document.getElementById('out-name-input').classList.add('input-error');
     }
 
-    console.log(isOutNameValid);
     if (!isUrlValid || !isOutNameValid) {
         event.preventDefault();
         return;
@@ -309,7 +308,9 @@ async function editOutFormBtn(event) {
         return;
     }
 
-    streamOutsConfig[pipeId][outId] = { stream: pipeId, out: outId, ...data };
+    streamOutsConfig[pipeId][outId].name = data.name;
+    streamOutsConfig[pipeId][outId].encoding = data.encoding;
+    streamOutsConfig[pipeId][outId].url = data.url;
     pipelines = getPipelinesInfo();
     renderPipelines();
 }
