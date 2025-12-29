@@ -181,6 +181,10 @@ function renderOutsColumn(selectedPipeline) {
 
     const pipe = pipelines.find((p) => p.id === selectedPipeline);
     if (!pipe) {
+        console.log(
+            pipelines,
+            pipelines.find((p) => p.id === '2'),
+        );
         console.error('Pipeline not found:', selectedPipeline);
         return;
     }
@@ -552,12 +556,6 @@ async function fetchConfigs() {
     return await res.json();
 }
 
-async function updateStatuses() {
-    statsJson = await fetchStats();
-    processes = await fetchProcesses();
-    pipelines = getPipelinesInfo();
-}
-
 async function checkStreamingConfigs(secondTime = false) {
     const config = await fetchConfigFile();
     if (
@@ -575,7 +573,8 @@ async function checkStreamingConfigs(secondTime = false) {
 }
 
 async function rerenderStatuses() {
-    await updateStatuses();
+    statsJson = await fetchStats();
+    processes = await fetchProcesses();
     serverStats = await fetchSystemStats();
     pipelines = getPipelinesInfo();
     renderPipelines();

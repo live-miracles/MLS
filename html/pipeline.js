@@ -90,16 +90,29 @@ function getPipelinesInfo() {
     });
 
     getRtmpStats('output').forEach((s) => {
-        const pipe = newPipelines.find((p) => p.key === 'stream' + s.input);
+        let pipe = newPipelines.find((p) => p.key === 'stream' + s.input);
         if (!pipe) {
             console.error('Pipeline not found for stats', s);
-            return;
+            pipe = {
+                id: String(s.input),
+                name: 'stream' + s.input,
+                key: 'stream' + s.input,
+                input: {
+                    status: 'warning',
+                    time: 0,
+                    video: null,
+                    audio: null,
+                },
+                outs: [],
+            };
+            newPipelines.push(pipe);
         }
 
         let out = pipe.outs.find((o) => o.id === s.id);
         if (!out) {
             console.error('Output not found for stats', s);
             out = { id: null, pipe: pipe.name, name: s.id, status: 'warning' };
+            console.log(pipe);
             pipe.outs.push(out);
         } else {
             out.status = s.video.bw > 0 ? 'on' : 'warning';
@@ -111,10 +124,22 @@ function getPipelinesInfo() {
     });
 
     getRtmpStats('distribute').forEach((s) => {
-        const pipe = newPipelines.find((p) => p.key === 'stream' + s.input);
+        let pipe = newPipelines.find((p) => p.key === 'stream' + s.input);
         if (!pipe) {
             console.error('Pipeline not found for stats', s);
-            return;
+            pipe = {
+                id: String(s.input),
+                name: 'stream' + s.input,
+                key: 'stream' + s.input,
+                input: {
+                    status: 'warning',
+                    time: 0,
+                    video: null,
+                    audio: null,
+                },
+                outs: [],
+            };
+            newPipelines.push(pipe);
         }
 
         pipe.input = {
