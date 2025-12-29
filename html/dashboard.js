@@ -273,8 +273,8 @@ async function editOutFormBtn(event) {
     const outId = document.getElementById('out-id-input').value;
     const data = {
         name: document.getElementById('out-name-input').value,
-        resolution: document.getElementById('out-encoding-input').value,
-        rtmpUrl: serverUrl + rtmpKey,
+        encoding: document.getElementById('out-encoding-input').value,
+        url: serverUrl + rtmpKey,
     };
 
     console.log(serverUrl);
@@ -282,11 +282,11 @@ async function editOutFormBtn(event) {
     if (serverUrl.includes('${s_prp}')) {
         const queryString = rtmpKey.value.split('?')[1];
         const params = new URLSearchParams(queryString);
-        data.rtmpUrl = data.rtmpUrl.replaceAll('${s_prp}', params.get('s_prp'));
+        data.url = data.url.replaceAll('${s_prp}', params.get('s_prp'));
     }
 
-    const isRtmpUrlValid = isValidUrl(data.rtmpUrl);
-    if (isRtmpUrlValid) {
+    const isUrlValid = isValidUrl(data.url);
+    if (isUrlValid) {
         document.getElementById('out-rtmp-key-input').classList.remove('input-error');
     } else {
         document.getElementById('out-rtmp-key-input').classList.add('input-error');
@@ -300,7 +300,7 @@ async function editOutFormBtn(event) {
     }
 
     console.log(isOutNameValid);
-    if (!isRtmpUrlValid || !isOutNameValid) {
+    if (!isUrlValid || !isOutNameValid) {
         event.preventDefault();
         return;
     }
@@ -311,13 +311,7 @@ async function editOutFormBtn(event) {
         return;
     }
 
-    streamOutsConfig[pipeId][outId] = {
-        stream: pipeId,
-        out: outId,
-        name: data.name,
-        encoding: data.resolution,
-        url: data.rtmpUrl,
-    };
+    streamOutsConfig[pipeId][outId] = { stream: pipeId, out: outId, ...data };
     pipelines = getPipelinesInfo();
     renderPipelines();
 }
@@ -375,17 +369,16 @@ async function addOutBtn() {
     }
     const outId = String(newId);
 
-    const res = await setOut(pipeId, outId, { name: 'Out_' + outId });
+    const data = {
+        name: 'Out_' + outId,
+        encoding: 'source',
+        url: 'rtmp://a.rtmp.youtube.com/live2/your-key',
+    };
+    const res = await setOut(pipeId, outId, data);
     if (res.error) {
         return;
     }
-    streamOutsConfig[pipeId][outId] = {
-        stream: pipeId,
-        out: outId,
-        name: 'Out_' + outId,
-        encoding: '',
-        url: '',
-    };
+    streamOutsConfig[pipeId][outId] = { stream: pipeId, out: outId, ...data };
     pipelines = getPipelinesInfo();
     renderPipelines();
 }
