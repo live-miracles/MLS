@@ -277,11 +277,9 @@ async function editOutFormBtn(event) {
         url: serverUrl + rtmpKey,
     };
 
-    console.log(serverUrl);
-
     if (serverUrl.includes('${s_prp}')) {
-        const queryString = rtmpKey.value.split('?')[1];
-        const params = new URLSearchParams(queryString);
+        // Instagram
+        const params = new URLSearchParams(rtmpKey.split('?')[1]);
         data.url = data.url.replaceAll('${s_prp}', params.get('s_prp'));
     }
 
