@@ -445,11 +445,7 @@ async function deletePipeBtn() {
         return;
     }
 
-    const confirmDelete = confirm(
-        'Are you sure you want to delete pipeline "' +
-            pipe.name +
-            '"? This will delete all its outputs as well.',
-    );
+    const confirmDelete = confirm('Are you sure you want to delete pipeline "' + pipe.name + '"?');
     if (!confirmDelete) {
         return;
     }
@@ -459,7 +455,6 @@ async function deletePipeBtn() {
         return;
     }
     streamNames[pipeId] = '';
-    streamOutsConfig[pipeId] = [];
     pipelines = getPipelinesInfo();
     setUrlParam('pipeline', null);
     renderPipelines();
