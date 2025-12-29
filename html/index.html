@@ -133,7 +133,7 @@
         </div>
         <ul class="menu rounded-box w-full" id="pipelines"></ul>
         <div class="mt-3 w-full text-center">
-          <button class="btn btn-xs btn-accent btn-outline btn-disabled" id="add-pipe-btn" onclick="addPipeline()">Add Pipeline</button>
+          <button class="btn btn-xs btn-accent btn-outline btn-disabled" id="add-pipe-btn" onclick="addPipeBtn()">Add Pipeline</button>
         </div>
       </div>
 
@@ -146,7 +146,8 @@
         <div>
           <div class="mb-3 flex items-center gap-2 text-xl font-bold">
             <span id="pipe-name"></span>
-            <button class="btn btn-xs btn-accent btn-outline btn-disabled" id="edit-pipe" onclick="editPipe()">✏️</button>
+            <button class="btn btn-xs btn-accent btn-outline" id="edit-pipe-btn" onclick="editPipeBtn()">✏️</button>
+            <button class="btn btn-xs btn-accent btn-outline" id="delete-pipe-btn" onclick="deletePipeBtn()">🗑️</button>
             <span class="badge" id="input-time"></span>
           </div>
 

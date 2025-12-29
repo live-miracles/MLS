@@ -34,7 +34,7 @@ async function setOut(pipeId, outId, data) {
 
 async function setPipeName(pipeId, name) {
     const names = streamNames.slice(1).join(',');
-    streamNames[parseInt(pipeId)] = name;
+    names[parseInt(pipeId)] = name;
 
     return await fetchResponse(
         `config.php?nameconfig`,

@@ -58,6 +58,15 @@ function renderPipelinesList(selectedPipeline) {
         return sum + p.outs.filter((o) => o.status === 'warning').length;
     }, 0);
 
+    const addPipeBtn = document.getElementById('add-pipe-btn');
+    if (pipelines.length >= config['pipelines-limit']) {
+        addPipeBtn.classList.add('btn-disabled');
+        addPipeBtn.title = `Pipeline limit reached: ${config['pipelines-limit']} pipelines`;
+    } else {
+        addPipeBtn.classList.remove('btn-disabled');
+        addPipeBtn.title = '';
+    }
+
     const html = pipelines
         .map((p) => {
             let outStatus = 'off';
@@ -99,8 +108,21 @@ function renderPipelineInfoColumn(selectedPipeline) {
     }
 
     document.getElementById('pipe-name').innerHTML = pipe.name;
-    document.getElementById('input-time').innerHTML =
-        pipe.input.time !== 0 ? msToHHMMSS(pipe.input.time) : '';
+    if (pipe.input.time === 0) {
+        document.getElementById('input-time').classList.add('hidden');
+    } else {
+        document.getElementById('input-time').classList.remove('hidden');
+        document.getElementById('input-time').innerHTML = msToHHMMSS(pipe.input.time);
+    }
+
+    const deletePipeBtn = document.getElementById('delete-pipe-btn');
+    if (pipe.outs.find((o) => o.status !== 'off')) {
+        deletePipeBtn.classList.add('btn-disabled');
+        deletePipeBtn.title = 'Stop all outputs before deleting the pipeline';
+    } else {
+        deletePipeBtn.classList.remove('btn-disabled');
+        deletePipeBtn.title = '';
+    }
 
     const serverUrl = 'rtmp://' + document.location.hostname + '/distribute/';
     document.getElementById('server-url').innerHTML = serverUrl;
@@ -137,15 +159,6 @@ function renderPipelineInfoColumn(selectedPipeline) {
             pipe.input.audio.bw / 1000,
         );
     }
-
-    const addOutBtn = document.getElementById('add-out-btn');
-    if (pipe.outs.length >= config['out-limit']) {
-        addOutBtn.classList.add('btn-disabled');
-        addOutBtn.title = `Output limit reached: ${config['out-limit']} outs`;
-    } else {
-        addOutBtn.classList.remove('btn-disabled');
-        addOutBtn.title = '';
-    }
 }
 
 function startOutBtn(pipeId, outId) {
@@ -171,6 +184,16 @@ function renderOutsColumn(selectedPipeline) {
         console.error('Pipeline not found:', selectedPipeline);
         return;
     }
+
+    const addOutBtn = document.getElementById('add-out-btn');
+    if (pipe.outs.length >= config['out-limit']) {
+        addOutBtn.classList.add('btn-disabled');
+        addOutBtn.title = `Output limit reached: ${config['out-limit']} outs`;
+    } else {
+        addOutBtn.classList.remove('btn-disabled');
+        addOutBtn.title = '';
+    }
+
     const outsHtml = pipe.outs
         .map((o) => {
             const statusColor =
@@ -333,6 +356,89 @@ async function addOutBtn() {
         url: '',
     };
     pipelines = getPipelinesInfo();
+    renderPipelines();
+}
+
+async function addPipeBtn() {
+    if (pipelines.length >= config['pipelines-limit']) {
+        console.error(`Pipeline limit reached. Max pipelines: ${config['pipelines-limit']}`);
+        return;
+    }
+
+    const pipeIds = pipelines.map((p) => p.id);
+    let newId = 1;
+    while (pipeIds.includes(String(newId))) {
+        newId++;
+    }
+    const pipeId = String(newId);
+
+    const newName = 'Pipeline ' + pipeId;
+    const res = await setPipeName(pipeId, newName);
+    if (res.error) {
+        return;
+    }
+    streamNames[pipeId] = newName;
+    pipelines = getPipelinesInfo();
+    renderPipelines();
+}
+
+async function editPipeBtn() {
+    const pipeId = getUrlParam('pipeline');
+    if (!pipeId) {
+        console.error('Please select a pipeline first.');
+        return;
+    }
+
+    const pipe = pipelines.find((p) => p.id === String(pipeId));
+    if (!pipe) {
+        console.error('Pipeline not found:', selectedPipeline);
+        return;
+    }
+
+    const newName = prompt('Enter new name for pipeline "' + pipe.name + '":', pipe.name);
+    if (!newName) {
+        return;
+    }
+
+    const res = await setPipeName(pipeId, newName);
+    if (res.error) {
+        return;
+    }
+    streamNames[pipeId] = newName;
+    pipelines = getPipelinesInfo();
+    renderPipelines();
+}
+
+async function deletePipeBtn() {
+    const pipeId = getUrlParam('pipeline');
+    if (!pipeId) {
+        console.error('Please select a pipeline first.');
+        return;
+    }
+
+    const pipe = pipelines.find((p) => p.id === String(pipeId));
+    if (!pipe) {
+        console.error('Pipeline not found:', selectedPipeline);
+        return;
+    }
+
+    const confirmDelete = confirm(
+        'Are you sure you want to delete pipeline "' +
+            pipe.name +
+            '"? This will delete all its outputs as well.',
+    );
+    if (!confirmDelete) {
+        return;
+    }
+
+    const res = await setPipeName(pipeId, '');
+    if (res.error) {
+        return;
+    }
+    streamNames[pipeId] = '';
+    streamOutsConfig[pipeId] = [];
+    pipelines = getPipelinesInfo();
+    setUrlParam('pipeline', null);
     renderPipelines();
 }
 
