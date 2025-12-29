@@ -456,8 +456,8 @@ function renderStatsColumn(selectedPipeline) {
         .filter((p) => p.input.video)
         .map((p) => {
             return `
-      <tr class="bg-base-100">
-        <th>${msToHHMMSS(p.input.time)}</th>
+      <tr class="${p.status === 'warning' ? 'bg-warning/10' : ''}">
+        <td>${msToHHMMSS(p.input.time)}</td>
         <td>${p.name}</td>
         <td>${Math.trunc(p.input.video.bw / 1000)}</td>
         <td>${p.input.video.codec}</td>
@@ -475,8 +475,8 @@ function renderStatsColumn(selectedPipeline) {
         .filter((o) => o.video)
         .map((o) => {
             return `
-      <tr>
-        <th>${msToHHMMSS(o.time)}</th>
+      <tr class="${o.status === 'warning' ? 'bg-warning/10' : ''}">
+        <td>${msToHHMMSS(o.time)}</td>
         <td>${o.pipe}: ${o.name}</td>
         <td>${Math.trunc(o.video.bw / 1000)}</td>
         <td>${o.video.codec}</td>
@@ -489,7 +489,11 @@ function renderStatsColumn(selectedPipeline) {
       </tr>`;
         })
         .join('');
-    document.getElementById('stats-table').innerHTML = inputStatsHtml + outputStatsHtml;
+    document.getElementById('stats-table').innerHTML =
+        `<tr class="bg-base-100"><th colspan="10">Inputs</th></tr>` +
+        inputStatsHtml +
+        `<tr class="bg-base-100"><th colspan="10">Outputs</th></tr>` +
+        outputStatsHtml;
 }
 
 function renderPipelines() {

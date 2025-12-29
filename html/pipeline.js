@@ -12,7 +12,8 @@ function getRtmpStats(type) {
         const name = s.name['#text'].split('-')[1];
         let id = null;
         if (type === 'output') {
-            id = streamOutsConfig[parseInt(streamNo)].find((o) => o && o.name === name)?.out;
+            id =
+                streamOutsConfig[parseInt(streamNo)].find((o) => o && o.name === name)?.out ?? name;
         }
 
         return {
@@ -95,13 +96,15 @@ function getPipelinesInfo() {
             return;
         }
 
-        const out = pipe.outs.find((o) => o.id === s.id);
+        let out = pipe.outs.find((o) => o.id === s.id);
         if (!out) {
             console.error('Output not found for stats', s);
-            return;
+            out = { id: null, pipe: pipe.name, name: s.id, status: 'warning' };
+            pipe.outs.push(out);
+        } else {
+            out.status = s.video.bw > 0 ? 'on' : 'warning';
         }
 
-        out.status = s.video.bw > 0 ? 'on' : 'warning';
         out.time = s.time;
         out.video = s.video;
         out.audio = s.audio;
