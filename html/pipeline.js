@@ -10,10 +10,10 @@ function getRtmpStats(type) {
     return outputs.map((s) => {
         const streamNo = s.name['#text'].split('-')[0].replace('stream', '');
         const name = s.name['#text'].split('-')[1];
-        const id =
-            type === 'output'
-                ? streamOutsConfig[parseInt(streamNo)].find((o) => o && o.name === name).out
-                : null;
+        let id = null;
+        if (type === 'output') {
+            id = streamOutsConfig[parseInt(streamNo)].find((o) => o && o.name === name)?.out;
+        }
 
         return {
             id: id,

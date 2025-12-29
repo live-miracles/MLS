@@ -2,72 +2,6 @@ let pipelines = [];
 let serverStats = {};
 let config = {};
 
-function msToHHMMSS(ms) {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    return [hours, minutes.toString().padStart(2, '0'), seconds.toString().padStart(2, '0')].join(
-        ':',
-    );
-}
-
-function legacyCopy(text) {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-
-    // Prevent scrolling to bottom
-    textarea.style.position = 'fixed';
-    textarea.style.top = '0';
-    textarea.style.left = '0';
-    textarea.style.opacity = '0';
-
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-
-    let success = false;
-    try {
-        success = document.execCommand('copy');
-    } catch (err) {
-        console.error('Legacy copy failed', err);
-    }
-
-    document.body.removeChild(textarea);
-    return success;
-}
-
-async function copyData(id) {
-    const elem = document.getElementById(id);
-    const text = elem.dataset.copy;
-
-    if (navigator.clipboard) {
-        try {
-            await navigator.clipboard.writeText(text);
-            return true;
-        } catch (err) {
-            console.warn('Clipboard API failed, falling back', err);
-        }
-    }
-    return legacyCopy(text);
-}
-
-function setUrlParam(param, value) {
-    const url = new URL(window.location);
-    if (value === null) {
-        url.searchParams.delete(param);
-    } else {
-        url.searchParams.set(param, value);
-    }
-    window.history.pushState({}, '', url);
-}
-
-function getUrlParam(param) {
-    const url = new URL(window.location);
-    return url.searchParams.get(param);
-}
-
 function getStatusColor(status) {
     switch (status) {
         case 'on':
@@ -214,13 +148,13 @@ function renderPipelineInfoColumn(selectedPipeline) {
     }
 }
 
-function startOut(pipeId, outId) {
-    executePhp(`/control.php?streamno=${pipeId}&action=out&actnumber=${outId}&state=on`);
+function startOutBtn(pipeId, outId) {
+    startOut(pipeId, outId);
     document.getElementById(`pipe${pipeId}-out${outId}-btn`).classList.add('btn-disabled');
 }
 
-function stopOut(pipeId, outId) {
-    executePhp(`/control.php?streamno=${pipeId}&action=out&actnumber=${outId}&state=off`);
+function stopOutBtn(pipeId, outId) {
+    stopOut(pipeId, outId);
     document.getElementById(`pipe${pipeId}-out${outId}-btn`).classList.add('btn-disabled');
 }
 
@@ -254,7 +188,7 @@ function renderOutsColumn(selectedPipeline) {
                 <div class="font-semibold mr-3">
                     <div aria-label="status" class="status status-lg ${statusColor} mx-1"></div>
                     <button id="pipe${pipe.id}-out${o.id}-btn" class="btn btn-xs ${o.status === 'off' ? 'btn-accent' : 'btn-accent btn-outline'}"
-                        onclick="${o.status === 'off' ? 'startOut' : 'stopOut'}(${pipe.id}, ${o.id})">
+                        onclick="${o.status === 'off' ? 'startOutBtn' : 'stopOutBtn'}(${pipe.id}, ${o.id})">
                         ${o.status === 'off' ? 'start' : 'stop'}</button>
                     Out ${o.id}: ${o.name} (${o.encoding})
                     ${o.time !== 0 ? `<span class="badge badge-sm">${msToHHMMSS(o.time)}</span>` : ''}
@@ -262,8 +196,10 @@ function renderOutsColumn(selectedPipeline) {
                 <code title="${o.url}" class="text-sm opacity-70 truncate block">${o.url}</code>
             </div>
             <div class="flex items-center gap-2 w-fit">
-                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}" onclick="editOutBtn(${pipe.id}, ${o.id})">✏️</button>
-                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}" onclick="deleteOutBtn(${pipe.id}, ${o.id})">🗑️</button>
+                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}"
+                  onclick="editOutBtn(this, ${pipe.id}, ${o.id})">✏️</button>
+                <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}"
+                  onclick="deleteOutBtn(${pipe.id}, ${o.id})">🗑️</button>
             </div>
           </div>`;
         })
@@ -277,11 +213,20 @@ function editOutBtn(pipeId, outId) {
 }
 
 function deleteOutBtn(pipeId, outId) {
-    if (!confirm('Are you sure you want to delete this output?')) {
+    const output = pipelines
+        .find((p) => p.id === String(pipeId))
+        .outs.find((o) => o.id === String(outId));
+    if (!output) {
+        console.error('Output not found:', pipeId, outId);
+        return;
+    }
+
+    if (!confirm('Are you sure you want to delete output "' + output.name + '"?')) {
         return;
     }
 
     deleteOut(pipeId, outId);
+    elem.classList.add('btn-disabled');
 }
 
 function addOutBtn() {
@@ -382,22 +327,43 @@ async function fetchConfigs() {
     return await res.json();
 }
 
+async function updateStatuses() {
+    statsJson = await fetchStats();
+    processes = await fetchProcesses();
+    pipelines = getPipelinesInfo();
+}
+
+async function checkStreamingConfigs() {
+    const config = await fetchConfigFile();
+    if (
+        JSON.stringify(streamOutsConfig) === JSON.stringify(config.outs) &&
+        JSON.stringify(streamNames) === JSON.stringify(config.names)
+    ) {
+        return;
+    }
+    document.getElementById('streaming-config-changed-alert').classList.remove('hidden');
+}
+
+async function rerenderStatuses() {
+    await updateStatuses();
+    serverStats = await fetchSystemStats();
+    pipelines = getPipelinesInfo();
+    renderPipelines();
+}
+
 (async () => {
+    setVideoPlayers();
+
     config = await fetchConfigs();
     document.title = config['server-name'] + ': Dashboard';
     document.getElementById('server-name').innerHTML = 'MLS: ' + config['server-name'];
 
-    setVideoPlayers();
+    const streamConfig = await fetchConfigFile();
+    streamNames = streamConfig.names;
+    streamOutsConfig = streamConfig.outs;
 
-    await updateConfigs();
-    serverStats = await fetchSystemStats();
-    pipelines = getPipelinesInfo();
-    renderPipelines();
+    await rerenderStatuses();
+    setInterval(rerenderStatuses, 5000);
 
-    setInterval(async () => {
-        await updateConfigs();
-        serverStats = await fetchSystemStats();
-        pipelines = getPipelinesInfo();
-        renderPipelines();
-    }, 5000);
+    setInterval(checkStreamingConfigs, 6000);
 })();

@@ -15,6 +15,72 @@ function clearAndAddChooseOption(selector) {
     selector.appendChild(option);
 }
 
+function msToHHMMSS(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return [hours, minutes.toString().padStart(2, '0'), seconds.toString().padStart(2, '0')].join(
+        ':',
+    );
+}
+
+function legacyCopy(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+
+    // Prevent scrolling to bottom
+    textarea.style.position = 'fixed';
+    textarea.style.top = '0';
+    textarea.style.left = '0';
+    textarea.style.opacity = '0';
+
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    let success = false;
+    try {
+        success = document.execCommand('copy');
+    } catch (err) {
+        console.error('Legacy copy failed', err);
+    }
+
+    document.body.removeChild(textarea);
+    return success;
+}
+
+async function copyData(id) {
+    const elem = document.getElementById(id);
+    const text = elem.dataset.copy;
+
+    if (navigator.clipboard) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch (err) {
+            console.warn('Clipboard API failed, falling back', err);
+        }
+    }
+    return legacyCopy(text);
+}
+
+function setUrlParam(param, value) {
+    const url = new URL(window.location);
+    if (value === null) {
+        url.searchParams.delete(param);
+    } else {
+        url.searchParams.set(param, value);
+    }
+    window.history.pushState({}, '', url);
+}
+
+function getUrlParam(param) {
+    const url = new URL(window.location);
+    return url.searchParams.get(param);
+}
+
 // ===== Document Config & URL Utils =====
 function setInputValue(id, value) {
     const input = document.getElementById(id, value);
@@ -353,12 +419,15 @@ function escapeHTML(str) {
     return new Option(str).innerHTML;
 }
 
+let alertCount = 0;
 function showErrorAlert(error) {
     const errorAlertElem = document.getElementById('error-alert');
     if (!errorAlertElem) return;
     errorAlertElem.classList.remove('hidden');
     document.getElementById('error-msg').innerText = error;
+    const alertId = ++alertCount;
     setTimeout(() => {
+        if (alertId !== alertCount) return;
         errorAlertElem.classList.add('hidden');
     }, 5000);
 }

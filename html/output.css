@@ -2556,6 +2556,13 @@
       --alert-color: var(--color-error);
     }
   }
+  .alert-warning {
+    @layer daisyui.l1.l2 {
+      color: var(--color-warning-content);
+      --alert-border-color: var(--color-warning);
+      --alert-color: var(--color-warning);
+    }
+  }
   .link-accent {
     @layer daisyui.l1.l2 {
       color: var(--color-accent);
