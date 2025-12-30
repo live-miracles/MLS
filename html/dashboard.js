@@ -224,7 +224,7 @@ function renderOutsColumn(selectedPipeline) {
             </div>
             <div class="flex items-center gap-2 w-fit">
                 <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}"
-                  onclick="editOutBtn(${pipe.id}, ${o.id})">✏️</button>
+                  onclick="editOutBtn(${pipe.id}, ${o.id})">✎</button>
                 <button class="btn btn-xs btn-accent btn-outline ${o.status === 'off' ? '' : 'btn-disabled'}"
                   onclick="deleteOutBtn(${pipe.id}, ${o.id})">✖</button>
             </div>
