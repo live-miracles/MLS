@@ -73,7 +73,7 @@ function getPipelinesInfo() {
 
             const pipe = newPipelines.find((p) => p.id === out.stream);
             if (!pipe) return;
-            const status = processes.includes(pipe.id + 'out' + out.out) ? 'error' : 'off';
+            const status = processes?.includes(pipe.id + 'out' + out.out) ? 'error' : 'off';
 
             pipe.outs.push({
                 id: out.out,
