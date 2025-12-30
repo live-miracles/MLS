@@ -559,8 +559,8 @@ async function fetchConfigs() {
 async function checkStreamingConfigs(secondTime = false) {
     const config = await fetchConfigFile();
     if (
-        config.outs &&
-        config.names &&
+        !config.outs ||
+        !config.names ||
         JSON.stringify({ outs: streamOutsConfig, names: streamNames }) === JSON.stringify(config)
     ) {
         document.getElementById('streaming-config-changed-alert').classList.add('hidden');
