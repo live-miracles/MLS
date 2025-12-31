@@ -27,6 +27,12 @@ function msToHHMMSS(ms) {
 }
 
 function isValidUrl(str) {
+    // YouTube backup URL is a little funny
+    const text = str.replaceAll(
+        'rtmp://b.rtmp.youtube.com/live2?backup=1',
+        'rtmp://a.rtmp.youtube.com/live2',
+    );
+
     const pattern = new RegExp(
         '^([a-zA-Z]+:\\/\\/)?' + // protocol
             '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -36,7 +42,8 @@ function isValidUrl(str) {
             '(\\#[-a-z\\d_]*)?$', // fragment locator
         'i',
     );
-    return pattern.test(str);
+
+    return pattern.test(text);
 }
 
 function legacyCopy(text) {
