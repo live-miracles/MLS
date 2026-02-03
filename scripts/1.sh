@@ -410,7 +410,22 @@ off)
 		;;
 
 	1080p) # YouTube Live – 4K → 1080p downscale, audio copy
-		encodeparam="-acodec copy -vcodec libx264 -pix_fmt yuv420p -r 25 -g 50 -vf 'scale=1920:1080:flags=lanczos' -profile:v high -level 4.2 -keyint_min 50 -b:v 8000k -maxrate 8000k -bufsize 16000k -preset veryfast -flags +global_header"
+		encodeparam="\
+		-vf "scale=1920:1080:flags=bicubic" \
+		-vcodec libx264 \
+		-pix_fmt yuv420p \
+		-profile:v high \
+		-level 4.2 \
+		-r 25 \
+		-g 50 \
+		-keyint_min 50 \
+		-b:v 8000k \
+		-maxrate 8000k \
+		-bufsize 32000k \
+		-preset ultrafast \
+		-x264-params nal-hrd=cbr \
+		-acodec copy \
+		-flags +global_header"
 		;;
 
 	720p) #1.3mbps video, audio copy
