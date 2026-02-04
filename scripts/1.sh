@@ -410,8 +410,7 @@ off)
 		;;
 
 	vertical_blur)
-		encodeparam="
-		-filter_complex '[0:v] split=2 [fg][bg];[bg] scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,boxblur=10:1 [bg];[fg] scale=-2:ih*0.6 [fg];[bg][fg] overlay=(W-w)/2:(H-h)/2,setsar=1' -c:v libx264 -preset veryfast -pix_fmt yuv420p -profile:v high -level 4.1 -r 25 -g 50 -c:a copy -flags +global_header"
+		encodeparam="-filter_complex '[0:v] split=2 [fg][bg];[bg] scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,boxblur=10:1 [bg];[fg] scale=-2:ih*0.6 [fg];[bg][fg] overlay=(W-w)/2:(H-h)/2,setsar=1' -c:v libx264 -preset veryfast -pix_fmt yuv420p -profile:v high -level 4.1 -r 25 -g 50 -c:a copy -flags +global_header"
 		;;
 
 	1080p) # YouTube Live – 4K → 1080p downscale, audio copy
