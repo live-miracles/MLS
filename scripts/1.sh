@@ -405,8 +405,12 @@ off)
 		encodeparam="-c copy -flags +global_header"
 		;;
 
-	vertical) # Rotate video 90 degrees and scale to 720p
-		encodeparam="-vf 'transpose=1, scale=720:1280' -c:v libx264 -c:a aac -flags +global_header"
+	vertical_rotate) # Rotate 90° + downscale (audio copy, low CPU)
+		encodeparam="-vf 'scale=720:1280:flags=fast_bilinear,transpose=1' -vcodec libx264 -pix_fmt yuv420p -preset ultrafast -threads 4 -acodec copy -flags +global_header"
+		;;
+
+	vertical_blur)
+		encodeparam="-vf \"split=2[fg][bg];[bg]scale=720:1280:flags=fast_bilinear,boxblur=10:1[bg];[fg]scale=960:1706:flags=fast_bilinear,crop=720:1280[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2\" -vcodec libx264 -pix_fmt yuv420p -preset ultrafast -threads 4 -acodec copy -flags +global_header"
 		;;
 
 	1080p) # YouTube Live – 4K → 1080p downscale, audio copy
