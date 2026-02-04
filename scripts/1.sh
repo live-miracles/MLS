@@ -405,24 +405,17 @@ off)
 		encodeparam="-c copy -flags +global_header"
 		;;
 
-	vertical_rotate) # Rotate 90° + downscale (audio copy, low CPU)
-		encodeparam="-vf 'transpose=1,scale=720:-2:flags=fast_bilinear' -c:v libx264 -preset veryfast -c:a copy -flags +global_header"
+	vertical_rotate) # Rotate 90°
+		encodeparam="-vf 'transpose=1' -c:v libx264 -preset veryfast -c:a copy -flags +global_header"
 		;;
 
 	vertical_blur)
 		encodeparam="
 		-filter_complex '
-			[0:v] transpose=1, split=2 [fg][bg];
-
-			[bg] scale=720:1280:flags=fast_bilinear,
-				boxblur=10:1
-				[bg];
-
-			[fg] scale=720:-2:flags=fast_bilinear
-				[fg];
-
-			[bg][fg] overlay=(W-w)/2:(H-h)/2,
-					setsar=1
+		[0:v] split=2 [fg][bg];
+		[bg] scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,boxblur=10:1 [bg];
+		[fg] scale=-2:ih*0.6 [fg];
+		[bg][fg] overlay=(W-w)/2:(H-h)/2,setsar=1
 		'
 		-c:v libx264
 		-preset veryfast
